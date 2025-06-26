@@ -1,6 +1,7 @@
 # Diabetic Retinopathy Classification
 
 ![diabetic retinopathy classification example](../images/diabetic-retinopathy-classification.png)
+[Source: Image Credit URL](https://www.sciencedirect.com/science/article/pii/S0957417423000581)
 
 This challenge is about classifying Fundus photographies for Diabetic Retinopathy (DR) severity level:
 - 0: No DR
