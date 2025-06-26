@@ -6,9 +6,9 @@ In this repository, you will find all the information needed to participate in t
 Below you can find the three use cases for the DM i AI 2025 event. <br>
 Within each use case, you find a description together with a template that can be used to setup an API endpoint. <br> 
 The API endpoint will be used for submission and is required. The requirements for the API endpoints are specified in the respective use cases. <br> <br>
-<a href="">- </a> <br>
-<a href="">- </a> <br>
-<a href="">- Diabetic Retinopathy Classification</a> <br> <br>
+<a href=""></a> <br>
+<a href=""></a> <br>
+<a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/diabetic-retinopathy-classification">- Diabetic Retinopathy Classification</a> <br> <br>
 
 Clone this GitHub repository to download templates for all three use cases.
 ```
