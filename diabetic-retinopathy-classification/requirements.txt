@@ -5,4 +5,3 @@ pydantic-settings
 opencv-python
 numpy
 matplotlib
-loguru
