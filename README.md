@@ -6,7 +6,7 @@ In this repository, you will find all the information needed to participate in t
 Below you can find the three use cases for the DM i AI 2025 event. <br>
 Within each use case, you find a description together with a template that can be used to setup an API endpoint. <br> 
 The API endpoint will be used for submission and is required. The requirements for the API endpoints are specified in the respective use cases. <br> <br>
-<a href="">- Race Car Simulator</a> <br>
+<a href="">- </a> <br>
 <a href="">- </a> <br>
 <a href="">- Diabetic Retinopathy Classification</a> <br> <br>
 
@@ -38,7 +38,7 @@ The total score is simply an average of your individual scores.<br>
 This format also means that you can lose points / be overtaken by other teams during the week if they submit a model that is better than yours. 
 
 <h3>Deadline for submission</h3>
-The deadline for submission is: **(TODO: SET DEADLINE DATE)**
+The deadline for submission is: August 8, 2025 at 14.00
 
 <h3>Final evaluation</h3>
 Upon completion of the contest, the top 5 highest-ranking teams will be asked to submit their training code and the trained models for validation no later than **(TODO: SET DEADLINE DATE)**. The submissions will be validated by our Scientific Jury who will get back to everyone within top 5 to let them know their placement. 
