@@ -13,29 +13,32 @@ This challenge is about classifying Fundus photographies for Diabetic Retinopath
 [Fundus photographies](https://en.wikipedia.org/wiki/Fundus_photography), as seen in the above figure, capture the rear of an eye, using a specialized camera consisting of a microscope attached to a flash.
 [Diabetic retinopathy](https://en.wikipedia.org/wiki/Diabetic_retinopathy) is a medical condition caused by diabetes. The condition is a leading cause of blindness in developed countries and one of the leading causes of sight loss in the world.
 
-The challenge is to develop a framework which correctly identifies the diabetic retinopathy severity level in fundus photos.
+This challenge is about developing a framework which correctly identifies the diabetic retinopathy severity level in fundus photos.
 
-Your score will be calculated through a [Mean Absolute Error (MAE)](https://en.wikipedia.org/wiki/Mean_absolute_error). This is because, mis-classifying a fundus photo with **Proliferative DR (4)** as **No DR (0)** is much worse than mis-classifying as **Severe non-proliferative DR (3)**:
+Your score will be calculated through a [Mean Absolute Error (MAE)](https://en.wikipedia.org/wiki/Mean_absolute_error). This is because, mis-classifying a fundus photo with **Proliferative DR (4)** as **No DR (0)** is much worse than mis-classifying it as **Severe non-proliferative DR (3)**:
 
-Example 1:
+Absolute Error Example 1:
 - True severity level: **Severe non-proliferative DR (3)**
 - Predicted severity level: **Proliferative DR (4)**
 - Absolute Error: ∣3−4∣=1
 
-Example 2:
+Absolute Error Example 2:
 - True severity level: **No DR (0)**
 - Predicted severity level: **Proliferative DR (4)**
 - Absolute Error: ∣0−4∣=4
 
-The best possible score is 0, which indicate that the predicted severity level (y) and true severity l level (x) corresponds for every single fundus image in the dataset. The score is formally defined as:
+
+The best possible MAE score is 0, which indicate that the predicted severity level (y) and true severity l level (x) corresponds for every single fundus image in the dataset. The score is formally defined as:
 
 $$
-\text{Score} = \frac{1}{N} \sum_{i=1} |x_i - y_i|
+\text{Score} = \text{MAE} = \frac{1}{N} \sum_{i=1} |x_i - y_i|
  $$
 
 ## Data Description
 
-**TODO: ADD DESCRIPTION ABOUT THE IMAGES**. The datasets are split into 3 for the challenge:
+**TODO: ADD DESCRIPTION ABOUT THE IMAGES**. 
+
+The datasets are split into 3 for the challenge:
 
 * X training images
 * Y validation images
@@ -81,8 +84,7 @@ Serve your endpoint locally and test that everything starts without errors
 ```cmd
 python api.py
 ```
-Open a browser and navigate to http://localhost:4321. You should see a message stating that the endpoint is running. 
-Feel free to change the `HOST` and `PORT` settings in `api.py`. 
+Open a browser and navigate to http://localhost:4321. You should see a message stating that the endpoint is running. Navigate to http://localhost:4321/docs to see your endpoints.
 
 ### Make your endpoint visible to the validation and evaluation service
 There are multiple options:
