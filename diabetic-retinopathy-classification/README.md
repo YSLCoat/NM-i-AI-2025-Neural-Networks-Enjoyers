@@ -29,7 +29,7 @@ Absolute Error Example 2:
 - Absolute Error: ∣0−4∣=4
 
 
-The best possible MAE score is 0, which indicate that the predicted severity level (y) and true severity l level (x) corresponds for every single fundus image in the dataset. The score is formally defined as:
+The best possible MAE score is 0, which indicate that the predicted severity level ($y_i$) and true severity level ($x_i$) corresponds for every single fundus image ($\text{image}_i$) in the dataset. The score is formally defined as:
 
 $$
 \text{Score} = \text{MAE} = \frac{1}{N} \sum_{i=1} |x_i - y_i|
