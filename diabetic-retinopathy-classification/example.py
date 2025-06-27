@@ -1,8 +1,11 @@
-from utils import tif_to_ndarray
+from utils import png_to_array, show_image
 from model import predict
 
-CELL_IMG = "data/training/007.tif" 
+FUNDUS_IMG = "data/training/0a4e1a29ffff.png" 
 
-image = tif_to_ndarray(CELL_IMG) # For local testing with tif files
+image = png_to_array(FUNDUS_IMG)
 sample_prediction = predict(image)
-print(sample_prediction)
+
+print("Predicted class:", sample_prediction)
+show_image(image, str(sample_prediction))
+
