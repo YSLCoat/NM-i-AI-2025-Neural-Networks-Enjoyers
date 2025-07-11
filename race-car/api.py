@@ -6,13 +6,14 @@ from pydantic import BaseModel
 from model import predict
 from utils import load_sample
 from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
+from test_endpoint import return_random
 HOST = "0.0.0.0"
 PORT = 4321
 
 
 @app.post('/predict', response_model=RaceCarPredictResponseDto)
 def predict(request: RaceCarPredictRequestDto = Body(...)):
-    action = return_nothing(request.dict())
+    action = return_random(request.dict())
     return RaceCarPredictResponseDto(action_type=action)
 
 
