@@ -4,8 +4,7 @@ Ready, set, GO! It's racing time.
 
 Race against the competition to go the furthest in the allotted time, but be careful, one small crash can end your run!
 
-Image
-/home/rebecca/projects/dm-i-ai-2025-evaluation-service_new/race_car_game/cf7a5fb356344b6bb9acd94940a84d72/frame_0348.png
+![Race Car](../images/race_car_intro.png)
 
 ## About the game
 You control the yellow car. Red and blue cars will spawn in random lanes - it is your job to dodge them. The car is equipped with 8 evenly spaced sensors - each being able to find obstacles within a 1000px. Figure 2 shows an image of the sensors with names.
@@ -20,11 +19,6 @@ The game runs with 5 lanes of equal size. Your car will spawn in the center lane
 On the top and bottom of the screens are walls. If you hit the walls your car will crash, so no off roading in this one. 
 
 ### Your Goal
-1. dont crash into adversarial cars
-2. dont crash into walls
-3. go fast
-4. go far
-
 
 Your goal is to go as far as you can in one minute. Your game will **end** if you crash into adversarial cars or into walls. Your final score will be based on your distance.
 
@@ -43,7 +37,7 @@ To communicate with the server for validation and evaluation, use the functions 
 
 Sensor output is your information from the game. There are 8 sensors on the car, each is positioned at a specific angle (in degrees) relative to the center of the car and has a reach of 1000 pixels Figure X #FIX shows the sensors. Below all sensors are listed. 
 
-![Sensors](race_car_game/cf7a5fb356344b6bb9acd94940a84d72/frame_0425.png)
+![Sensors](../images/race_car_sensors.png)
 
 **List of Sensors (angle, name):**
 
