@@ -1,19 +1,21 @@
-from utils import l1_score, plot_prediction, load_sample
+from utils import load_statement_sample
 from model import predict
 
-PATIENT_IX = "000_0"
+# Load a sample from training data
+statement, true_answer = load_statement_sample("0001")
 
-sample = load_sample(PATIENT_IX)
-tissue_image = sample["tissue_image"]
-corrupted_image = sample["corrupted_image"]
-mask_image = sample["mask_image"]
-ct_image = sample["ct_image"]
-vertebrae = sample["vertebrae"]
+print(f"Statement: {statement}")
+print(f"True answer: {true_answer}")
 
-## Predict reconstruction
-reconstructed_image = predict(corrupted_image,tissue_image,mask_image,vertebrae)
+# Make prediction
+statement_is_true, statement_topic = predict(statement)
 
-# Plot and score prediction
-plot_prediction(corrupted_image,tissue_image,mask_image,reconstructed_image,vertebrae,ct_image)
-l1 = l1_score(ct_image,corrupted_image)
-print(f"L1 score: {l1:.03f}")
+print(f"Predicted: statement_is_true={statement_is_true}, statement_topic={statement_topic}")
+
+# Check accuracy
+true_correct = statement_is_true == true_answer["statement_is_true"]
+topic_correct = statement_topic == true_answer["statement_topic"]
+
+print(f"Truth prediction correct: {true_correct}")
+print(f"Topic prediction correct: {topic_correct}")
+print(f"Both correct: {true_correct and topic_correct}")
