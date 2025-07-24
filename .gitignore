@@ -1,3 +1,7 @@
+#emergency-healthcare-rag
+emergency-healthcare-rag/data/test
+emergency-healthcare-rag/data/validation
+
 # Emily-specific files
 .idea
 .vscode
