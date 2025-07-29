@@ -19,9 +19,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
 4. Enter a job name
 5. Set hours to 1-4
 6. Keep nodes at 1
-7. Choose machine type:
-   - **uc1-gc1-1**: No GPU required
-   - **uc1-l4-1**: GPU required (do not select multi-GPU nodes)
+7. Choose machine type: **uc1-l4-1**  (do not select multi-GPU nodes)
 8. Under "Select folders to use":
    - Click **Add folder**
    - Choose your team drive (e.g., TEAM31)
