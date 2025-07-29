@@ -65,7 +65,7 @@ Feel free to change the `HOST` and `PORT` settings in `api.py`.
 ### Make your endpoint visible to the evaluation service
 There are multiple options:
 - **Local deployment** Ensure that the selected `PORT` on your network is open and redirecting traffic to your machine (this may not be possible depending on your network setup. Usually this involves changing settings in the admin panel of your router). 
-- **Cloud deployment** Create a compute instance on UCloud, Microsoft Azure, Google Cloud, Amazon Web Services (AWS) or other cloud providers. Repeat the steps above on the compute instance. Note that UCloud instances will be available free of charge to participants in DM-in-AI.
+- **Cloud deployment** Create a compute instance on UCloud, Microsoft Azure, Google Cloud, Amazon Web Services (AWS) or other cloud providers. Repeat the steps above on the compute instance. Note that UCloud instances will be available free of charge to participants in DM-in-AI. Please see `ucloud/getting-started.md`
 
 
 ## About the data
