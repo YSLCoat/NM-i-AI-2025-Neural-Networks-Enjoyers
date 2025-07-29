@@ -133,7 +133,8 @@ To expose the FastAPI endpoint to the internet:
 7. Verify setup:
    - Check logs for any errors
    - Test the public link in your browser
-   - Test from a different machine: ```bash
+   - Test from a different machine:
+   ```bash
    curl -X POST https://public-link.cloud.aau.dk/predict  -H "Content-Type: application/json"   -d '{"statement": "constipation is a disease"}
    ```
 ### Restarting Jobs
