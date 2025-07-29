@@ -1,4 +1,5 @@
 # Emergency Healthcare RAG
+![Kiku](../images/emergency-rag-banner.png)
 
 In this use case, your job is to help an emergency department answer critical medical questions fast and accurately!
 
