@@ -67,7 +67,6 @@ if [ -n "$NEEDS" ]; then
     exit 1
 fi
 
-done
 OLLAMA_INSTALL_DIR=$(dirname ${BINDIR})
 
 if [ -d "$OLLAMA_INSTALL_DIR/lib/ollama" ] ; then
