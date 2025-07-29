@@ -79,7 +79,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
 
 ## 4. Setup FastAPI Server
 
-1. Navigate to project directory:
+1. (On the gpu instance) Navigate to project directory:
    ```bash
    cd /work/TEAM31/DM-i-AI-2025/emergency-healthcare-rag
    ```
