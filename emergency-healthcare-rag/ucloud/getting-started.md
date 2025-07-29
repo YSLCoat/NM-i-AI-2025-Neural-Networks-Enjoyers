@@ -53,7 +53,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
    screen
    ```
 
-5. Start Ollama server:
+5. Start Ollama server (this will start ollama on port 11434):
    ```bash
    OLLAMA_MODELS=/work/TEAM31/models /work/TEAM31/ollama/bin/ollama serve
    ```
