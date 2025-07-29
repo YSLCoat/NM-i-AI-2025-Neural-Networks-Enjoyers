@@ -43,7 +43,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
    git clone https://github.com/amboltio/DM-i-AI-2025
    ```
 
-3. Install Ollama:
+3. Install Ollama (this modified ollama installation script installs ollama in the working directory as opposed to /usr/bin):
    ```bash
    sh DM-i-AI-2025/emergency-healthcare-rag/ucloud/ollama-install.sh
    ```
