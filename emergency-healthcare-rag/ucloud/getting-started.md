@@ -70,7 +70,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
    ```bash
    /work/TEAM31/ollama/bin/ollama run llama3.2:3b
    ```
-   (Press `Ctrl+C` to exit chat)
+   (Press `Ctrl+D` to exit chat)
 
 9. Verify server is running:
    ```bash
