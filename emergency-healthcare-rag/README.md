@@ -12,7 +12,7 @@ $$
 Accuracy = \frac{\text{Number of correct predictions}}{\text{Total number of predictions}}
 $$
 
-The training set, validation set and test set contain 200, 200 and 749 statements respectively. All statements are generated based on the medical reference material found in ```data/topics/```. The medical topics range from emergency conditions like stroke, cardiac arrest, and trauma to diagnostic procedures like CT scans, blood tests, and ECGs. The complete topic mapping is provided in ```data/topics.json```.
+The training set, validation set and evaluation set contain 200, 200 and 749 statements respectively. All statements are generated based on the medical reference material found in ```data/topics/```. The medical topics range from emergency conditions like stroke, cardiac arrest, and trauma to diagnostic procedures like CT scans, blood tests, and ECGs. The complete topic mapping is provided in ```data/topics.json```.
 
 ### Example Statement
 **Statement**: "Cancer patients with pulmonary embolism have the highest VTE recurrence risk with pancreatic cancer, hematological malignancies, lung cancer, gastric cancer, and brain cancer carrying the greatest thrombotic risk, necessitating extended anticoagulation with LMWH or direct oral anticoagulants preferred over vitamin K antagonists."

@@ -8,7 +8,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 HOST = "0.0.0.0"
-PORT = 9050
+PORT = 8000
 
 class MedicalStatementRequestDto(BaseModel):
     statement: str
