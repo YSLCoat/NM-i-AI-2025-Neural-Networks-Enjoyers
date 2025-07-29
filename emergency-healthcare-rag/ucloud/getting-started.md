@@ -23,7 +23,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
 8. Under "Select folders to use":
    - Click **Add folder**
    - Choose your team drive (e.g., TEAM31)
-   - Files persist between runs (50GB storage)
+   - Files in the team drive persist between runs (50GB storage). All files outside the drive folder will be deleted when the job finishes.
 9. Click **Submit** and wait for job to start
 10. Click **Open terminal**
 11. Team drive location: `/work/TEAM31`
