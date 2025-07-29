@@ -2,8 +2,6 @@ import uvicorn
 from fastapi import FastAPI
 import datetime
 import time
-from utils import validate_prediction
-from model import predict
 from loguru import logger
 from pydantic import BaseModel
 
@@ -39,8 +37,6 @@ def predict_endpoint(request: MedicalStatementRequestDto):
     # Get prediction from model
     statement_is_true, statement_topic = predict(request.statement)
 
-    # Validate prediction format
-    validate_prediction(statement_is_true, statement_topic)
 
     # Return the prediction
     response = MedicalStatementResponseDto(
