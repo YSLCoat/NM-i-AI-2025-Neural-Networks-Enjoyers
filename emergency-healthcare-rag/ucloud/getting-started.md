@@ -1,0 +1,144 @@
+# UCloud Setup Guide
+
+**Important**: GPU resources are shared with limited hours. Stop GPU jobs when not in use and limit your team to **1 GPU instance** at a time.
+
+## Overview
+This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
+
+## 1. Accept Team Invite
+1. Accept your team's UCloud invite link and login with university credentials
+2. Share the invite link only with your teammates (not other participants)
+3. You may need to click the invite link again after signup to join the team
+4. Note your team name (e.g., TEAM31)
+
+## 2. Start GPU Instance
+
+1. Navigate to https://cloud.sdu.dk/app/applications
+2. Click **Terminal**
+3. Enter a job name
+4. Set hours to 1-4
+5. Keep nodes at 1
+6. Choose machine type:
+   - **uc1-gc1-1**: No GPU required
+   - **uc1-l4-1**: GPU required (do not select multi-GPU nodes)
+7. Under "Select folders to use":
+   - Click **Add folder**
+   - Choose your team drive (e.g., TEAM31)
+   - Files persist between runs (50GB storage)
+8. Click **Submit** and wait for job to start
+9. Click **Open terminal**
+10. Team drive location: `/work/TEAM31`
+11. Verify GPU: `nvidia-smi`
+
+## 3. Setup Ollama
+
+**Note**: Save all files, programs, and data in the team drive to persist between jobs. Files outside the team drive are deleted when jobs finish.
+
+1. (On the GPU instance) Navigate to team directory:
+   ```bash
+   cd /work/TEAM31
+   ```
+
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/amboltio/DM-i-AI-2025
+   ```
+
+3. Install Ollama:
+   ```bash
+   sh DM-i-AI-2025/emergency-healthcare-rag/ucloud/ollama-install.sh
+   ```
+
+4. Start a screen session:
+   ```bash
+   screen
+   ```
+
+5. Start Ollama server:
+   ```bash
+   OLLAMA_MODELS=/work/TEAM31/models /work/TEAM31/ollama/bin/ollama serve
+   ```
+
+6. Detach from screen: `Ctrl+A+D`
+   - To Reconnect: `screen -r`
+
+7. Download a model:
+   ```bash
+   /work/TEAM31/ollama/bin/ollama pull llama3.2:3b
+   ```
+
+8. Test Ollama in the terminal:
+   ```bash
+   /work/TEAM31/ollama/bin/ollama run llama3.2:3b
+   ```
+   (Press `Ctrl+C` to exit chat)
+
+9. Verify server is running:
+   ```bash
+   curl -L localhost:11434
+   ```
+
+## 4. Setup FastAPI Server
+
+1. Navigate to project directory:
+   ```bash
+   cd /work/TEAM31/DM-i-AI-2025/emergency-healthcare-rag
+   ```
+
+2. Create and activate virtual environment:
+   ```bash
+   uv venv
+   source .venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+
+4. Start the FastAPI server:
+   ```bash
+   python ucloud/api.py
+   ```
+
+5. Test the API:
+   ```bash
+   curl -X POST localhost:8000/api/endpoint \
+     -H "Content-Type: application/json" \
+     -d '{"query": "constipation is a disease"}'
+   ```
+ 
+## 5. Setup Nginx (Public Access)
+
+To expose the FastAPI endpoint to the internet:
+
+1. Navigate to https://cloud.sdu.dk/app/applications
+2. Search for "nginx" in the upper right corner
+3. Select the nginx application
+4. Configure the job:
+   - Give it a name
+   - Machine type: **uc1-gc1-1** (no GPU needed)
+   - Duration: 1-4 hours
+
+5. Optional parameters:
+   - NGINX configuration: Select `TEAM31/DM-i-AI-2025/emergency-healthcare-rag/ucloud/nginx.conf`
+
+6. Configure custom links to your application: 
+   - Click "Add public link" (save this URL - it's your public endpoint)
+
+7. Connect to other jobs: 
+   - Click "Connect to job"
+   - Hostname: `my-api`
+   - Select the GPU job
+
+6. Click **Submit** and wait for startup
+
+7. Verify setup:
+   - Check logs for any errors
+   - Test the public link in your browser
+
+### Restarting Jobs
+To restart nginx or GPU terminal applications:
+1. Go to https://cloud.sdu.dk/app/jobs
+2. Double-click a finished job
+3. Click "Run application again" 

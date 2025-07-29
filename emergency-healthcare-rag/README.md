@@ -37,15 +37,6 @@ Since this is an emergency department scenario, your solution must operate under
 ## Evaluation
 During the week of the competition, you will be able to validate your solution against the validation set. You can do this multiple times, however, **you can only submit to the evaluation set once!** The best validation and evaluation score your model achieves will be displayed on the <a href="https://cases.dmiai.dk/teams"> scoreboard</a>. We encourage you to validate your code and API before you submit your final model to evaluation.
 
-###  Scoring
-A scaled score between 0 and 1 is calculated by linearly scaling your accuracy score between a baseline score, $Accuracy_{baseline}$, and the best accuracy score among all teams, $Accuracy_{best}$:
-
-$$
-Score : \max \left(0,\frac{Accuracy-Accuracy_{baseline}}{Accuracy_{best}-Accuracy_{baseline}}\right)
-$$
-
-For this challenge, $Accuracy_{baseline}=0.60$. This corresponds to the accuracy achieved by zero-shot Llama 3.1. This scaling means that you will get a scaled score of $0$ if you do worse than or as good as the baseline model, and a score of $1$ if you have the best model among all teams.
-
 ## Quickstart
 Clone the repository and change folder to the emergency-healthcare-rag challenge
 
