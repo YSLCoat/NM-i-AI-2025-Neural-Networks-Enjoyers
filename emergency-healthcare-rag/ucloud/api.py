@@ -35,7 +35,7 @@ def predict_endpoint(request: MedicalStatementRequestDto):
     logger.info(f'Received statement: {request.statement[:100]}...')
 
     # Get prediction from model
-    statement_is_true, statement_topic = predict(request.statement)
+    statement_is_true, statement_topic = predict_llm(request.statement)
 
 
     # Return the prediction
