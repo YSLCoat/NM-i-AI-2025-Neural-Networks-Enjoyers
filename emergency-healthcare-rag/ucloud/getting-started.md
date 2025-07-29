@@ -102,9 +102,7 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
 
 5. Test the API:
    ```bash
-   curl -X POST localhost:8000/api/endpoint \
-     -H "Content-Type: application/json" \
-     -d '{"query": "constipation is a disease"}'
+   curl -X POST localhost:8000/predict   -H "Content-Type: application/json"   -d '{"statement": "constipation is a disease"}'
    ```
  
 ## 5. Setup Nginx (Public Access)
