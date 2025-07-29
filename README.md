@@ -6,8 +6,8 @@ In this repository, you will find all the information needed to participate in t
 Below you can find the three use cases for the DM i AI 2025 event. <br>
 Within each use case, you find a description together with a template that can be used to setup an API endpoint. <br> 
 The API endpoint will be used for submission and is required. The requirements for the API endpoints are specified in the respective use cases. <br> <br>
-<a href=""></a> <br>
-<a href=""></a> <br>
+<a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/race-car">- Race car</a> <br>
+<a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/emergency-healthcare-rag">- Emergency Healthcare RAG</a> <br>
 <a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/diabetic-retinopathy-classification">- Diabetic Retinopathy Classification</a> <br> <br>
 
 Clone this GitHub repository to download templates for all three use cases.
@@ -33,7 +33,26 @@ Note: When you validate your solution on the submission form, it will be evaluat
 The scoreboard will display a score for each use case and a "total score".
 The individual score reflects the placement your best model has achieved relative to the other participants' models.
 
-The total score is simply an average of your individual scores.<br>
+We use a ranking system inspired by the <a href="https://en.wikipedia.org/wiki/List_of_Formula_One_World_Championship_points_scoring_systems">Formula 1 points scoring system</a>, which means that the best entry in each use case is awarded 25 points, the second-best entry is awarded 18 points, and each additional entry gets a decreasing award. 
+
+The full point system is as follows:
+
+1) 25 points
+2) 18 points
+3) 15 points
+4) 12 points
+5) 10 points
+6) 8 points
+7) 6 points
+8) 4 points
+9) 2 points
+10) 1 point
+11) $>$ 1 point
+
+Rank 11-end are awarded points in the range from 1 to 0. 
+
+
+The total score is simply the sum of your individual scores.<br>
 
 This format also means that you can lose points / be overtaken by other teams during the week if they submit a model that is better than yours. 
 
@@ -41,10 +60,21 @@ This format also means that you can lose points / be overtaken by other teams du
 The deadline for submission is: August 8, 2025 at 14.00
 
 <h3>Final evaluation</h3>
-Upon completion of the contest, the top 5 highest-ranking teams will be asked to submit their training code and the trained models for validation no later than **(TODO: SET DEADLINE DATE)**. The submissions will be validated by our Scientific Jury who will get back to everyone within top 5 to let them know their placement. 
+Upon completion of the contest, the top 5 highest-ranking teams will be asked to submit their training code and the trained models for validation no later than August 8th at 16:00. The submissions will be validated by our Scientific Jury who will get back to everyone within top 5 to let them know their placement. 
 
 <h2>How to get a server for deployment?</h2>
-When you are doing the submission, we are expecting you to host the server at which the REST API can be deployed. You can sign up to <a href="https://azure.microsoft.com/da-dk/free/students/">Azure for Students</a>, where you will get free credits that you can use to create a virtual machine. We expect you all to be able to do this, since the competition is only for students. Alternatively, you can also deploy your submission locally (This requires a public IP). <br> 
+When you are doing the submission, we are expecting you to host the server at which the REST API can be deployed. 
+
+As a DM i AI contestant, you have access to compute resources from UCloud. Each team is allocated resources on the following hardware:
+
+- NVIDIA L4 GPU (24 GB VRAM)
+- NVIDIA L40 GPU (48 GB VRAM)
+
+Please reach out to the competition admins on discord if your team has not received an invitation link to UCloud within the first day of the competition.
+
+
+<h3>Azure for Students</h3>
+You can sign up to <a href="https://azure.microsoft.com/da-dk/free/students/">Azure for Students</a>, where you will get free credits that you can use to create a virtual machine. We expect you all to be able to do this, since the competition is only for students. Alternatively, you can also deploy your submission locally (This requires a public IP). <br> 
 The following contains the necessary links for creating a virtual machine: <br> <br>
 
 * <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal">Creating a linux virtual machine</a> <br>
@@ -64,3 +94,7 @@ The following contains the necessary links for creating a virtual machine: <br> 
 **A:** This depends on the individual use case. If you believe you can create a better model with more data, you should go gather the data yourself. We are only supplying a limited amount of data, as we want you to get creative in your approach to each use case.  
 
 **Please note, that we do not provide servers for training!** You are expected to train your models and solutions using your own hardware, Google Colab, etc.
+
+**Q: Are we allowed to use OpenAI / Google Cloud / AWS / Azure APIs?**
+
+**A:** No, you are not allowed to use cloud APIs during inference. You ARE allowed to use as many cloud APIs that you want to build your models. When we call the /predict endpoints of your services, however, the models should be able to run on their own without additional cloud API calls.
