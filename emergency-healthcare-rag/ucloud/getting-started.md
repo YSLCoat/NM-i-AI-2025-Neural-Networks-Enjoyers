@@ -14,21 +14,22 @@ This tutorial covers setting up FastAPI and Ollama (for local LLMs) on UCloud.
 ## 2. Start GPU Instance
 
 1. Navigate to https://cloud.sdu.dk/app/applications
-2. Click **Terminal**
-3. Enter a job name
-4. Set hours to 1-4
-5. Keep nodes at 1
-6. Choose machine type:
+2. If you get message stating that you need to reconnect to DeiC, press it and press "Reconnect"
+3. Click **Terminal**
+4. Enter a job name
+5. Set hours to 1-4
+6. Keep nodes at 1
+7. Choose machine type:
    - **uc1-gc1-1**: No GPU required
    - **uc1-l4-1**: GPU required (do not select multi-GPU nodes)
-7. Under "Select folders to use":
+8. Under "Select folders to use":
    - Click **Add folder**
    - Choose your team drive (e.g., TEAM31)
    - Files persist between runs (50GB storage)
-8. Click **Submit** and wait for job to start
-9. Click **Open terminal**
-10. Team drive location: `/work/TEAM31`
-11. Verify GPU: `nvidia-smi`
+9. Click **Submit** and wait for job to start
+10. Click **Open terminal**
+11. Team drive location: `/work/TEAM31`
+12. Verify GPU: `nvidia-smi`
 
 ## 3. Setup Ollama
 
