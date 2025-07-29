@@ -17,7 +17,7 @@ git clone https://github.com/amboltio/DM-i-AI-2025.git
 The use cases have been built on top of the <a href="https://fastapi.tiangolo.com/">FastAPI</a> framework, and can be used to specify endpoints in every use case.
 
 <h2>Discord Server</h2>
-Come hang out and talk to other competitors of the event on our Discord server. Discuss the use cases with each other, or get in touch with the organizers to solve issues or questions that may arise during the competition. <a href="">Join here! **(TODO: Setup Channel)**</a> <br>
+Come hang out and talk to other competitors of the event on our Discord server. Discuss the use cases with each other, or get in touch with the organizers to solve issues or questions that may arise during the competition. <a href="https://discord.gg/VK9tZkxt99">Join here!</a> <br>
 
 <h2>Getting started</h2>
 You can check the individual template and find the requirements for the different API endpoints. These have to be exactly the same for the evaluation service to work. Inside ```<use-case>/models/dtos.py``` you can find information on the request and response DTOs, describing the input and output requirements for your API.
