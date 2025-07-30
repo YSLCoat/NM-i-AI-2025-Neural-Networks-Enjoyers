@@ -4,6 +4,7 @@ import datetime
 import time
 from loguru import logger
 from pydantic import BaseModel
+from openai import OpenAI
 
 HOST = "0.0.0.0"
 PORT = 8000
@@ -17,6 +18,13 @@ class MedicalStatementResponseDto(BaseModel):
 
 app = FastAPI()
 start_time = time.time()
+
+
+# Create OpenAI client pointing to local ollama instance
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="dummy"  # ollama doesn't require real API key
+)
 
 @app.get('/api')
 def hello():
@@ -48,6 +56,10 @@ def predict_endpoint(request: MedicalStatementRequestDto):
     return response
 
 
+
+
+    
+
 def predict_llm(statement: str, model_name="llama3.2:3b") -> bool:
     """
     Use local ollama instance with OpenAI-compatible API to determine if a medical statement is true or false.
@@ -59,14 +71,8 @@ def predict_llm(statement: str, model_name="llama3.2:3b") -> bool:
     Returns:
         bool: True if statement is true, False if false
     """
-    from openai import OpenAI
     
-    # Create OpenAI client pointing to local ollama instance
-    client = OpenAI(
-        base_url="http://localhost:11434/v1",
-        api_key="dummy"  # ollama doesn't require real API key
-    )
-    
+
     try:
         response = client.chat.completions.create(
             model=model_name,
