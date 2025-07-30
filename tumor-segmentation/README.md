@@ -1,7 +1,7 @@
 # Tumor Segmentation
 In this use case, your task is to detect tumors on medical images.
 
-You will be receiving so-called "Whole-body MIP-PET" images of patients with cancer (see the [MIP-PET section](#mip-pet) for more information). Your job is to segment the tumorours areas in each patient image, i.e. for each pixel in an image, your must determine whether the pixel belongs to a tumor area or a healthy area. You will receive 182 MIP-PET images and ground truth segmentations of patients with cancer (```data/patients```). In addition, you will also receive 426 MIP-PET images of "healthy controls" that have NO cancer (```data/controls```). 
+You will be receiving so-called "Whole-body MIP-PET" images of patients with cancer (see the [MIP-PET section](#mip-pet) for more information). Your job is to segment the tumorous areas in each patient image, i.e. for each pixel in an image, your must determine whether the pixel belongs to a tumor area or a healthy area. You will receive 182 MIP-PET images and ground truth segmentations of patients with cancer (```data/patients```). In addition, you will also receive 426 MIP-PET images of "healthy controls" that have NO cancer (```data/controls```). 
 
 Automated tumor segmentation is expected to become a vital tool in the treatment and diagnosis of cancer. Without an automated tool, the clinicians are left to do the segmentation manually, which is costly in terms of time and resources. 
 ## MIP-PET
@@ -22,7 +22,7 @@ The following organs have high sugar consumption:
 - Brain
 - Bladder
 - Kidneys
-- Hear
+- Heart
 - Liver
 
 Some patient factors can lead to increased sugar consumption in parts of the body. Common factors are:
@@ -37,21 +37,21 @@ validate_segmentation
 <table>
   <tr>
     <td>  <img src="data/controls/imgs/control_050.png" width=200> </td>
-    <td>  <h3>Control 50</h3> <p>Symmetric high sugar consumption around neck and esophagus (spiserør) usually caused by the patient being too cold during the scan.</p></td>
+    <td>  <h3>Control 50</h3> <p>Symmetric high sugar consumption around neck and esophagus, usually caused by the patient being too cold during the scan.</p></td>
    </tr> 
   <tr>
     <td>  <img src="data/controls/imgs/control_399.png" width=200> </td>
-    <td>  <h3>Control 399</h3> <p>Uniform high sugar consumption in the bones usually caused by recent chemotherapy or other treatment.
+    <td>  <h3>Control 399</h3> <p>Uniform high sugar consumption in the bones, usually caused by recent chemotherapy or other treatment.
 </p></td>
    </tr> 
     <tr>
     <td>  <img src="data/controls/imgs/control_381.png" width=200> </td>
-    <td>  <h3>Control 381</h3> <p>Slightly increased sugar consumption in the upper body muscles usually caused by the subject forgetting to fast before the scan.
+    <td>  <h3>Control 381</h3> <p>Slightly increased sugar consumption in the upper body muscles, usually caused by the subject forgetting to fast before the scan.
 </p></td>
    </tr> 
     <tr>
     <td>  <img src="data/controls/imgs/control_398.png" width=200> </td>
-    <td>  <h3>Control 398</h3> <p>High sugar consumption in the colon usually caused by constipation.
+    <td>  <h3>Control 398</h3> <p>High sugar consumption in the colon, usually caused by constipation.
 </p></td>
    </tr> 
 </table>
@@ -66,7 +66,7 @@ We have implemented a simple threshold baseline model in ```example.py``` along 
 
 ```python
 def predict(img: np.ndarray) -> np.ndarray:
-    logger.info(f'Recieved image: {img.shape}')
+    logger.info(f'Received image: {img.shape}')
     threshold = 50
     segmentation = get_threshold_segmentation(img,threshold)
     return segmentation
@@ -74,7 +74,7 @@ def predict(img: np.ndarray) -> np.ndarray:
 def get_threshold_segmentation(img:np.ndarray, threshold:int) -> np.ndarray:
     return (img < threshold).astype(np.uint8)*255    
 ```
-To use your own model, simply change the call to ```get_threshold_segmentation``` with a call to the inference function of your model. 
+To use your own model, simply replace the call to ```get_threshold_segmentation``` with a call to the inference function of your model. 
 
 
 
