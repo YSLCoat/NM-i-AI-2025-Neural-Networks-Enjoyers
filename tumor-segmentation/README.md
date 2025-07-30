@@ -79,7 +79,7 @@ To use your own model, simply replace the call to ```get_threshold_segmentation`
 
 
 ## Validation and Evaluation
-Both the validation set and the test set each contain 100 samples of patients with cancer. **There are no healthy controls in the validation or test set**.
+Both the validation set and the test set each contain 200 samples of patients with cancer. **There are no healthy controls in the validation or test set**.
 The images have a maximum width of 400 px and a maximum height of 991 pixels. **You have 10 seconds to return your predictions for each image.**
 During the week of the competition, you will be able to validate your solution against the validation set. You can do this multiple times, however, **you can only submit to the test/evaluation set once!** The best validation and test score your model achieves will be displayed on the <a href="https://cases.dmiai.dk/teams"> scoreboard</a> . We encourage you to validate your code and API before you submit your final model to evaluation. 
 
