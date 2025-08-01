@@ -86,10 +86,6 @@ git clone https://github.com/amboltio/DM-i-AI-2025
 cd DM-i-AI-2024/race-car
 ```
 
-Install dependencies
-```cmd
-pip install -r requirements.txt
-```
 
 ### Serve your endpoint
 Serve your endpoint locally and test that everything starts without errors
