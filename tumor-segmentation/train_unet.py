@@ -27,9 +27,9 @@ class CombinedLoss(nn.Module):
 
 def train():
     # Configure the model
-    model_name = 'model_3'
+    model_name = 'model_3_1'
     epochs = 10
-    batch_size = 4
+    batch_size = 1
     resize_shape = (991, 400)  # (height, width)
     learning_rate = 0.0001
 
@@ -51,8 +51,8 @@ def train():
 
     # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    #loss_fn = DiceLoss(mode='binary')
-    loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
+    loss_fn = DiceLoss(mode='binary')
+    #loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
