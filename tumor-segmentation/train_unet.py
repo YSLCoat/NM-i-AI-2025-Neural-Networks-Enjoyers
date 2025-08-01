@@ -12,7 +12,7 @@ import time
 
 def train():
     # Configure the model
-    model_name = 'model_2'
+    model_name = 'model_2_zscore_norm'
     epochs = 4
     batch_size = 4
     resize_shape = (991, 400)  # (height, width)
@@ -39,7 +39,7 @@ def train():
     loss_fn = DiceLoss(mode='binary')
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-    log_dir = f"runs/unet_experiment_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
+    log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
     writer = SummaryWriter(log_dir=log_dir)
 
     global_step = 0
