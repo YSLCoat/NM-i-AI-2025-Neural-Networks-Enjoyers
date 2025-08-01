@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 
 class RaceCarPredictRequestDto(BaseModel):
@@ -7,11 +7,11 @@ class RaceCarPredictRequestDto(BaseModel):
     elapsed_time_ms: int
     distance: int
     velocity: Dict[str, int]  
+    coordinates: Dict[str, int] # add
     sensors: Dict[str, Optional[int]]  
 
 class RaceCarPredictResponseDto(BaseModel):
-    action_type: str
-    action_amount: Optional[int] = None    # Possible types:
+    actions: List[str]
     # 'ACCELERATE'
     # 'DECELERATE'
     # 'STEER_LEFT'
