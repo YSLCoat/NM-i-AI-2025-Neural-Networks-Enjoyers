@@ -19,6 +19,9 @@ The use cases have been built on top of the <a href="https://fastapi.tiangolo.co
 <h2>Discord Server</h2>
 Come hang out and talk to other competitors of the event on our Discord server. Discuss the use cases with each other, or get in touch with the organizers to solve issues or questions that may arise during the competition. <a href="https://discord.gg/VK9tZkxt99">Join here!</a> <br>
 
+You can expect an answer from the organizers within a couple of hours on work days within 08:00 to 16:00. In the weekend, you can ask your fellow contestants for help.
+
+
 <h2>Getting started</h2>
 You can check the individual template and find the requirements for the different API endpoints. These have to be exactly the same for the evaluation service to work. Inside ```<use-case>/models/dtos.py``` you can find information on the request and response DTOs, describing the input and output requirements for your API.
 
@@ -82,6 +85,7 @@ The following contains the necessary links for creating a virtual machine: <br> 
 * <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal#create-an-inbound-security-rule">Create an inbound security Rule</a> (This ensures that the API endpoints can be accessed when submitting)<br> <br>
 
 <b>Please make sure to get a server up and running early in the competition, and make sure to get connection to the evaluation service as quickly as possible, so if you have any server related issues, we can catch them early and not close to deadline!</b>
+
 
 <h2>Frequently Asked Questions</h2>
 
