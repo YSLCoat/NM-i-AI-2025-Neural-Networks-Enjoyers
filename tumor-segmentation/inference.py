@@ -1,0 +1,55 @@
+import torch
+import numpy as np
+import cv2
+from unet_model import get_unet_model
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Inference device: {device}")
+model = get_unet_model(in_channels=1, out_classes=1)
+model.load_state_dict(torch.load("models/unet_model_3_2.pth", map_location=device))
+model.to(device)
+model.eval()
+
+def preprocess(img: np.ndarray, resize_shape=(991, 400)) -> torch.Tensor:
+    # Convert to grayscale (if input is color)
+    if img.ndim == 3 and img.shape[2] == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = img.astype(np.float32)
+
+    # Log transform to compress dynamic range
+    img = np.log1p(img)
+
+    # Z-score normalization
+    img = (img - img.mean()) / (img.std() + 1e-5)
+
+    # Resize if specified
+    if resize_shape:
+        target_h, target_w = resize_shape
+        img = cv2.resize(img, (target_w, target_h), interpolation=cv2.INTER_AREA)
+
+    # Add channel and batch dims: (1, 1, H, W)
+    img = np.expand_dims(img, axis=0)
+    img = np.expand_dims(img, axis=0)
+
+    tensor = torch.tensor(img, dtype=torch.float32).to(device)
+    return tensor
+
+def postprocess(pred: torch.Tensor, target_size: tuple) -> np.ndarray:
+    # pred shape: (1, 1, H_pred, W_pred)
+    pred_np = pred.squeeze().cpu().numpy()  # (H_pred, W_pred)
+    
+    # Resize to target size (HxW) using cv2.INTER_LINEAR
+    pred_resized = cv2.resize(pred_np, (target_size[1], target_size[0]), interpolation=cv2.INTER_LINEAR)
+    
+    # Threshold to binary mask
+    binary_mask = (pred_resized > 0.5).astype(np.uint8) * 255
+    
+    # Convert to 3-channel for output
+    return cv2.cvtColor(binary_mask, cv2.COLOR_GRAY2RGB)
+
+def predict(img: np.ndarray) -> np.ndarray:
+    original_size = img.shape[:2]  # (height, width)
+    input_tensor = preprocess(img)
+    with torch.no_grad():
+        output = model(input_tensor)
+    return postprocess(output, original_size)
