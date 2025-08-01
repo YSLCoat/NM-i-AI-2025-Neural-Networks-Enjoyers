@@ -27,8 +27,8 @@ class CombinedLoss(nn.Module):
 
 def train():
     # Configure the model
-    model_name = 'model_3_2'
-    epochs = 10
+    model_name = 'model_3_3'
+    epochs = 100
     batch_size = 4
     resize_shape = (991, 400)  # (height, width)
     learning_rate = 1e-5
