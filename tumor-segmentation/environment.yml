@@ -1,0 +1,18 @@
+name: unet
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pytorch
+  - torchvision
+  - torchaudio
+  - matplotlib
+  - pip:
+      - segmentation-models-pytorch
+      - albumentations
+      - opencv-python
+      - tqdm
