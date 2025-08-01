@@ -26,19 +26,19 @@ class CombinedLoss(nn.Module):
         return self.weight_dice * loss_dice + self.weight_bce * loss_bce
 
 def train():
-    # Configure the model
-    model_name = 'model_test'
+    # Configure the training
+    model_name = 'model_5_1'
     epochs = 10
-    batch_size = 4
+    batch_size = 3
     resize_shape = (512, 512)  # (height, width)
-    learning_rate = 1e-4
+    learning_rate = 1e-3
 
     # Enable CUDA if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load training images and masks
-    train_images = sorted(glob("tumor-segmentation/datasets/overfit_test/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/overfit_test/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_500/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_500/labels/*.png"))
 
     # Dataset and DataLoader
     train_ds = TumorSegmentationDataset(
@@ -52,6 +52,7 @@ def train():
     # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
     #loss_fn = DiceLoss(mode='binary')
+    #loss_fn = nn.BCEWithLogitsLoss()
     loss_fn = CombinedLoss(weight_dice=0.7, weight_bce=0.3)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
