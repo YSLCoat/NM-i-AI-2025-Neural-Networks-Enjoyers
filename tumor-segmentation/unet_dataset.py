@@ -24,7 +24,8 @@ class TumorSegmentationDataset(Dataset):
         # Load mask and convert to grayscale
         mask_rgb = cv2.imread(self.mask_paths[idx], cv2.IMREAD_UNCHANGED)
         mask = cv2.cvtColor(mask_rgb, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-
+        mask = (mask > 0.5).astype(np.float32) # ensure binary mask
+        
         # Resize if specified
         if self.resize_shape:
             target_h, target_w = self.resize_shape
