@@ -27,11 +27,11 @@ class CombinedLoss(nn.Module):
 
 def train():
     # Configure the model
-    model_name = 'model_3_1'
+    model_name = 'model_3_2'
     epochs = 10
-    batch_size = 1
+    batch_size = 4
     resize_shape = (991, 400)  # (height, width)
-    learning_rate = 0.0001
+    learning_rate = 1e-5
 
     # Enable CUDA if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -51,8 +51,8 @@ def train():
 
     # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = DiceLoss(mode='binary')
-    #loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
+    #loss_fn = DiceLoss(mode='binary')
+    loss_fn = CombinedLoss(weight_dice=0.7, weight_bce=0.3)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
