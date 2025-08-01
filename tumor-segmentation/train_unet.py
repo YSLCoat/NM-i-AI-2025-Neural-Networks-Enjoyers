@@ -8,14 +8,17 @@ from segmentation_models_pytorch.losses import DiceLoss
 from glob import glob
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
+import time
 
 def train():
     # Configure the model
-    model_name = 'model_1'
-    epochs = 10
-    batch_size = 2
-    resize_shape = (1024, 1024)  # (height, width)
+    model_name = 'model_2'
+    epochs = 4
+    batch_size = 4
+    resize_shape = (991, 400)  # (height, width)
+    learning_rate = 0.0001
 
+    # Enable CUDA if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load training images and masks
@@ -34,9 +37,11 @@ def train():
     # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
     loss_fn = DiceLoss(mode='binary')
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-    writer = SummaryWriter(log_dir="runs/unet_experiment")
+    log_dir = f"runs/unet_experiment_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
+    writer = SummaryWriter(log_dir=log_dir)
+
     global_step = 0
 
     for epoch in range(epochs):
