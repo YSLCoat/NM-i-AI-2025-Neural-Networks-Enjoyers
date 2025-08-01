@@ -37,15 +37,33 @@ def preprocess(img: np.ndarray, resize_shape=(991, 400)) -> torch.Tensor:
 def postprocess(pred: torch.Tensor, target_size: tuple) -> np.ndarray:
     # pred shape: (1, 1, H_pred, W_pred)
     pred_np = pred.squeeze().cpu().numpy()  # (H_pred, W_pred)
-    
-    # Resize to target size (HxW) using cv2.INTER_LINEAR
+
+    # Resize back to original image size
     pred_resized = cv2.resize(pred_np, (target_size[1], target_size[0]), interpolation=cv2.INTER_LINEAR)
-    
+
     # Threshold to binary mask
-    binary_mask = (pred_resized > 0.5).astype(np.uint8) * 255
+    binary_mask = (pred_resized > 0.5).astype(np.uint8)  # values: 0 or 1
+
+    # --- NEW CLEANING STEPS BELOW ---
+
+    # Remove small objects using connected components
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary_mask, connectivity=8)
     
-    # Convert to 3-channel for output
-    return cv2.cvtColor(binary_mask, cv2.COLOR_GRAY2RGB)
+    min_size = 5  # minimum area of object to keep (tune this value)
+    cleaned_mask = np.zeros_like(binary_mask)
+
+    for i in range(1, num_labels):  # skip background (label 0)
+        if stats[i, cv2.CC_STAT_AREA] >= min_size:
+            cleaned_mask[labels == i] = 1
+
+    # Optional: apply morphological closing to fill small holes
+    kernel = np.ones((3, 3), np.uint8)
+    cleaned_mask = cv2.morphologyEx(cleaned_mask, cv2.MORPH_CLOSE, kernel)
+
+    # Convert to [0, 255] and 3-channel RGB
+    cleaned_mask = (cleaned_mask * 255).astype(np.uint8)
+    return cv2.cvtColor(cleaned_mask, cv2.COLOR_GRAY2RGB)
+
 
 def predict(img: np.ndarray) -> np.ndarray:
     original_size = img.shape[:2]  # (height, width)
