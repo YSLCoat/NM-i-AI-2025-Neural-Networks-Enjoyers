@@ -1,4 +1,7 @@
 
+runs/
+datasets/
+
 # Emily-specific files
 .emily
 .idea
