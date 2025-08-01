@@ -6,11 +6,11 @@ from unet_model import get_unet_model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Inference device: {device}")
 model = get_unet_model(in_channels=1, out_classes=1)
-model.load_state_dict(torch.load("models/unet_model_4_0.pth", map_location=device))
+model.load_state_dict(torch.load("models/unet_model_5_2.pth", map_location=device))
 model.to(device)
 model.eval()
 
-def preprocess(img: np.ndarray, resize_shape=(991, 400)) -> torch.Tensor:
+def preprocess(img: np.ndarray, resize_shape=(1024, 1024)) -> torch.Tensor:
     # Convert to grayscale (if input is color)
     if img.ndim == 3 and img.shape[2] == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

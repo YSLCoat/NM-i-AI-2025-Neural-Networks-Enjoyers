@@ -15,32 +15,35 @@ class CombinedLoss(nn.Module):
         super().__init__()
         self.dice = DiceLoss(mode='binary')
         self.bce = nn.BCEWithLogitsLoss()
-
         self.weight_dice = weight_dice
         self.weight_bce = weight_bce
 
     def forward(self, preds, targets):
-        # preds are raw logits, so:
-        loss_dice = self.dice(torch.sigmoid(preds), targets)  # Dice expects probabilities
-        loss_bce = self.bce(preds, targets)  # BCE with logits expects raw preds
-        return self.weight_dice * loss_dice + self.weight_bce * loss_bce
+        preds_sigmoid = torch.sigmoid(preds)
+        loss_dice = self.dice(preds_sigmoid, targets)
+        loss_bce = self.bce(preds, targets)
+        loss = self.weight_dice * loss_dice + self.weight_bce * loss_bce
+        return loss, loss_dice.detach(), loss_bce.detach()
+
+def soft_dice_score(preds, targets, eps=1e-6):
+    probs = torch.sigmoid(preds)
+    intersection = (probs * targets).sum(dim=[1, 2, 3])
+    union = probs.sum(dim=[1, 2, 3]) + targets.sum(dim=[1, 2, 3])
+    dice = (2. * intersection + eps) / (union + eps)
+    return dice.mean()
 
 def train():
-    # Configure the training
-    model_name = 'model_5_1'
+    model_name = 'model_5_3'
     epochs = 10
     batch_size = 3
-    resize_shape = (512, 512)  # (height, width)
+    resize_shape = (1024, 1024)
     learning_rate = 1e-3
 
-    # Enable CUDA if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    # Load training images and masks
+
     train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_500/imgs/*.png"))
     train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_500/labels/*.png"))
 
-    # Dataset and DataLoader
     train_ds = TumorSegmentationDataset(
         image_paths=train_images,
         mask_paths=train_masks,
@@ -49,11 +52,8 @@ def train():
     )
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
 
-    # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    #loss_fn = DiceLoss(mode='binary')
-    #loss_fn = nn.BCEWithLogitsLoss()
-    loss_fn = CombinedLoss(weight_dice=0.7, weight_bce=0.3)
+    loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
@@ -65,6 +65,9 @@ def train():
         model.train()
         running_loss = 0.0
         running_dice = 0.0
+        running_soft_dice = 0.0
+        running_loss_dice = 0.0
+        running_loss_bce = 0.0
 
         loop = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
         for images, masks in loop:
@@ -72,41 +75,56 @@ def train():
             masks = masks.to(device)
 
             preds = model(images)
-            loss = loss_fn(preds, masks)
+            loss, loss_dice, loss_bce = loss_fn(preds, masks)
 
-            # Calculate Dice score (threshold 0.5)
-            #preds_bin = (preds > 0.5).float()
+            # Dice scores
             preds_bin = (torch.sigmoid(preds) > 0.5).float()
+            intersection = (preds_bin * masks).sum(dim=[1, 2, 3])
+            union = preds_bin.sum(dim=[1, 2, 3]) + masks.sum(dim=[1, 2, 3])
+            hard_dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
 
-            intersection = (preds_bin * masks).sum(dim=[1,2,3])
-            union = preds_bin.sum(dim=[1,2,3]) + masks.sum(dim=[1,2,3])
-            dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
+            soft_dice = soft_dice_score(preds, masks)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
-            running_dice += dice.item()
+            running_dice += hard_dice.item()
+            running_soft_dice += soft_dice.item()
+            running_loss_dice += loss_dice.item()
+            running_loss_bce += loss_bce.item()
 
-            
-            writer.add_scalar('Loss/train', loss.item(), global_step)
-            writer.add_scalar('Dice/train', dice.item(), global_step)
+            # TensorBoard logs
+            writer.add_scalar('Loss/combined', loss.item(), global_step)
+            writer.add_scalar('Loss/Dice', loss_dice.item(), global_step)
+            writer.add_scalar('Loss/BCE', loss_bce.item(), global_step)
+            writer.add_scalar('Dice/hard', hard_dice.item(), global_step)
+            writer.add_scalar('Dice/soft', soft_dice.item(), global_step)
 
             loop.set_postfix(loss=running_loss / (loop.n + 1))
             global_step += 1
 
         avg_loss = running_loss / len(train_loader)
         avg_dice = running_dice / len(train_loader)
-        writer.add_scalar('Loss/epoch_avg', avg_loss, epoch)
-        writer.add_scalar('Dice/epoch_avg', avg_dice, epoch)
-        print(f"Epoch {epoch+1} finished, average loss: {avg_loss:.4f}, average dice: {avg_dice:.4f}")
-    # Save model checkpoint
+        avg_soft_dice = running_soft_dice / len(train_loader)
+        avg_loss_dice = running_loss_dice / len(train_loader)
+        avg_loss_bce = running_loss_bce / len(train_loader)
+
+        writer.add_scalar('Epoch/Loss_combined', avg_loss, epoch)
+        writer.add_scalar('Epoch/Loss_Dice', avg_loss_dice, epoch)
+        writer.add_scalar('Epoch/Loss_BCE', avg_loss_bce, epoch)
+        writer.add_scalar('Epoch/Dice_hard', avg_dice, epoch)
+        writer.add_scalar('Epoch/Dice_soft', avg_soft_dice, epoch)
+
+        print(f"Epoch {epoch+1} finished:")
+        print(f" - Avg Combined Loss: {avg_loss:.4f}")
+        print(f" - Avg Dice (hard):   {avg_dice:.4f}")
+        print(f" - Avg Dice (soft):   {avg_soft_dice:.4f}")
 
     torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
     print(f"Model saved as unet_{model_name}.pth")
     writer.close()
-
 
 if __name__ == "__main__":
     train()
