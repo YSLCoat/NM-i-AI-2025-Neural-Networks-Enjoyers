@@ -16,7 +16,10 @@ class TumorSegmentationDataset(Dataset):
     def __getitem__(self, idx):
         # Load image
         img = cv2.imread(self.image_paths[idx], cv2.IMREAD_UNCHANGED)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        gray = np.log1p(gray)  # log transform to compress dynamic range
+        gray = (gray - gray.mean()) / (gray.std() + 1e-5)  # z-score normalization
 
         # Load mask and convert to grayscale
         mask_rgb = cv2.imread(self.mask_paths[idx], cv2.IMREAD_UNCHANGED)
