@@ -10,9 +10,24 @@ from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import time
 
+class CombinedLoss(nn.Module):
+    def __init__(self, weight_dice=1.0, weight_bce=1.0):
+        super().__init__()
+        self.dice = DiceLoss(mode='binary')
+        self.bce = nn.BCEWithLogitsLoss()
+
+        self.weight_dice = weight_dice
+        self.weight_bce = weight_bce
+
+    def forward(self, preds, targets):
+        # preds are raw logits, so:
+        loss_dice = self.dice(torch.sigmoid(preds), targets)  # Dice expects probabilities
+        loss_bce = self.bce(preds, targets)  # BCE with logits expects raw preds
+        return self.weight_dice * loss_dice + self.weight_bce * loss_bce
+
 def train():
     # Configure the model
-    model_name = 'model_2_zscore_norm'
+    model_name = 'model_2_combined_loss'
     epochs = 4
     batch_size = 4
     resize_shape = (991, 400)  # (height, width)
@@ -36,7 +51,8 @@ def train():
 
     # Model, loss, optimizer
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = DiceLoss(mode='binary')
+    #loss_fn = DiceLoss(mode='binary')
+    loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
@@ -58,7 +74,9 @@ def train():
             loss = loss_fn(preds, masks)
 
             # Calculate Dice score (threshold 0.5)
-            preds_bin = (preds > 0.5).float()
+            #preds_bin = (preds > 0.5).float()
+            preds_bin = (torch.sigmoid(preds) > 0.5).float()
+
             intersection = (preds_bin * masks).sum(dim=[1,2,3])
             union = preds_bin.sum(dim=[1,2,3]) + masks.sum(dim=[1,2,3])
             dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
@@ -87,6 +105,7 @@ def train():
     torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
     print(f"Model saved as unet_{model_name}.pth")
     writer.close()
+
 
 if __name__ == "__main__":
     train()
