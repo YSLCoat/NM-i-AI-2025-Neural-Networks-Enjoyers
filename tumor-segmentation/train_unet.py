@@ -1,0 +1,85 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from unet_model import get_unet_model
+from unet_dataset import TumorSegmentationDataset
+from segmentation_models_pytorch.losses import DiceLoss
+from glob import glob
+from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
+
+def train():
+    # Configure the model
+    model_name = 'model_1'
+    epochs = 10
+    batch_size = 2
+    resize_shape = (1024, 1024)  # (height, width)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Load training images and masks
+    train_images = sorted(glob("tumor-segmentation/datasets/original/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/original/labels/*.png"))
+
+    # Dataset and DataLoader
+    train_ds = TumorSegmentationDataset(
+        image_paths=train_images,
+        mask_paths=train_masks,
+        resize_shape=resize_shape,
+        augment=True
+    )
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+
+    # Model, loss, optimizer
+    model = get_unet_model(in_channels=1, out_classes=1).to(device)
+    loss_fn = DiceLoss(mode='binary')
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+    writer = SummaryWriter(log_dir="runs/unet_experiment")
+    global_step = 0
+
+    for epoch in range(epochs):
+        model.train()
+        running_loss = 0.0
+        running_dice = 0.0
+
+        loop = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
+        for images, masks in loop:
+            images = images.to(device)
+            masks = masks.to(device)
+
+            preds = model(images)
+            loss = loss_fn(preds, masks)
+
+            # Calculate Dice score (threshold 0.5)
+            preds_bin = (preds > 0.5).float()
+            intersection = (preds_bin * masks).sum(dim=[1,2,3])
+            union = preds_bin.sum(dim=[1,2,3]) + masks.sum(dim=[1,2,3])
+            dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            running_dice += dice.item()
+
+            
+            writer.add_scalar('Loss/train', loss.item(), global_step)
+            writer.add_scalar('Dice/train', dice.item(), global_step)
+
+            loop.set_postfix(loss=running_loss / (loop.n + 1))
+            global_step += 1
+
+        avg_loss = running_loss / len(train_loader)
+        avg_dice = running_dice / len(train_loader)
+        print(f"Epoch {epoch+1} finished, average loss: {avg_loss:.4f}, average dice: {avg_dice:.4f}")
+    # Save model checkpoint
+
+    torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
+    print(f"Model saved as unet_{model_name}.pth")
+    writer.close()
+
+if __name__ == "__main__":
+    train()
