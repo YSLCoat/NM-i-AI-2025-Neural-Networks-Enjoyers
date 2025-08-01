@@ -37,8 +37,8 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load training images and masks
-    train_images = sorted(glob("tumor-segmentation/datasets/original/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/original/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/train/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/train/labels/*.png"))
 
     # Dataset and DataLoader
     train_ds = TumorSegmentationDataset(
