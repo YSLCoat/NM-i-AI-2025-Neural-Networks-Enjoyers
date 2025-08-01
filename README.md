@@ -8,7 +8,7 @@ Within each use case, you find a description together with a template that can b
 The API endpoint will be used for submission and is required. The requirements for the API endpoints are specified in the respective use cases. <br> <br>
 <a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/race-car">- Race car</a> <br>
 <a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/emergency-healthcare-rag">- Emergency Healthcare RAG</a> <br>
-<a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/diabetic-retinopathy-classification">- Diabetic Retinopathy Classification</a> <br> <br>
+<a href="https://github.com/amboltio/DM-i-AI-2025/tree/main/tumor-segmentation">- Tumor segmentation</a> <br> <br>
 
 Clone this GitHub repository to download templates for all three use cases.
 ```
