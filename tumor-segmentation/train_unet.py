@@ -27,18 +27,18 @@ class CombinedLoss(nn.Module):
 
 def train():
     # Configure the model
-    model_name = 'model_4_0'
-    epochs = 20
-    batch_size = 3
-    resize_shape = (991, 400)  # (height, width)
-    learning_rate = 1e-5
+    model_name = 'model_test'
+    epochs = 10
+    batch_size = 4
+    resize_shape = (512, 512)  # (height, width)
+    learning_rate = 1e-4
 
     # Enable CUDA if possible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load training images and masks
-    train_images = sorted(glob("tumor-segmentation/datasets/train/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/train/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/overfit_test/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/overfit_test/labels/*.png"))
 
     # Dataset and DataLoader
     train_ds = TumorSegmentationDataset(
