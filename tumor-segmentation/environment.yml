@@ -3,16 +3,18 @@ channels:
   - defaults
   - conda-forge
   - pytorch
+  - nvidia
 dependencies:
   - python=3.10
-  - pip
   - numpy
-  - pytorch
-  - torchvision
-  - torchaudio
   - matplotlib
+  - pip
   - pip:
       - segmentation-models-pytorch
       - albumentations
       - opencv-python
       - tqdm
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=11.8
