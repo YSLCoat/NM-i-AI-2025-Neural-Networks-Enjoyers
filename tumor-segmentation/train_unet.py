@@ -74,6 +74,8 @@ def train():
 
         avg_loss = running_loss / len(train_loader)
         avg_dice = running_dice / len(train_loader)
+        writer.add_scalar('Loss/epoch_avg', avg_loss, epoch)
+        writer.add_scalar('Dice/epoch_avg', avg_dice, epoch)
         print(f"Epoch {epoch+1} finished, average loss: {avg_loss:.4f}, average dice: {avg_dice:.4f}")
     # Save model checkpoint
 
