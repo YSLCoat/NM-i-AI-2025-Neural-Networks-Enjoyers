@@ -18,14 +18,14 @@ STATEMENTS_DIR="/home/torf/NM-i-AI-2025-Neural-Networks-Enjoyers/emergency-healt
 GROUND_TRUTH_DIR="/home/torf/NM-i-AI-2025-Neural-Networks-Enjoyers/emergency-healthcare-rag/data/train/answers/"
 
 
-echo "--- Step 1: Creating new vector store with embedding model: $EMBEDDING_MODEL ---"
-python "$CREATE_STORE_SCRIPT" \
-    --model "$EMBEDDING_MODEL" \
-    --chunks_filename "$CHUNKS_FILENAME" \
-    --faiss_index_filename "$FAISS_INDEX_FILENAME"
+# echo "--- Step 1: Creating new vector store with embedding model: $EMBEDDING_MODEL ---"
+# python "$CREATE_STORE_SCRIPT" \
+#     --model "$EMBEDDING_MODEL" \
+#     --chunks_filename "$CHUNKS_FILENAME" \
+#     --faiss_index_filename "$FAISS_INDEX_FILENAME"
 
-echo "--- Vector store created successfully. ---"
-echo ""
+# echo "--- Vector store created successfully. ---"
+# echo ""
 
 
 echo "--- Step 2: Running evaluation with LLM: $LLM_MODEL ---"
