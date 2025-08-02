@@ -2,8 +2,12 @@
 set -e
 
 EMBEDDING_MODEL="BAAI/bge-large-en-v1.5"
-LLM_MODEL="gemma:7b" 
+# --- NEW: Define the Cross-Encoder model for reranking ---
+RERANKER_MODEL="BAAI/bge-reranker-large"
+LLM_MODEL="gemma2:9b" 
 
+# Giving the powerful reranker more candidates can help. 10 is a good starting point.
+TOP_K_FOR_RERANKING=10
 CHUNKS_FILENAME="clean_chunks.pkl"
 FAISS_INDEX_FILENAME="faiss_index.bin"
 
@@ -28,9 +32,11 @@ echo "--- Step 2: Running evaluation with LLM: $LLM_MODEL ---"
 python "$INFERENCE_SCRIPT" \
     --llm_model "$LLM_MODEL" \
     --embedding_model "$EMBEDDING_MODEL" \
+    --reranker_model "$RERANKER_MODEL" \
     --faiss_index "$FAISS_INDEX_FILENAME" \
     --chunks_file "$CHUNKS_FILENAME" \
     --statements_dir "$STATEMENTS_DIR" \
-    --ground_truth_dir "$GROUND_TRUTH_DIR"
+    --ground_truth_dir "$GROUND_TRUTH_DIR" \
+    --top_k "$TOP_K_FOR_RERANKING"
 
 echo "--- Experiment finished successfully! ---"
