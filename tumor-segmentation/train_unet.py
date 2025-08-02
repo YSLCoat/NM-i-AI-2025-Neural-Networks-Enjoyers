@@ -9,6 +9,8 @@ from glob import glob
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import time
+import torchvision.utils as vutils
+
 
 class CombinedLoss(nn.Module):
     def __init__(self, weight_dice=1.0, weight_bce=1.0):
@@ -33,16 +35,16 @@ def soft_dice_score(preds, targets, eps=1e-6):
     return dice.mean()
 
 def train():
-    model_name = 'model_5_3'
-    epochs = 10
-    batch_size = 3
-    resize_shape = (1024, 1024)
+    model_name = 'model_5_4'
+    epochs = 40
+    batch_size = 4
+    resize_shape = (512, 512)
     learning_rate = 1e-3
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_500/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_500/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/labels/*.png"))
 
     train_ds = TumorSegmentationDataset(
         image_paths=train_images,
@@ -54,7 +56,7 @@ def train():
 
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
     loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
     writer = SummaryWriter(log_dir=log_dir)
@@ -79,6 +81,25 @@ def train():
 
             # Dice scores
             preds_bin = (torch.sigmoid(preds) > 0.5).float()
+
+            # Visualize in tensorboard
+            if global_step % 50 == 0:
+                img = images[0].detach().cpu()
+                mask = masks[0].detach().cpu()
+                pred = torch.sigmoid(preds[0]).detach().cpu()
+                pred_bin = (pred > 0.5).float()
+
+                # Add batch/channel dimensions for consistent shape [C, H, W]
+                img_grid = vutils.make_grid(img.unsqueeze(0), normalize=True)
+                mask_grid = vutils.make_grid(mask.unsqueeze(0))
+                pred_grid = vutils.make_grid(pred)
+                pred_bin_grid = vutils.make_grid(pred_bin)
+
+                writer.add_image("Debug/Input_Image", img_grid, global_step)
+                writer.add_image("Debug/True_Mask", mask_grid, global_step)
+                writer.add_image("Debug/Predicted_Mask_Sigmoid", pred_grid, global_step)
+                writer.add_image("Debug/Predicted_Mask_Binary", pred_bin_grid, global_step)
+
             intersection = (preds_bin * masks).sum(dim=[1, 2, 3])
             union = preds_bin.sum(dim=[1, 2, 3]) + masks.sum(dim=[1, 2, 3])
             hard_dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
