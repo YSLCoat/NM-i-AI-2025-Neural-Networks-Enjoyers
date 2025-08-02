@@ -3,13 +3,15 @@ import cv2
 import numpy as np
 import albumentations as A
 from tqdm import tqdm
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # === Config ===
-NUM_AUGMENTED_TOTAL = 500
+NUM_AUGMENTED_TOTAL = 2000
 INPUT_IMG_DIR = "datasets/train/imgs"
 INPUT_MASK_DIR = "datasets/train/labels"
-OUT_IMG_DIR = "datasets/train_augmented_500/imgs"
-OUT_MASK_DIR = "datasets/train_augmented_500/labels"
+OUT_IMG_DIR = "datasets/train_augmented_2000/imgs"
+OUT_MASK_DIR = "datasets/train_augmented_2000/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)
