@@ -11,8 +11,24 @@ from torch.utils.tensorboard import SummaryWriter
 import time
 import torchvision.utils as vutils
 
+# Tversky Loss (PyTorch)
+class TverskyLoss(nn.Module):
+    def __init__(self, alpha=0.7, beta=0.3, smooth=1e-6):
+        super().__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.smooth = smooth
 
-class CombinedLoss(nn.Module):
+    def forward(self, preds, targets):
+        preds = preds.view(-1)
+        targets = targets.view(-1)
+        TP = (preds * targets).sum()
+        FP = ((1 - targets) * preds).sum()
+        FN = (targets * (1 - preds)).sum()
+        tversky = (TP + self.smooth) / (TP + self.alpha * FP + self.beta * FN + self.smooth)
+        return 1 - tversky
+
+class CombinedLossDiceBCE(nn.Module):
     def __init__(self, weight_dice=1.0, weight_bce=1.0):
         super().__init__()
         self.dice = DiceLoss(mode='binary')
@@ -27,6 +43,21 @@ class CombinedLoss(nn.Module):
         loss = self.weight_dice * loss_dice + self.weight_bce * loss_bce
         return loss, loss_dice.detach(), loss_bce.detach()
 
+class CombinedLossDiceTversky(nn.Module):
+    def __init__(self, weight_dice=1.0, weight_tversky=1.0, alpha=0.7, beta=0.3):
+        super().__init__()
+        self.dice = DiceLoss(mode='binary')
+        self.tversky = TverskyLoss(alpha=alpha, beta=beta)
+        self.weight_dice = weight_dice
+        self.weight_tversky = weight_tversky
+
+    def forward(self, preds, targets):
+        preds_sigmoid = torch.sigmoid(preds)
+        loss_dice = self.dice(preds_sigmoid, targets)
+        loss_tversky = self.tversky(preds_sigmoid, targets)
+        loss = self.weight_dice * loss_dice + self.weight_tversky * loss_tversky
+        return loss, loss_dice.detach(), loss_tversky.detach()
+
 def soft_dice_score(preds, targets, eps=1e-6):
     probs = torch.sigmoid(preds)
     intersection = (probs * targets).sum(dim=[1, 2, 3])
@@ -34,17 +65,37 @@ def soft_dice_score(preds, targets, eps=1e-6):
     dice = (2. * intersection + eps) / (union + eps)
     return dice.mean()
 
+@torch.no_grad()
+def validate(model, val_loader, device):
+    model.eval()
+    dice_scores = []
+    for images, masks in val_loader:
+        images = images.to(device)
+        masks = masks.to(device)
+        preds = model(images)
+        preds_bin = (torch.sigmoid(preds) > 0.5).float()
+
+        intersection = (preds_bin * masks).sum(dim=[1, 2, 3])
+        union = preds_bin.sum(dim=[1, 2, 3]) + masks.sum(dim=[1, 2, 3])
+        dice = ((2. * intersection + 1e-6) / (union + 1e-6)).mean()
+        dice_scores.append(dice.item())
+
+    return sum(dice_scores) / len(dice_scores)
+
 def train():
-    model_name = 'model_5_4'
-    epochs = 40
-    batch_size = 4
+    model_name = 'model_5_6'
+    epochs = 100
+    batch_size = 1
     resize_shape = (512, 512)
-    learning_rate = 1e-3
+    learning_rate = 5e-4
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/imgs/*.png"))
     train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/labels/*.png"))
+
+    val_images = sorted(glob("tumor-segmentation/datasets/val/imgs/*.png"))
+    val_masks = sorted(glob("tumor-segmentation/datasets/val/labels/*.png"))
 
     train_ds = TumorSegmentationDataset(
         image_paths=train_images,
@@ -52,10 +103,18 @@ def train():
         resize_shape=resize_shape,
         augment=True
     )
+    val_ds = TumorSegmentationDataset(
+        image_paths=val_images,
+        mask_paths=val_masks,
+        resize_shape=resize_shape,
+        augment=False
+    )
+
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
 
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = CombinedLoss(weight_dice=1.0, weight_bce=1.0)
+    loss_fn = CombinedLossDiceTversky(weight_dice=0.5, weight_tversky=0.5)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
@@ -79,17 +138,14 @@ def train():
             preds = model(images)
             loss, loss_dice, loss_bce = loss_fn(preds, masks)
 
-            # Dice scores
             preds_bin = (torch.sigmoid(preds) > 0.5).float()
 
-            # Visualize in tensorboard
             if global_step % 50 == 0:
                 img = images[0].detach().cpu()
                 mask = masks[0].detach().cpu()
                 pred = torch.sigmoid(preds[0]).detach().cpu()
                 pred_bin = (pred > 0.5).float()
 
-                # Add batch/channel dimensions for consistent shape [C, H, W]
                 img_grid = vutils.make_grid(img.unsqueeze(0), normalize=True)
                 mask_grid = vutils.make_grid(mask.unsqueeze(0))
                 pred_grid = vutils.make_grid(pred)
@@ -116,10 +172,9 @@ def train():
             running_loss_dice += loss_dice.item()
             running_loss_bce += loss_bce.item()
 
-            # TensorBoard logs
             writer.add_scalar('Loss/combined', loss.item(), global_step)
             writer.add_scalar('Loss/Dice', loss_dice.item(), global_step)
-            writer.add_scalar('Loss/BCE', loss_bce.item(), global_step)
+            writer.add_scalar('Loss/Tversky', loss_bce.item(), global_step)
             writer.add_scalar('Dice/hard', hard_dice.item(), global_step)
             writer.add_scalar('Dice/soft', soft_dice.item(), global_step)
 
@@ -134,7 +189,7 @@ def train():
 
         writer.add_scalar('Epoch/Loss_combined', avg_loss, epoch)
         writer.add_scalar('Epoch/Loss_Dice', avg_loss_dice, epoch)
-        writer.add_scalar('Epoch/Loss_BCE', avg_loss_bce, epoch)
+        writer.add_scalar('Epoch/Loss_Tversky', avg_loss_bce, epoch)
         writer.add_scalar('Epoch/Dice_hard', avg_dice, epoch)
         writer.add_scalar('Epoch/Dice_soft', avg_soft_dice, epoch)
 
@@ -142,6 +197,10 @@ def train():
         print(f" - Avg Combined Loss: {avg_loss:.4f}")
         print(f" - Avg Dice (hard):   {avg_dice:.4f}")
         print(f" - Avg Dice (soft):   {avg_soft_dice:.4f}")
+
+        val_dice = validate(model, val_loader, device)
+        writer.add_scalar('Val/Dice_hard', val_dice, epoch)
+        print(f" - Val Dice (hard):   {val_dice:.4f}")
 
     torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
     print(f"Model saved as unet_{model_name}.pth")
