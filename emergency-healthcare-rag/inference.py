@@ -9,7 +9,6 @@ import warnings
 from tqdm import tqdm
 import pickle
 
-# --- Required Imports for GPU execution ---
 import torch
 import numpy as np
 # MODIFIED: Import CrossEncoder
@@ -18,7 +17,6 @@ from sentence_transformers.util import cos_sim
 import faiss
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig # For quantization
 
-# It's good practice to handle potential import errors for optional libraries
 try:
     import pynvml
     pynvml.nvmlInit()
@@ -38,7 +36,6 @@ class RAGRetriever:
         with open(chunks_path, "rb") as f:
             self.chunks = pickle.load(f)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        # This is the BI-ENCODER for initial, fast retrieval
         self.model = SentenceTransformer(embedding_model, device=device)
         print(f"Retriever initialized successfully on device: {device}")
 
@@ -48,7 +45,6 @@ class RAGRetriever:
         _, indices = self.index.search(query_embedding, k)
         return [self.chunks[i] for i in indices[0]]
 
-# --- MODIFIED: Reranking function now returns a sorted list of chunks ---
 def rerank_with_cross_encoder(cross_encoder_model: CrossEncoder, query: str, chunks: list[dict]) -> list[dict]:
     """
     Reranks a list of chunks using a more powerful Cross-Encoder model and returns them sorted by relevance.
@@ -80,7 +76,6 @@ class RAGGenerator:
             exit()
 
 
-    # --- MODIFIED: Generate method now accepts multiple chunks for richer context ---
     def generate(self, statement: str, context_chunks: list[dict]) -> dict:
         """
         Generates a response based on a statement and a list of context chunks.
@@ -92,7 +87,6 @@ class RAGGenerator:
         context_parts = [f"Section: {chunk['section_title']}\n\n{chunk['content']}" for chunk in context_chunks]
         context_text = "\n\n---\n\n".join(context_parts)
         
-        # Use the topic_id from the most relevant chunk (the first one in the sorted list)
         topic_id = context_chunks[0]['topic_id']
 
         prompt = f"""Context:\n---\n{context_text}\n---\nStatement: "{statement}"\n\nTask: Based ONLY on the provided context, respond with a single, raw JSON object with two keys: "statement_is_true" (1 for true, 0 for false) and "statement_topic" (the integer topic ID, which is {topic_id}). Do not add any explanation or markdown."""
@@ -134,7 +128,6 @@ def run_evaluation(args):
     
     retriever = RAGRetriever(args.faiss_index, args.chunks_file, args.embedding_model)
     generator = RAGGenerator(args.llm_model)
-    # --- Load the Cross-Encoder model for reranking ---
     print(f"Loading Reranker Model: {args.reranker_model}")
     cross_encoder = CrossEncoder(args.reranker_model, device='cuda')
 
@@ -145,7 +138,6 @@ def run_evaluation(args):
     total_statements = len(statement_files)
     correct_truth, correct_topic = 0, 0
     
-    # Note: Cross-encoder reranking is more computationally intensive, so the process may be slower.
     for i, statement_file in enumerate(tqdm(statement_files, desc=f"Evaluating with Cross-Encoder")):
         with open(statement_file, 'r', encoding='utf-8') as f:
             statement_text = f.read().strip()
@@ -156,7 +148,6 @@ def run_evaluation(args):
         with open(ground_truth_file, 'r', encoding='utf-8') as f:
             ground_truth = json.load(f)
 
-        # --- MODIFIED: RAG pipeline with Multi-Chunk Context Generation ---
         # 1. Retrieve top-k chunks with the fast bi-encoder
         retrieved_chunks = retriever.retrieve(statement_text, k=args.top_k)
         
@@ -168,7 +159,6 @@ def run_evaluation(args):
 
         # 4. Generate a response using the combined context of the top N chunks
         prediction = generator.generate(statement_text, top_n_chunks)
-        # --- End of Modification ---
 
         if prediction.get("statement_is_true") == ground_truth.get("statement_is_true"): correct_truth += 1
         if prediction.get("statement_topic") == ground_truth.get("statement_topic"): correct_topic += 1
@@ -182,7 +172,6 @@ def run_evaluation(args):
 
     print("\n--- Evaluation Complete ---")
     print(f"LLM Tested: {args.llm_model}")
-    # MODIFIED: Updated print statement to be more descriptive
     print(f"Retrieval Strategy: Top {args.top_k} retrieved -> Reranked with {args.reranker_model} -> Top {args.top_n_reranked} used for context")
     print(f"Total Statements: {total_statements}")
     print("\n--- Accuracy Scores ---")

@@ -17,10 +17,6 @@ def load_topics_index_mapping(path: str) -> dict:
     return mapping
 
 def create_clean_chunks(topic_id: int, raw_text: str, tokenizer_model: str = "BAAI/bge-m3") -> List[Dict[str, Any]]:
-    """
-    Creates clean, semantically coherent chunks from raw text using a recursive, token-based splitting strategy.
-    """
-    # --- Step 1: Initial text cleaning (same as before) ---
     unwanted_sections = {
         'Authors', 'Affiliations', 'Continuing Education Activity', 'Review Questions',
         'References', 'Disclosure', 'Comment on this article.',
@@ -41,11 +37,8 @@ def create_clean_chunks(topic_id: int, raw_text: str, tokenizer_model: str = "BA
     text = re.sub(r'\n{3,}', '\n\n', text)
     text = text.strip()
 
-    # Get the title from the first line of the original raw text
     title = raw_text.split('\n')[0].lstrip('# ').strip()
 
-    # We use a tokenizer to measure chunk length in tokens, not characters.
-    # This is much more accurate for language models.
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
     
     text_splitter = RecursiveCharacterTextSplitter(
