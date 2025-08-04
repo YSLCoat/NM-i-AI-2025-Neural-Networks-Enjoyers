@@ -33,8 +33,8 @@ def dice_coefficient(y_true, y_pred, smooth=1e-6):
 # === MAIN EVALUATION ===
 def main():
     ROOT_DIR = os.path.abspath(".")
-    MODEL_PATH = os.path.join(ROOT_DIR, "tumor-segmentation", "logs", "train", "mask_rcnn_tumor_20250804T1758.h5")  # Adjust if needed
-    VAL_DIR = os.path.join(ROOT_DIR, "tumor-segmentation","datasets", "train_augmented_500")
+    MODEL_PATH = os.path.join(ROOT_DIR, "tumor-segmentation", "logs", "train", "mask_rcnn_tumor_20250804T2137.h5")
+    VAL_DIR = os.path.join(ROOT_DIR, "tumor-segmentation","datasets", "val")
     SAVE_DIR = os.path.join(ROOT_DIR, "tumor-segmentation","eval_outputs")
     os.makedirs(SAVE_DIR, exist_ok=True)
 

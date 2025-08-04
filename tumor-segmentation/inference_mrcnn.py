@@ -13,13 +13,18 @@ class InferenceConfig(Config):
     NUM_CLASSES = 1 + 1  # background + tumor
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
-    DETECTION_MIN_CONFIDENCE = 0.3  # adjust as needed
+
+    DETECTION_MIN_CONFIDENCE = 0.5
+
+    IMAGE_RESIZE_MODE = "square"
+    IMAGE_MIN_DIM = 512
+    IMAGE_MAX_DIM = 512
 
 config = InferenceConfig()
 config.display()
 
 # === SETUP MODEL ===
-MODEL_PATH = os.path.join("tumor-segmentation","logs", "train", "mask_rcnn_tumor_20250804T1758.h5")
+MODEL_PATH = os.path.join("tumor-segmentation","logs", "train", "mask_rcnn_tumor_20250804T2137.h5")
 
 model = modellib.MaskRCNN(mode="inference", model_dir="logs/train", config=config)
 model.load_weights(MODEL_PATH, by_name=True)
