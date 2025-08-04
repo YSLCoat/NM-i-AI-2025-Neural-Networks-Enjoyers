@@ -4,8 +4,9 @@ import datetime
 import numpy as np
 from fastapi import Body, FastAPI
 from dtos import TumorPredictRequestDto, TumorPredictResponseDto
-#from example import predict
-from inference import predict
+# from example import predict
+from inference_mrcnn import predict
+# from inference import predict
 from utils import validate_segmentation, encode_request, decode_request
 
 
@@ -58,5 +59,6 @@ if __name__ == '__main__':
     uvicorn.run(
         'api:app',
         host=HOST,
-        port=PORT
+        port=PORT,
+        reload=True
     )
