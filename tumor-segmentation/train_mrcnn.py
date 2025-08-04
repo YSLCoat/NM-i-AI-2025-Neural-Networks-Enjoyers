@@ -219,7 +219,7 @@ def main():
         train_dataset,
         val_dataset,
         learning_rate=config.LEARNING_RATE,
-        epochs=30,
+        epochs=120,
         layers='3+',
         custom_callbacks=[tensorboard_callback, checkpoint_callback]
         # custom_callbacks=[tensorboard_callback]

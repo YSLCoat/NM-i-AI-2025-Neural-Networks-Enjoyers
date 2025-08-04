@@ -7,8 +7,8 @@ import numpy as np
 from utils import decode_request, plot_prediction, dice_score
 
 # === Config ===
-img_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\train\imgs"
-label_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\train\labels"
+img_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\val\imgs"
+label_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\val\labels"
 url = "http://localhost:9051/predict"
 VISUALIZE = 1  # Toggle this to True if you want to visualize predictions
 
