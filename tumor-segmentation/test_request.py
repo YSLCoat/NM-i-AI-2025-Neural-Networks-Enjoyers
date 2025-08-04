@@ -7,10 +7,10 @@ import numpy as np
 from utils import decode_request, plot_prediction, dice_score
 
 # === Config ===
-img_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\val\imgs"
-label_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\val\labels"
+img_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\train\imgs"
+label_dir = r"C:\Users\theod\Documents\nmki\NM-i-AI-2025-Neural-Networks-Enjoyers\tumor-segmentation\datasets\train\labels"
 url = "http://localhost:9051/predict"
-VISUALIZE = 0  # Toggle this to True if you want to visualize predictions
+VISUALIZE = 1  # Toggle this to True if you want to visualize predictions
 
 img_filenames = [f for f in os.listdir(img_dir) if f.endswith('.png')]
 dice_scores = []

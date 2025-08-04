@@ -1,7 +1,8 @@
 
 runs/
 datasets/
-
+logs/train/
+tumor-segmentation/mrcnn/mask_rcnn_coco.h5
 # Emily-specific files
 .emily
 .idea
