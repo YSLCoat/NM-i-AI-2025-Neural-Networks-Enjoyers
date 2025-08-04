@@ -20,7 +20,7 @@ def return_action(state):
 
 
 if __name__ == '__main__':
-    seed_value = 12345
+    seed_value = 565318
     pygame.init()
     initialize_game_state("http://example.com/api/predict", seed_value)
     game_loop(verbose=True) # For pygame window

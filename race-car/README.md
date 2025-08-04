@@ -104,7 +104,6 @@ You can send the following action responses:
 - STEER_RIGHT
 - STEER_LEFT
 
-If you do not add an action amount, it will default to None, and one action will be added to the queue. 
 
 ### Run the simulation locally
 ```cmd
