@@ -11,7 +11,6 @@ import pickle
 
 import torch
 import numpy as np
-# MODIFIED: Import CrossEncoder
 from sentence_transformers import SentenceTransformer, CrossEncoder
 from sentence_transformers.util import cos_sim
 import faiss
@@ -131,10 +130,9 @@ def run_evaluation(args):
     print(f"Loading Reranker Model: {args.reranker_model}")
     cross_encoder = CrossEncoder(args.reranker_model, device='cuda')
 
-
     statements_path = pathlib.Path(args.statements_dir)
     statement_files = sorted(list(statements_path.glob("*.txt")))
-    
+
     total_statements = len(statement_files)
     correct_truth, correct_topic = 0, 0
     
