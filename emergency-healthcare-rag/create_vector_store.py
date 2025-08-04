@@ -48,7 +48,7 @@ def build_vector_store(model, chunk_list_filename, faiss_filename):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create vector store for rag pipeline')
-    parser.add_argument('--data_dir', default="/home/torf/NM-i-AI-2025-Neural-Networks-Enjoyers/emergency-healthcare-rag/data/")
+    parser.add_argument('--data_dir', default=r"C:\Users\torfor\NM-i-AI-2025-Neural-Networks-Enjoyers\emergency-healthcare-rag\data")
     parser.add_argument('--chunks_filename')
     parser.add_argument('--model')
     parser.add_argument('--faiss_index_filename')
