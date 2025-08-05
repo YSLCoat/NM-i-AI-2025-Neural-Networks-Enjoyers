@@ -11,7 +11,7 @@ tumor-segmentation/miniconda.sh
 
 tumor-segmentation/mrcnn/mask_rcnn_coco.h5
 runs/
-tumor-segmentation/models
+
 # Generic Python files (Source: https://github.com/github/gitignore/blob/main/Python.gitignore @ 2022-03-23):
 
 # Byte-compiled / optimized / DLL files
