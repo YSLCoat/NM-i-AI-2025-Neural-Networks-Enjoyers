@@ -32,8 +32,8 @@ class Car:
         self.x += self.velocity.x - ego.velocity.x 
         self.y += self.velocity.y
         rn = random_number() - 0.5
-        velocity_change = 0.1 * rn + 1 
-        self.velocity.x = velocity_change * self.velocity.x
+        velocity_change = rn / 5
+        self.velocity.x = self.velocity.x + velocity_change
 
 
     def slow_down(self, amount: float = 0.1):
@@ -61,6 +61,7 @@ class Car:
         :param amount: The amount to adjust the velocity by (default is 1).
         """
         self.velocity.y += amount
+
 
     def load_sprite(self, path: str, target_height: int) -> pygame.Surface:
         """
