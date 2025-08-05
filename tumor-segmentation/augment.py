@@ -8,10 +8,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # === Config ===
 NUM_AUGMENTED_TOTAL = 1000
-INPUT_IMG_DIR = "datasets/train/imgs"
-INPUT_MASK_DIR = "datasets/train/labels"
-OUT_IMG_DIR = "datasets/train_augmented_1000/imgs"
-OUT_MASK_DIR = "datasets/train_augmented_1000/labels"
+INPUT_IMG_DIR = "datasets/original/imgs"
+INPUT_MASK_DIR = "datasets/original/labels"
+OUT_IMG_DIR = "datasets/original_augmented_1000/imgs"
+OUT_MASK_DIR = "datasets/original_augmented_1000/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)
@@ -36,7 +36,7 @@ augment = A.Compose([
         contrast_limit=0.1,
         p=0.3
     ),
-    A.GaussianBlur(blur_limit=(3, 3), p=0.1),
+    A.GaussianBlur(blur_limit=(3, 3), p=0.2),
     A.CLAHE(clip_limit=2.0, tile_grid_size=(8, 8), p=0.2),
 ], additional_targets={'mask': 'image'})
 
