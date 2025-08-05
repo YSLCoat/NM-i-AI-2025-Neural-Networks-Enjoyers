@@ -16,7 +16,7 @@ import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize, VecFrameStack
 from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback, CallbackList
 
 from src.game.racecar_env import RaceCarEnv  # <-- your env
@@ -33,7 +33,7 @@ LOG_DIR = "logs_sb3"
 NUM_CPU = 24         # 32 if your env is very light AND truly instance-safe
 N_STEPS = 4096       # per-env rollout length
 SEED = 42
-TOTAL_TIMESTEPS = 200_000_000
+TOTAL_TIMESTEPS = 400_000_000
 
 # PPO core hyperparams (GPU-friendly)
 NET_ARCH = [256, 256, 256, 256]        # a bit wider; GPU handles this easily
@@ -55,22 +55,31 @@ CLIP_OBS = 10.0
 UPDATES_PER_EVAL = 4     # eval every ~UPDATES_PER_EVAL rollout updates
 UPDATES_PER_CKPT = 20    # checkpoint every ~UPDATES_PER_CKPT updates
 
-# ----------------------------- Utilities -----------------------------
-
-def choose_batch_size(global_batch: int) -> int:
+def choose_batch_size(global_batch: int, prefer_k=(8, 6, 4, 3, 2)) -> int:
     """
-    Return a batch_size that exactly divides global_batch and is large enough
-    to keep the GPU fed. We try 2, 3, then 4 minibatches per update.
+    Return a batch_size that exactly divides global_batch.
+    Prefer more (smaller) minibatches for better gradient signal.
     """
-    for k in (2, 3, 4):
+    for k in prefer_k:
         if global_batch % k == 0:
             return global_batch // k
-    # Fallback: find a large divisor (>= 4096 when possible)
-    for bs in range(16384, 2047, -512):
+    # Fallback: find a large divisor in a reasonable range
+    for bs in range(16384, 4095, -512):
         if global_batch % bs == 0:
             return bs
-    # Last resort: just use the whole batch (1 minibatch)
-    return global_batch
+    return global_batch  # last resort
+
+def linear_schedule(start: float, end: float, end_fraction: float = 1.0):
+    """
+    SB3 passes progress from 1.0 -> 0.0 across training.
+    We map that to a linear schedule from `start` to `end`.
+    """
+    def f(progress_remaining: float):
+        # progress_remaining: 1.0 (begin) -> 0.0 (end)
+        progress = 1.0 - progress_remaining  # 0 -> 1
+        scaled = min(progress / end_fraction, 1.0)
+        return start + (end - start) * scaled
+    return f
 
 def make_envs(n_envs: int, monitor_dir: Optional[str]):
     """
@@ -125,7 +134,6 @@ def train():
           f"batch_size={batch_size}, n_epochs={N_EPOCHS}, device={device}")
     print(f"[Cadence] eval_freq={eval_freq} steps, ckpt_freq={ckpt_freq} steps")
 
-    # -------- Training envs --------
     train_env = make_envs(NUM_CPU, monitor_dir=LOG_DIR)
     train_env = VecNormalize(
         train_env,
@@ -134,6 +142,7 @@ def train():
         clip_obs=CLIP_OBS,
         gamma=GAMMA,
     )
+    train_env = VecFrameStack(train_env, n_stack=3)
 
     policy_kwargs = dict(
         net_arch=NET_ARCH,
@@ -145,13 +154,13 @@ def train():
         "MlpPolicy",
         train_env,
         policy_kwargs=policy_kwargs,
-        learning_rate=LEARNING_RATE,
+        learning_rate=linear_schedule(3e-4, 1e-4, end_fraction=1.0),  # 3e-4 → 1e-4 over the run
+        clip_range=linear_schedule(0.20, 0.10, end_fraction=1.0),     # 0.20 → 0.10
         n_steps=N_STEPS,          # per-env
         batch_size=batch_size,    # must divide n_steps * n_envs
         n_epochs=N_EPOCHS,
         gamma=GAMMA,
         gae_lambda=GAE_LAMBDA,
-        clip_range=CLIP_RANGE,
         ent_coef=ENT_COEF,
         vf_coef=VF_COEF,
         max_grad_norm=MAX_GRAD_NORM,
@@ -167,13 +176,16 @@ def train():
     eval_env = VecNormalize(
         eval_env,
         norm_obs=True,
-        norm_reward=False,   # do not normalize rewards at eval/inference
+        norm_reward=False,   # no reward norm at eval
         clip_obs=CLIP_OBS,
         gamma=GAMMA,
     )
-    # Share observation normalization with training env
-    eval_env.obs_rms = train_env.obs_rms
+    # share obs stats from training (see helper below)
+    # eval_env.obs_rms = train_env.obs_rms   # <-- remove this line
     eval_env.training = False
+
+    # add the same frame stack used in training
+    eval_env = VecFrameStack(eval_env, n_stack=3)
 
     eval_callback = EvalCallback(
         eval_env,

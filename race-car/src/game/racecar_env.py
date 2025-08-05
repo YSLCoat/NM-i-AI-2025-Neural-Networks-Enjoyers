@@ -73,6 +73,8 @@ class RaceCarEnv(gym.Env):
         return observation, info
 
     def step(self, action):
+        """One environment step with TTC-aware shaping + rear-safety shaping."""
+        # 1) Robust action handling
         try:
             action_int = int(np.asarray(action).squeeze())
         except Exception as e:
@@ -81,11 +83,14 @@ class RaceCarEnv(gym.Env):
             action_int = ACTIONS.index('NOTHING')
         action_string = ACTION_MAP[action_int]
 
+        # 2) Cache progress baseline
         prev_distance = core.STATE.distance
 
+        # 3) Simulate one tick
         core.update_game(action_string)
         core.STATE.ticks += 1
 
+        # 4) Collision detection
         crashed = False
         ego = core.STATE.ego
         for car in core.STATE.cars:
@@ -99,26 +104,47 @@ class RaceCarEnv(gym.Env):
                     break
         core.STATE.crashed = core.STATE.crashed or crashed
 
+        # 5) Observation (next state)
         observation = self._get_obs()
 
+        # 6) Reward shaping
         if crashed:
             reward = -100.0
+            # Prepare defaults for logging below
+            fwd_min = left_min = right_min = 0.0
+            ttc_fwd = ttc_left = ttc_right = 0.0
+            headway_sec = 0.0
+            vx = float(core.STATE.ego.velocity.x)
+            back_min = rear_left_min = rear_right_min = 0.0
+            rear_danger = 0.0
         else:
+            # --- sensor slices & cones ---
+            # observation[:16] are normalized distances in [0,1] (1.0 = far, 0.0 = very close)
             sensor_obs = observation[:16]
 
-            FWD_CONE   = (7, 9, 0, 10, 1)
-            LEFT_CONE  = (8, 7, 9)             
-            RIGHT_CONE = (10, 1, 11)          
+            # Forward & front-side cones (based on your sensor order)
+            FWD_CONE    = (7, 9, 0, 10, 1)     # left_front, front_left_front, front, front_right_front, right_front
+            LEFT_CONE   = (8, 7, 9)            # left_side_front, left_front, front_left_front
+            RIGHT_CONE  = (10, 1, 11)          # front_right_front, right_front, right_side_front
 
+            # Rear cones for rear-safety shaping
+            BACK_CONE_NARROW = (3, 4, 5)       # right_back, back, left_back
+            REAR_LEFT_CONE   = (15, 14, 5)     # left_side_back, back_left_back, left_back
+            REAR_RIGHT_CONE  = (12, 13, 3)     # right_side_back, back_right_back, right_back
+
+            # --- progress (distance) ---
             delta_dist = core.STATE.distance - prev_distance        # ~ ego.vx per tick
             fwd_min = float(np.min(sensor_obs[list(FWD_CONE)]))     # 0..1 (1 = far)
+            # Harder gating: no tailgating reward; full reward when fwd_min >= ~0.65
             danger_gate = float(np.clip((fwd_min - 0.45) / 0.20, 0.0, 1.0))
             progress_r = 0.1 * max(delta_dist, 0.0) * danger_gate
 
-            MAX_SENSOR_PX = 1000.0  # sensor reach (px)
+            # --- Time-To-Collision (forward & front-sides), speed-aware ---
+            MAX_SENSOR_PX = 1000.0
             FPS = 60.0
             vx = max(core.STATE.ego.velocity.x, 0.0)  # px/tick
 
+            # forward TTC
             d_fwd_px = fwd_min * MAX_SENSOR_PX
             ttc_fwd = (d_fwd_px / max(vx, 1e-6)) / FPS
             TTC_CUTOFF_FWD = 1.8
@@ -126,6 +152,7 @@ class RaceCarEnv(gym.Env):
             danger_fwd = float(np.clip((TTC_CUTOFF_FWD - ttc_fwd) / TTC_CUTOFF_FWD, 0.0, 1.0))
             pen_ttc_fwd = (danger_fwd ** 2) * TTC_SCALE_FWD
 
+            # side TTCs (penalize turning into cars ahead-left / ahead-right)
             left_min  = float(np.min(sensor_obs[list(LEFT_CONE)]))
             right_min = float(np.min(sensor_obs[list(RIGHT_CONE)]))
             ttc_left  = (left_min * MAX_SENSOR_PX)  / max(vx, 1e-6) / FPS
@@ -136,24 +163,51 @@ class RaceCarEnv(gym.Env):
             danger_right = float(np.clip((TTC_CUTOFF_SIDE - ttc_right) / TTC_CUTOFF_SIDE, 0.0, 1.0))
             pen_ttc_side = (danger_left ** 2 + danger_right ** 2) * (TTC_SCALE_SIDE * 0.5)
 
+            # --- steer-into-danger penalty (front-sides) ---
+            steer_into_danger = 0.0
             if action_string == 'STEER_LEFT' and left_min < (fwd_min + 0.10):
                 steer_into_danger += 0.08 + 0.8 * max(0.0, 0.5 - left_min)
             if action_string == 'STEER_RIGHT' and right_min < (fwd_min + 0.10):
                 steer_into_danger += 0.08 + 0.8 * max(0.0, 0.5 - right_min)
 
+            # --- action-aware shaping (accel bad when danger; brake good when danger) ---
             act_shaping = 0.0
             if action_string == 'ACCELERATE' and danger_fwd > 0.35:
-                act_shaping += 0.7 * (danger_fwd - 0.35)   # was 0.5
+                act_shaping += 0.7 * (danger_fwd - 0.35)
             elif action_string == 'DECELERATE' and max(danger_fwd, danger_left, danger_right) > 0.35:
                 act_shaping -= 0.35 * (max(danger_fwd, danger_left, danger_right) - 0.35)
 
+            # --- distance-keeping bonus (time headway) ---
             headway_sec = ttc_fwd
             HEADWAY_TARGET = 2.0
-            headway_bonus = 0.08 * np.clip((headway_sec - HEADWAY_TARGET) / HEADWAY_TARGET, 0.0, 1.0)
-            headway_bonus *= float(np.clip(vx / 12.0, 0.0, 1.0)) * danger_gate
+            headway_bonus = 0.08 * float(np.clip((headway_sec - HEADWAY_TARGET) / HEADWAY_TARGET, 0.0, 1.0))
+            headway_bonus *= float(np.clip(vx / 12.0, 0.0, 1.0)) * danger_gate  # no idling exploit
 
+            # --- small steering penalty to reduce jitter ---
             turn_pen = 0.02 if action_string in ('STEER_LEFT', 'STEER_RIGHT') else 0.0
 
+            # --- Rear safety shaping (avoid being rear-ended) ---
+            back_min       = float(np.min(sensor_obs[list(BACK_CONE_NARROW)]))   # 0..1
+            rear_left_min  = float(np.min(sensor_obs[list(REAR_LEFT_CONE)]))
+            rear_right_min = float(np.min(sensor_obs[list(REAR_RIGHT_CONE)]))
+
+            # rear "danger": anything within ~0.6 range behind; smooth quadratic ramp
+            rear_danger = float(np.clip((0.6 - back_min) / 0.6, 0.0, 1.0)) ** 2
+
+            # 1) Penalize braking when rear is dangerous and forward is relatively safe
+            rear_brake_pen = 0.0
+            if action_string == 'DECELERATE' and rear_danger > 0.25 and danger_fwd < 0.35:
+                # grows to ~0.2 when rear is very close; fades if forward danger rises
+                rear_brake_pen = 0.2 * rear_danger * (1.0 - danger_fwd)
+
+            # 2) Penalize merging toward a rear-occupied side (avoid getting clipped)
+            rear_merge_pen = 0.0
+            if action_string == 'STEER_LEFT' and rear_left_min < 0.45:
+                rear_merge_pen += 0.06 * (0.45 - rear_left_min) * float(np.clip(vx / 8.0, 0.0, 1.0))
+            if action_string == 'STEER_RIGHT' and rear_right_min < 0.45:
+                rear_merge_pen += 0.06 * (0.45 - rear_right_min) * float(np.clip(vx / 8.0, 0.0, 1.0))
+
+            # --- compose reward ---
             survival = 0.01
             reward = (
                 progress_r
@@ -161,39 +215,35 @@ class RaceCarEnv(gym.Env):
                 - pen_ttc_side
                 - steer_into_danger
                 - act_shaping
+                - rear_brake_pen
+                - rear_merge_pen
                 - turn_pen
                 + headway_bonus
                 + survival
             )
 
+        # 7) Termination / truncation
         terminated = crashed
         truncated = core.STATE.ticks >= core.MAX_TICKS
 
+        # 8) Info for diagnostics
         info = self._get_info()
-        if not crashed:
-            info.update({
-                "delta_distance": float(core.STATE.distance - prev_distance),
-                "fwd_min": float(fwd_min),
-                "left_min": float(left_min),
-                "right_min": float(right_min),
-                "ttc_fwd": float(ttc_fwd),
-                "ttc_left": float(ttc_left),
-                "ttc_right": float(ttc_right),
-                "headway_sec": float(headway_sec),
-                "vx": float(vx),
-            })
-        else:
-            info.update({
-                "delta_distance": float(core.STATE.distance - prev_distance),
-                "fwd_min": 0.0,
-                "left_min": 0.0,
-                "right_min": 0.0,
-                "ttc_fwd": 0.0,
-                "ttc_left": 0.0,
-                "ttc_right": 0.0,
-                "headway_sec": 0.0,
-                "vx": float(core.STATE.ego.velocity.x),
-            })
+        info.update({
+            "delta_distance": float(core.STATE.distance - prev_distance),
+            "fwd_min": float(fwd_min),
+            "left_min": float(left_min),
+            "right_min": float(right_min),
+            "ttc_fwd": float(ttc_fwd),
+            "ttc_left": float(ttc_left),
+            "ttc_right": float(ttc_right),
+            "headway_sec": float(headway_sec),
+            "vx": float(vx),
+            # rear diagnostics
+            "back_min": float(back_min),
+            "rear_left_min": float(rear_left_min),
+            "rear_right_min": float(rear_right_min),
+            "rear_danger": float(rear_danger),
+        })
 
         if self.render_mode == "human":
             self._render_frame()
