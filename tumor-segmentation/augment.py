@@ -7,25 +7,39 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # === Config ===
-NUM_AUGMENTED_TOTAL = 2000
+NUM_AUGMENTED_TOTAL = 1000
 INPUT_IMG_DIR = "datasets/train/imgs"
 INPUT_MASK_DIR = "datasets/train/labels"
-OUT_IMG_DIR = "datasets/train_augmented_2000/imgs"
-OUT_MASK_DIR = "datasets/train_augmented_2000/labels"
+OUT_IMG_DIR = "datasets/train_augmented_1000/imgs"
+OUT_MASK_DIR = "datasets/train_augmented_1000/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)
 
 # === Define your augmentation pipeline ===
 augment = A.Compose([
-    A.HorizontalFlip(p=0.5),
-    A.VerticalFlip(p=0.2),
-    A.RandomRotate90(p=0.5),
-    A.ElasticTransform(alpha=1, sigma=50, alpha_affine=50, p=0.3),
-    A.RandomBrightnessContrast(p=0.3),
-    A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=30, p=0.5),
-    A.GaussianBlur(p=0.2),
+    A.ShiftScaleRotate(
+        shift_limit=0.05,
+        scale_limit=0.05,
+        rotate_limit=10,
+        p=0.5
+    ),
+    A.ElasticTransform(
+        alpha=0.5,
+        sigma=20,
+        alpha_affine=10,
+        p=0.2
+    ),
+    A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
+    A.RandomBrightnessContrast(
+        brightness_limit=0.1,
+        contrast_limit=0.1,
+        p=0.3
+    ),
+    A.GaussianBlur(blur_limit=(3, 3), p=0.1),
+    A.CLAHE(clip_limit=2.0, tile_grid_size=(8, 8), p=0.2),
 ], additional_targets={'mask': 'image'})
+
 
 # === Load all originals ===
 image_filenames = [f for f in os.listdir(INPUT_IMG_DIR) if f.endswith('.png')]

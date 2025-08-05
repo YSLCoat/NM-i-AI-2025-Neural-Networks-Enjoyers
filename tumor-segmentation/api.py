@@ -5,8 +5,8 @@ import numpy as np
 from fastapi import Body, FastAPI
 from dtos import TumorPredictRequestDto, TumorPredictResponseDto
 # from example import predict
-from inference_mrcnn import predict
-# from inference import predict
+# from inference_mrcnn import predict
+from inference_unet import predict
 from utils import validate_segmentation, encode_request, decode_request
 
 
