@@ -16,7 +16,7 @@ class InferenceConfig(Config):
     NUM_CLASSES = 1 + 1  # background + tumor
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
-    DETECTION_MIN_CONFIDENCE = 0.1
+    DETECTION_MIN_CONFIDENCE = 0.3
     IMAGE_RESIZE_MODE = "square"
     IMAGE_MIN_DIM = 512
     IMAGE_MAX_DIM = 512
@@ -33,7 +33,7 @@ def dice_coefficient(y_true, y_pred, smooth=1e-6):
 # === MAIN EVALUATION ===
 def main():
     ROOT_DIR = os.path.abspath(".")
-    MODEL_PATH = os.path.join(ROOT_DIR, "tumor-segmentation", "logs", "train", "mask_rcnn_tumor_20250804T2137.h5")
+    MODEL_PATH = os.path.join(ROOT_DIR, "tumor-segmentation", "logs", "train", "checkpoint_epoch_69.h5")
     VAL_DIR = os.path.join(ROOT_DIR, "tumor-segmentation","datasets", "val")
     SAVE_DIR = os.path.join(ROOT_DIR, "tumor-segmentation","eval_outputs")
     os.makedirs(SAVE_DIR, exist_ok=True)
