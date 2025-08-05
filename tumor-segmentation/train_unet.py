@@ -68,11 +68,11 @@ def validate(model, val_loader, device):
     return sum(dice_scores) / len(dice_scores)
 
 def train():
-    model_name = 'model_6_1'
-    epochs = 40
-    batch_size = 2
+    model_name = 'model_6_2'
+    epochs = 80
+    batch_size = 4
     resize_shape = (512, 512)
-    learning_rate = 5e-4
+    learning_rate = 1e-4
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -86,7 +86,7 @@ def train():
         image_paths=train_images,
         mask_paths=train_masks,
         resize_shape=resize_shape,
-        augment=False
+        augment=True
     )
     val_ds = TumorSegmentationDataset(
         image_paths=val_images,
@@ -99,9 +99,9 @@ def train():
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
 
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = CombinedLossDiceTversky(weight_dice=0.5, weight_tversky=0.5)
+    loss_fn = CombinedLossDiceTversky(weight_dice=0.7, weight_tversky=0.3)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=3)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
 
     log_dir = f"runs/unet_{model_name}_{time.strftime('%Y%m%d-%H%M%S')}"
     writer = SummaryWriter(log_dir=log_dir)
@@ -187,6 +187,7 @@ def train():
 
     torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
     print(f"Model saved as unet_{model_name}.pth")
+    writer.flush()
     writer.close()
 
 if __name__ == "__main__":
