@@ -86,10 +86,6 @@ git clone https://github.com/amboltio/DM-i-AI-2025
 cd DM-i-AI-2024/race-car
 ```
 
-Install dependencies
-```cmd
-pip install -r requirements.txt
-```
 
 ### Serve your endpoint
 Serve your endpoint locally and test that everything starts without errors
@@ -108,7 +104,6 @@ You can send the following action responses:
 - STEER_RIGHT
 - STEER_LEFT
 
-If you do not add an action amount, it will default to None, and one action will be added to the queue. 
 
 ### Run the simulation locally
 ```cmd
