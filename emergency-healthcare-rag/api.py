@@ -7,7 +7,7 @@ from model import predict
 from loguru import logger
 from pydantic import BaseModel
 
-HOST = "0.0.0.0"
+HOST = "127.0.0.1"
 PORT = 8000
 
 class MedicalStatementRequestDto(BaseModel):
