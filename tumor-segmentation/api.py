@@ -11,7 +11,7 @@ from utils import validate_segmentation, encode_request, decode_request
 
 
 HOST = "0.0.0.0"
-PORT = 9051
+PORT = 8000
 
 
 app = FastAPI()
