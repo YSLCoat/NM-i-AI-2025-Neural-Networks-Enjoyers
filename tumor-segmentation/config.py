@@ -9,9 +9,9 @@ IMG_WIDTH = 400
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-BATCH_SIZE = 2
+BATCH_SIZE = 8
 LEARNING_RATE = 1e-4
-EPOCHS = 25
+EPOCHS = 30
 VALIDATION_SPLIT = 0.2
 
 CHECKPOINT_DIR = "saved_models"

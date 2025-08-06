@@ -1,5 +1,6 @@
 import os
 import torch
+import numpy as np
 from torch.utils.data import DataLoader, random_split, ConcatDataset
 from tqdm import tqdm
 from pathlib import Path
@@ -8,6 +9,85 @@ import config
 from dataset import TumorDataset, train_transform, val_transform
 from model import UNet
 from loss import DiceBCELoss
+
+
+from torch.utils.data import Sampler
+
+class BalancedBatchSampler(Sampler):
+    """
+    A custom PyTorch sampler to create balanced batches.
+
+    For each batch, it samples a specified number of items from the patient dataset
+    and a specified number from the control dataset to ensure each batch has a
+    consistent composition.
+    """
+    def __init__(self, dataset, batch_size, patient_ratio=0.5):
+        """
+        Args:
+            dataset (Dataset): The full, concatenated dataset.
+            batch_size (int): The total number of samples in a batch.
+            patient_ratio (float): The proportion of the batch that should be patient samples.
+        """
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.patient_ratio = patient_ratio
+
+        # Determine the number of patient and control samples per batch
+        self.num_patients_per_batch = int(batch_size * patient_ratio)
+        self.num_controls_per_batch = batch_size - self.num_patients_per_batch
+
+        # Get the indices for each dataset from the ConcatDataset
+        # The first dataset added is the patient dataset
+        self.patient_indices = list(range(dataset.cumulative_sizes[0]))
+        # The second dataset added is the control dataset
+        self.control_indices = list(range(dataset.cumulative_sizes[0], dataset.cumulative_sizes[1]))
+
+        # Ensure we can form a batch with the given ratio
+        if self.num_patients_per_batch == 0 or self.num_controls_per_batch == 0:
+            raise ValueError(
+                f"Batch size {batch_size} and patient_ratio {patient_ratio} "
+                "results in zero samples for one of the classes. Adjust parameters."
+            )
+
+    def __iter__(self):
+        # Shuffle the indices at the beginning of each epoch
+        np.random.shuffle(self.patient_indices)
+        np.random.shuffle(self.control_indices)
+
+        # Create iterators to pull indices from
+        patient_iter = iter(self.patient_indices)
+        control_iter = iter(self.control_indices)
+
+        # Yield batches until the total dataset is traversed once
+        for _ in range(len(self)):
+            batch = []
+            # Add patient indices to the batch
+            for _ in range(self.num_patients_per_batch):
+                try:
+                    batch.append(next(patient_iter))
+                except StopIteration:
+                    # If we run out of patient samples, reshuffle and start over
+                    np.random.shuffle(self.patient_indices)
+                    patient_iter = iter(self.patient_indices)
+                    batch.append(next(patient_iter))
+
+            # Add control indices to the batch
+            for _ in range(self.num_controls_per_batch):
+                try:
+                    batch.append(next(control_iter))
+                except StopIteration:
+                    # If we run out of control samples, reshuffle and start over
+                    np.random.shuffle(self.control_indices)
+                    control_iter = iter(self.control_indices)
+                    batch.append(next(control_iter))
+            
+            np.random.shuffle(batch)
+            yield batch
+
+    def __len__(self):
+        # Returns the total number of batches per epoch
+        return len(self.dataset) // self.batch_size
+
 
 
 def check_accuracy(loader, model, device="cuda"):
@@ -123,7 +203,19 @@ def main():
     print(f"Total training samples: {len(train_ds)}")
     print(f"Total validation samples: {len(val_ds)}")
 
-    train_loader = DataLoader(train_ds, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True)
+    balanced_sampler = BalancedBatchSampler(
+        dataset=train_ds,
+        batch_size=config.BATCH_SIZE,
+        patient_ratio=0.5  # This means 50% of each batch will be patient images
+    )
+
+    # When using a batch_sampler, you must NOT specify batch_size, shuffle, sampler, or drop_last in the DataLoader
+    train_loader = DataLoader(
+        train_ds,
+        batch_sampler=balanced_sampler,
+        num_workers=4,
+        pin_memory=True
+    )
     val_loader = DataLoader(val_ds, batch_size=config.BATCH_SIZE, shuffle=False, num_workers=4, pin_memory=True)
 
     best_dice_score = -1.0

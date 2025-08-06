@@ -43,8 +43,10 @@ class TumorDataset(Dataset):
 
 train_transform = A.Compose([
     A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0),
-    A.Rotate(limit=15, p=0.5),
+    A.Rotate(limit=15, p=0.5, border_mode=0),
     A.HorizontalFlip(p=0.5),
+    A.RandomBrightnessContrast(p=0.2), # Add this
+    A.GaussNoise(p=0.2), # And this
     A.Normalize(mean=[0.0], std=[1.0]),
     ToTensorV2(),
 ])
