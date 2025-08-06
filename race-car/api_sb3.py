@@ -1,6 +1,8 @@
 # api_sb3.py — Serve PPO policy for server-side verification
 import os
 import pickle
+import logging # --- LOGGING ADDED ---
+from datetime import datetime # --- LOGGING ADDED ---
 from collections import deque
 from typing import List, Optional
 
@@ -20,6 +22,29 @@ except Exception:
     _HAS_VECNORM = False
 
 from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
+
+# ----------------------------- Logging Setup -----------------------------
+# --- LOGGING ADDED ---
+# Create a logger
+logger = logging.getLogger("api_predictor")
+logger.setLevel(logging.INFO)
+
+# Create handlers
+log_file_path = "predictor_log.txt"
+file_handler = logging.FileHandler(log_file_path)
+console_handler = logging.StreamHandler()
+
+# Create a formatter and set it for both handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add handlers to the logger
+if not logger.handlers:
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+# --- END LOGGING ADDED ---
+
 
 # ----------------------------- Config -----------------------------
 MODEL_SAVE_DIR = "models_sb3"
@@ -44,8 +69,6 @@ try:
     _HAS_ENV_ACTIONS = True
 except Exception:
     _HAS_ENV_ACTIONS = False
-    # Fallback order: make sure this matches *your* training order if you use this path.
-    # If your env exposes ACTIONS, the server will use those instead.
     ENV_ACTIONS = ["NOTHING", "ACCELERATE", "DECELERATE", "STEER_LEFT", "STEER_RIGHT"]
     ENV_ACTION_MAP = {i: a for i, a in enumerate(ENV_ACTIONS)}
 
@@ -57,12 +80,8 @@ SENSORS_ORDER = [
     "back_right_back", "back_left_back", "left_side_back",
 ]
 
-# ------------------------ Helper: Obs Normalizer -------------------
 class ObsNormalizer:
-    """
-    Minimal loader for VecNormalize obs statistics so we can standardize observations
-    without constructing a real VecEnv server-side.
-    """
+    # This class is now simplified to only normalize the base 18-dim observation
     def __init__(self, vecnorm_path: str, clip_obs: float = 10.0):
         self.enabled = False
         self.mean = None
@@ -70,123 +89,126 @@ class ObsNormalizer:
         self.clip_obs = clip_obs
         if _HAS_VECNORM and os.path.exists(vecnorm_path):
             try:
-                # SB3's VecNormalize.load expects a VecEnv. We only need the stats.
-                # We'll unpickle to grab obs_rms.{mean,var} safely.
                 with open(vecnorm_path, "rb") as f:
                     vn = pickle.load(f)
-                # The pickled object is a VecNormalize; pull stats
-                self.mean = np.array(vn.obs_rms.mean, dtype=np.float32)
-                self.var = np.array(vn.obs_rms.var, dtype=np.float32)
+                # Ensure mean/var are shaped correctly for the base observation
+                self.mean = np.array(vn.obs_rms.mean, dtype=np.float32).reshape(1, BASE_OBS_DIM)
+                self.var = np.array(vn.obs_rms.var, dtype=np.float32).reshape(1, BASE_OBS_DIM)
                 self.clip_obs = float(getattr(vn, "clip_obs", clip_obs))
                 self.enabled = True
-                print(f"[ObsNorm] Loaded stats: clip_obs={self.clip_obs}, "
+                logger.info(f"[ObsNorm] Loaded stats: clip_obs={self.clip_obs}, "
                       f"mean.shape={self.mean.shape}, var.shape={self.var.shape}")
             except Exception as e:
-                print(f"[ObsNorm] Could not load VecNormalize stats from {vecnorm_path}: {e}")
+                logger.error(f"[ObsNorm] Could not load VecNormalize stats from {vecnorm_path}: {e}")
                 self.enabled = False
 
     def __call__(self, obs: np.ndarray) -> np.ndarray:
         if not self.enabled:
             return obs
-        # Expect (1, STACKED_OBS_DIM)
-        assert obs.ndim == 2, f"Expected (batch, dim), got {obs.shape}"
-        # Mean/var are for base-dim; we need to tile to stacked shape
-        base_mean = self.mean.reshape(1, BASE_OBS_DIM)
-        base_var = self.var.reshape(1, BASE_OBS_DIM)
-        mean = np.tile(base_mean, (1, N_STACK))
-        var = np.tile(base_var, (1, N_STACK))
+        # Expects a single, unstacked observation of shape (BASE_OBS_DIM,)
+        assert obs.shape == (BASE_OBS_DIM,), f"Expected ({BASE_OBS_DIM},), got {obs.shape}"
+        
+        # Reshape to (1, BASE_OBS_DIM) for broadcasting
+        obs = obs.reshape(1, BASE_OBS_DIM)
+        
         eps = 1e-8
-        norm = (obs - mean) / np.sqrt(var + eps)
-        return np.clip(norm, -self.clip_obs, self.clip_obs)
+        norm = (obs - self.mean) / np.sqrt(self.var + eps)
+        clipped = np.clip(norm, -self.clip_obs, self.clip_obs)
+        
+        # Return the normalized, unstacked observation, flattened back
+        return clipped.flatten()
 
 # --------------------------- Predictor -----------------------------
 class PPOPredictor:
     def __init__(self, model_path: str, vecnorm_path: Optional[str]):
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[Model] Loading PPO on device={device}")
-        # Allow .zip or bare path
+        logger.info(f"[Model] Loading PPO on device={device}")
         path = model_path if os.path.isfile(model_path) else model_path + ".zip"
         self.model = PPO.load(path, device=device)
-
-        # Stacked history for VecFrameStack emulation
         self._hist = deque(maxlen=N_STACK)
-
-        # Best-effort obs normalization (optional)
         self.obs_norm = ObsNormalizer(vecnorm_path, clip_obs=10.0)
 
     def _build_base_obs(self, req: RaceCarPredictRequestDto) -> np.ndarray:
-        """
-        Build the base (unstacked) observation vector exactly like training:
-        [16 sensors in training order, velocity.x, velocity.y]
-        """
         s = req.sensors or {}
-        # Values are normalized distances in [0, 1] already
-        sensors = [float(s.get(name, 1.0) if s.get(name) is not None else 1.0) for name in SENSORS_ORDER]
+        
+        sensors = []
+        for name in SENSORS_ORDER:
+            raw_reading = s.get(name)
+            reading = float(raw_reading) if raw_reading is not None else 1000.0
+            sensors.append(reading / 1000.0)
+
         vx = float(req.velocity.get("x", 0.0))
         vy = float(req.velocity.get("y", 0.0))
+        
         base = np.array(sensors + [vx, vy], dtype=np.float32)
+        
         assert base.shape == (BASE_OBS_DIM,), f"Bad base obs shape: {base.shape}"
         return base
 
-    def _stack(self, base_obs: np.ndarray) -> np.ndarray:
-        """Emulate VecFrameStack(n_stack=N_STACK) over 1 env."""
+    def _stack(self, normalized_base_obs: np.ndarray) -> np.ndarray:
+        # This now expects an already-normalized observation
         if len(self._hist) == 0:
             for _ in range(N_STACK):
-                self._hist.append(base_obs.copy())
+                self._hist.append(normalized_base_obs.copy())
         else:
-            self._hist.append(base_obs)
+            self._hist.append(normalized_base_obs)
         stacked = np.concatenate(list(self._hist), dtype=np.float32)
         assert stacked.shape == (STACKED_OBS_DIM,), f"Bad stacked shape: {stacked.shape}"
         return stacked
 
+    # --- MODIFIED predict_actions with CORRECTED ORDER ---
     def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
-        """
-        Produce a short buffer of actions. We compute the current best action and repeat it.
-        Keeping it reactive per call is consistent with the platform’s batching guidance.
-        """
-        base = self._build_base_obs(req)
-        stacked = self._stack(base)                 # (STACKED_OBS_DIM,)
-        obs = stacked.reshape(1, -1)                # (1, dim)
+        try:
+            # Log incoming request data
+            logger.info("="*50)
+            logger.info(f"Received request: distance={req.distance:.2f}, ticks={req.elapsed_ticks}, crashed={req.did_crash}")
 
-        # Normalize if stats are available
-        obs = self.obs_norm(obs)
+            # 1. Build base observation (unnormalized)
+            base_obs = self._build_base_obs(req)
+            logger.info(f"Step 1: Built base_obs | shape={base_obs.shape}, "
+                        f"min={base_obs.min():.3f}, max={base_obs.max():.3f}, mean={base_obs.mean():.3f}")
 
-        # Model expects a vectorized obs; predict returns action int
-        act_int, _ = self.model.predict(obs, deterministic=True)
-        a_int = int(np.asarray(act_int).squeeze())
+            # 2. Normalize the base observation
+            norm_base_obs = self.obs_norm(base_obs)
+            logger.info(f"Step 2: Built normalized_base_obs | shape={norm_base_obs.shape}, "
+                        f"min={norm_base_obs.min():.3f}, max={norm_base_obs.max():.3f}, mean={norm_base_obs.mean():.3f}")
+            
+            # 3. Stack the normalized observations
+            stacked_norm_obs = self._stack(norm_base_obs)
+            logger.info(f"Step 3: Built stacked_normalized_obs | shape={stacked_norm_obs.shape}, "
+                        f"min={stacked_norm_obs.min():.3f}, max={stacked_norm_obs.max():.3f}, mean={stacked_norm_obs.mean():.3f}")
+            
+            # 4. Get model prediction
+            obs_for_model = stacked_norm_obs.reshape(1, -1)
+            act_int, _ = self.model.predict(obs_for_model, deterministic=True)
+            a_int = int(np.asarray(act_int).squeeze())
+            logger.info(f"Step 4: Model predicted action_int={a_int}")
 
-        # Map to action string name
-        if _HAS_ENV_ACTIONS:
-            # Try ACTIONS first (list), else ACTION_MAP (dict)
-            if 0 <= a_int < len(ENV_ACTIONS):
-                a_name = str(ENV_ACTIONS[a_int])
+            # 5. Map to action name
+            if _HAS_ENV_ACTIONS:
+                if 0 <= a_int < len(ENV_ACTIONS):
+                    a_name = str(ENV_ACTIONS[a_int])
+                else:
+                    a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
             else:
-                a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
-        else:
-            # Fallback mapping
-            a_name = ENV_ACTION_MAP.get(a_int, "NOTHING")
+                a_name = ENV_ACTION_MAP.get(a_int, "NOTHING")
+            logger.info(f"Step 5: Mapped to action_name='{a_name}'")
 
-        # Return a small buffer of the same action to fill the server’s queue efficiently
-        return [a_name] * buffer_len
+            return [a_name] * buffer_len
 
+        except Exception as e:
+            logger.error(f"FATAL ERROR in predict_actions: {e}", exc_info=True)
+            return ["NOTHING"] * buffer_len
 # ----------------------------- API -------------------------------
 app = FastAPI(title="Race Car PPO API", version="1.0")
-
-# CORS (optional)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 predictor: Optional[PPOPredictor] = None
 
 @app.on_event("startup")
 def _load_model():
     global predictor
     predictor = PPOPredictor(MODEL_PATH, VECNORM_PATH)
-    print("[Startup] Predictor ready.")
+    logger.info("[Startup] Predictor ready.")
 
 @app.get("/")
 def root():
@@ -195,10 +217,12 @@ def root():
 @app.post("/predict", response_model=RaceCarPredictResponseDto)
 def predict(req: RaceCarPredictRequestDto):
     if predictor is None:
-        # Should not happen after startup, but guard anyway
         actions = ["NOTHING"] * ACTION_BUFFER_LEN
+        logger.error("Predictor not initialized, returning 'NOTHING'")
         return RaceCarPredictResponseDto(actions=actions)
+    
     actions = predictor.predict_actions(req, buffer_len=ACTION_BUFFER_LEN)
+    logger.info(f"--> Responding with actions: {actions}\n") # --- LOGGING ADDED ---
     return RaceCarPredictResponseDto(actions=actions)
 
 if __name__ == "__main__":
