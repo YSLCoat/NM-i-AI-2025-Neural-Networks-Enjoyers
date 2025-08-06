@@ -132,31 +132,54 @@ def _create_obs_from_request(request_data: Dict[str, Any]) -> np.ndarray:
 
 
 def _log_crash_data(request_data: Dict[str, Any], action_name: str):
-    """Writes diagnostic information for a crash event to the CSV log."""
-    velocity = request_data.get('sensors', {})
-    sensors = request_data.get('sensors', {})
-    
-    # Simple heuristics to find min sensor values for diagnostics
-    fwd_sensors = [sensors.get(s, 1000) for s in ["front_left_front", "front", "front_right_front"]]
-    left_sensors = [sensors.get(s, 1000) for s in ["left_side_front", "left_front"]]
-    right_sensors = [sensors.get(s, 1000) for s in ["right_side_front", "right_front"]]
-    back_sensors = [sensors.get(s, 1000) for s in ["back_left_back", "back", "back_right_back"]]
+    sensors = request_data.get('sensors', {}) or {}
+    velocity = request_data.get('velocity', {}) or {}
+    vx = float(velocity.get('x', 0.0))
+    vy = float(velocity.get('y', 0.0))
+
+    # Approximate the same aggregates used in eval
+    fwd_sensors  = [sensors.get(s, 1000.0) for s in ["front_left_front", "front", "front_right_front"]]
+    left_sensors = [sensors.get(s, 1000.0) for s in ["left_side_front", "left_front"]]
+    right_sensors= [sensors.get(s, 1000.0) for s in ["right_side_front", "right_front"]]
+    back_sensors = [sensors.get(s, 1000.0) for s in ["back_left_back", "back", "back_right_back"]]
+
+    # Normalize to [0,1] like the obs
+    fwd_min   = min(fwd_sensors)   / 1000.0
+    left_min  = min(left_sensors)  / 1000.0
+    right_min = min(right_sensors) / 1000.0
+    back_min  = min(back_sensors)  / 1000.0
+
+    # TTC / headway (same definitions as eval where possible)
+    FPS = 60.0
+    MAX_SENSOR_PX = 1000.0
+    vx_pos = max(vx, 1e-6)
+    ttc_fwd  = (fwd_min  * MAX_SENSOR_PX) / vx_pos / FPS
+    ttc_left = (left_min * MAX_SENSOR_PX) / vx_pos / FPS
+    ttc_right= (right_min* MAX_SENSOR_PX) / vx_pos / FPS
+    headway_sec = ttc_fwd
+
+    # Rear danger: square the ramp to match env shaping
+    rear_danger = max((0.6 - back_min) / 0.6, 0.0) ** 2
 
     log_entry = {
         "timestamp": time.strftime('%Y-%m-%d %H:%M:%S'),
         "tick": request_data.get('elapsed_ticks'),
         "distance": request_data.get('distance'),
-        "action_name": action_name, # The action that *led* to the crash
-        "fwd_min": min(fwd_sensors) / 1000.0,
-        "left_min": min(left_sensors) / 1000.0,
-        "right_min": min(right_sensors) / 1000.0,
-        "back_min": min(back_sensors) / 1000.0,
-        "rear_danger": (0.6 - (min(back_sensors) / 1000.0)) / 0.6 if min(back_sensors) < 600 else 0.0,
-        "vx": velocity.get('x'),
-        "vy": velocity.get('y')
+        "action_name": action_name,
+        "fwd_min": fwd_min,
+        "left_min": left_min,
+        "right_min": right_min,
+        "back_min": back_min,
+        "ttc_fwd": ttc_fwd,
+        "ttc_left": ttc_left,
+        "ttc_right": ttc_right,
+        "headway_sec": headway_sec,
+        "rear_danger": rear_danger,
+        "vx": vx,
+        "vy": vy,
     }
     csv_writer.writerow(log_entry)
-    csv_file.flush() # Ensure it's written immediately
+    csv_file.flush()
 
 
 def predict_action(request_data: Dict[str, Any]) -> List[str]:
