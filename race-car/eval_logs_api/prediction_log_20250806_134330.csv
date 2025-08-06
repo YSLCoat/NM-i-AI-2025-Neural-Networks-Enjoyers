@@ -1,0 +1,2 @@
+timestamp,episode_id,tick,distance,action_name,vx,vy,front,right_front,right_side,right_back,back,left_back,left_side,left_front,left_side_front,front_left_front,front_right_front,right_side_front,right_side_back,back_right_back,back_left_back,left_side_back,fwd_min,left_min,right_min,back_min,ttc_fwd
+13:43:38,d221c830,50,567.0,DECELERATE,10.0,0.0,500.0,600.0,700.0,800.0,900.0,400.0,300.0,200.0,350.0,450.0,550.0,650.0,750.0,850.0,950.0,150.0,200.0,200.0,550.0,400.0,0.3333333333333333
