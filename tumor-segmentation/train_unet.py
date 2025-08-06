@@ -68,7 +68,7 @@ def validate(model, val_loader, device):
     return sum(dice_scores) / len(dice_scores)
 
 def train():
-    model_name = 'model_6_5'
+    model_name = 'model_6_6'
     epochs = 5
     batch_size = 4
     resize_shape = (512, 512)
@@ -99,7 +99,7 @@ def train():
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
 
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = CombinedLossDiceTversky(weight_dice=0.7, weight_tversky=0.3)
+    loss_fn = CombinedLossDiceTversky(weight_dice=0.9, weight_tversky=0.1)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
 
