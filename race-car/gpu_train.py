@@ -29,14 +29,12 @@ MODEL_SAVE_PATH = os.path.join(MODEL_SAVE_DIR, MODEL_NAME)
 VECNORM_PATH = os.path.join(MODEL_SAVE_DIR, f"{MODEL_NAME}_vecnormalize.pkl")
 LOG_DIR = "logs_sb3"
 
-# Hardware profile (Threadripper 7960X + RTX 5090)
-NUM_CPU = 24         # 32 if your env is very light AND truly instance-safe
-N_STEPS = 4096       # per-env rollout length
+NUM_CPU = 24        
+N_STEPS = 4096       
 SEED = 42
 TOTAL_TIMESTEPS = 400_000_000
 
-# PPO core hyperparams (GPU-friendly)
-NET_ARCH = [256, 256, 256, 256]        # a bit wider; GPU handles this easily
+NET_ARCH = [256, 256, 256, 256]     
 LEARNING_RATE = 3e-4
 N_EPOCHS = 3
 GAMMA = 0.995
@@ -47,13 +45,10 @@ VF_COEF = 0.5
 MAX_GRAD_NORM = 0.5
 TARGET_KL = 0.02
 
-# VecNormalize settings
 CLIP_OBS = 10.0
-# Keep reward normalization during training; turn it off for eval/inference
 
-# Evaluation / checkpoint cadence (measured in env steps across all envs)
-UPDATES_PER_EVAL = 4     # eval every ~UPDATES_PER_EVAL rollout updates
-UPDATES_PER_CKPT = 20    # checkpoint every ~UPDATES_PER_CKPT updates
+UPDATES_PER_EVAL = 4    
+UPDATES_PER_CKPT = 20
 
 def choose_batch_size(global_batch: int, prefer_k=(8, 6, 4, 3, 2)) -> int:
     """
@@ -63,11 +58,10 @@ def choose_batch_size(global_batch: int, prefer_k=(8, 6, 4, 3, 2)) -> int:
     for k in prefer_k:
         if global_batch % k == 0:
             return global_batch // k
-    # Fallback: find a large divisor in a reasonable range
     for bs in range(16384, 4095, -512):
         if global_batch % bs == 0:
             return bs
-    return global_batch  # last resort
+    return global_batch 
 
 def linear_schedule(start: float, end: float, end_fraction: float = 1.0):
     """
@@ -75,8 +69,7 @@ def linear_schedule(start: float, end: float, end_fraction: float = 1.0):
     We map that to a linear schedule from `start` to `end`.
     """
     def f(progress_remaining: float):
-        # progress_remaining: 1.0 (begin) -> 0.0 (end)
-        progress = 1.0 - progress_remaining  # 0 -> 1
+        progress = 1.0 - progress_remaining
         scaled = min(progress / end_fraction, 1.0)
         return start + (end - start) * scaled
     return f
@@ -95,28 +88,24 @@ def make_envs(n_envs: int, monitor_dir: Optional[str]):
     )
 
 def enable_cuda_fastpaths():
-    # Enable fast matmul/conv paths on Ada/Blackwell-class GPUs
     if torch.cuda.is_available():
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
         try:
-            torch.set_float32_matmul_precision("high")  # PyTorch 2.x
+            torch.set_float32_matmul_precision("high") 
         except Exception:
             pass
 
-# ----------------------------- Training -----------------------------
 
 def train():
     os.makedirs(MODEL_SAVE_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    # Optional: sanity check a single env instance
     try:
         check_env(RaceCarEnv(), warn=True)
     except Exception as e:
         print(f"[check_env] Warning: {e}")
 
-    # CUDA fast paths
     if not torch.cuda.is_available():
         print("[WARN] CUDA not available; falling back to CPU. (Expected a 5090 here.)")
         device = "cpu"
@@ -124,9 +113,8 @@ def train():
         device = "cuda"
         enable_cuda_fastpaths()
 
-    # Compute global batch and a GPU-friendly batch_size that divides it exactly
-    global_batch = NUM_CPU * N_STEPS           # e.g., 24 * 1024 = 24576
-    batch_size = choose_batch_size(global_batch)  # e.g., 12288 (2 minibatches)
+    global_batch = NUM_CPU * N_STEPS       
+    batch_size = choose_batch_size(global_batch)
     eval_freq = global_batch * UPDATES_PER_EVAL
     ckpt_freq = global_batch * UPDATES_PER_CKPT
 
