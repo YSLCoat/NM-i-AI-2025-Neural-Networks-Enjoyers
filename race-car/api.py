@@ -1,304 +1,189 @@
-import os
 import time
-import math
+import uvicorn
 import datetime
-from collections import deque
-from typing import Dict, List, Optional
+import os
+import collections
+import logging
 
 import numpy as np
-import uvicorn
-from fastapi import Body, FastAPI
-
-try:
-    import cloudpickle as pickle  # SB3 uses cloudpickle
-except Exception:  # pragma: no cover
-    import pickle  # type: ignore
-
 import torch
+from fastapi import Body, FastAPI
 from stable_baselines3 import PPO
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import VecNormalize
 
 from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
+from src.game.racecar_env import RaceCarEnv
 
-# --------------------------------------------------------------------------------------
-# Server config
-# --------------------------------------------------------------------------------------
-HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", "9052"))
 
-MODEL_DIR = os.getenv("MODEL_SAVE_DIR", "models_sb3")
-MODEL_NAME = os.getenv("MODEL_NAME", "race_car_ppo_cuda_parallel")
-MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(MODEL_DIR, MODEL_NAME))  # we'll also try .zip
-VECNORM_PATH = os.getenv("VECNORM_PATH", os.path.join(MODEL_DIR, f"{MODEL_NAME}_vecnormalize.pkl"))
+# --- Configure Logging ---
+logging.basicConfig(
+    level=logging.INFO, # Change to logging.DEBUG for more detailed output
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler() # Outputs logs to the console
+    ]
+)
 
-# Match training/eval wrappers: VecNormalize -> VecFrameStack(n_stack=3)
-N_STACK = int(os.getenv("N_STACK", "3"))
-CLIP_OBS_DEFAULT = float(os.getenv("CLIP_OBS", "10.0"))  # fallback if not in vecnorm file
+# --- Configuration ---
+HOST = "0.0.0.0"
+PORT = 8000
 
-# How many steps to return per request (helps with network latency on the tournament server)
-# You can tune this after validating queue latency. 8-16 is a common range.
-BATCH_ACTIONS = int(os.getenv("BATCH_ACTIONS", "12"))
+# --- Model and Environment Configuration ---
+MODEL_SAVE_DIR = "models_sb3"
+MODEL_BASENAME = "race_car_ppo_cuda_parallel"
+MODEL_PATH = os.path.join(MODEL_SAVE_DIR, f"{MODEL_BASENAME}.zip")
+VECNORM_PATH = os.path.join(MODEL_SAVE_DIR, f"{MODEL_BASENAME}_vecnormalize.pkl")
+N_STACK = 3  # Must match the n_stack used in training (gpu_train.py)
 
-# Action names must match the game server
-ACTIONS: List[str] = [
-    "ACCELERATE",
-    "DECELERATE",
-    "STEER_LEFT",
-    "STEER_RIGHT",
-    "NOTHING",
+# --- Prevent Pygame from trying to open a display on the server ---
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
+# --- Define action and sensor order based on training environment ---
+ACTIONS = ['ACCELERATE', 'DECELERATE', 'STEER_LEFT', 'STEER_RIGHT', 'NOTHING']
+ACTION_MAP = {i: action for i, action in enumerate(ACTIONS)}
+
+# This order is derived from 'sensor_options' in 'core.py' as used by 'racecar_env.py' during training.
+# It is critical that this order is maintained for the model to interpret observations correctly.
+SENSOR_ORDER = [
+    "front", "right_front", "right_side", "right_back", "back", "left_back",
+    "left_side", "left_front", "left_side_front", "front_left_front",
+    "front_right_front", "right_side_front", "right_side_back",
+    "back_right_back", "back_left_back", "left_side_back"
 ]
-ACTION_MAP: Dict[int, str] = {i: a for i, a in enumerate(ACTIONS)}
-
-# Sensor order MUST match the environment used in training (see RaceCarEnv/_get_obs)
-# Index map (0..15):
-# 0: front, 1: right_front, 2: right_side, 3: right_back, 4: back, 5: left_back,
-# 6: left_side, 7: left_front, 8: left_side_front, 9: front_left_front,
-# 10: front_right_front, 11: right_side_front, 12: right_side_back,
-# 13: back_right_back, 14: back_left_back, 15: left_side_back
-ORDERED_SENSORS: List[str] = [
-    "front",
-    "right_front",
-    "right_side",
-    "right_back",
-    "back",
-    "left_back",
-    "left_side",
-    "left_front",
-    "left_side_front",
-    "front_left_front",
-    "front_right_front",
-    "right_side_front",
-    "right_side_back",
-    "back_right_back",
-    "back_left_back",
-    "left_side_back",
-]
+OBS_SHAPE = (len(SENSOR_ORDER) + 2,) # 16 sensors + 2 velocity components (vx, vy)
 
 
-# --------------------------------------------------------------------------------------
-# Inference engine — reproduces training-time preprocessing on the server
-#   Training pipeline: VecNormalize(norm_obs=True, clip_obs=10) -> VecFrameStack(n_stack=3)
-#   We mirror this by: (1) build obs (env scaling) (2) normalize using saved VecNormalize stats
-#                      (3) keep a rolling stack of last N normalized frames and feed PPO
-# --------------------------------------------------------------------------------------
-class _VecNormStats:
-    __slots__ = ("mean", "var", "eps", "clip_obs")
-
-    def __init__(self, mean: np.ndarray, var: np.ndarray, eps: float, clip_obs: float):
-        self.mean = mean.astype(np.float32)
-        self.var = var.astype(np.float32)
-        self.eps = float(eps)
-        self.clip_obs = float(clip_obs)
-
-    def normalize(self, x: np.ndarray) -> np.ndarray:
-        # (x - mean) / sqrt(var + eps)
-        out = (x - self.mean) / np.sqrt(np.maximum(self.var, self.eps))
-        # Clip to clip_obs like SB3 does
-        if self.clip_obs is not None and math.isfinite(self.clip_obs):
-            np.clip(out, -self.clip_obs, self.clip_obs, out=out)
-        return out.astype(np.float32, copy=False)
-
-
-def _resolve_model_path(path: str) -> str:
-    if os.path.isfile(path):
-        return path
-    zipped = path + ".zip"
-    if os.path.isfile(zipped):
-        return zipped
-    raise FileNotFoundError(f"Model not found at '{path}' or '{zipped}'")
-
-
-def _enable_cuda_fastpaths() -> None:
-    if torch.cuda.is_available():
-        torch.backends.cuda.matmul.allow_tf32 = True
-        torch.backends.cudnn.allow_tf32 = True
-        try:
-            torch.set_float32_matmul_precision("high")
-        except Exception:
-            pass
-
-
-class InferenceEngine:
-    def __init__(self) -> None:
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        _enable_cuda_fastpaths()
-
-        # Load PPO
-        mdl_path = _resolve_model_path(MODEL_PATH)
-        self.model = PPO.load(mdl_path, device=self.device)
-
-        # Load VecNormalize stats saved during training
-        self.vec_stats = self._load_vecnorm(VECNORM_PATH)
-
-        # Rolling stack of normalized observations
-        self.n_stack = int(max(1, N_STACK))
-        self.stack: deque[np.ndarray] = deque(maxlen=self.n_stack)
-        self._initialized = False
-
-        # Episode tracking to reset stack appropriately
-        self._last_tick: Optional[int] = None
-
-        # Sanity log
-        obs_dim = self.vec_stats.mean.shape[0] if self.vec_stats else 18
-        model_obs_dim = int(np.prod(self.model.observation_space.shape))
-        expected_model_dim = obs_dim * self.n_stack
-        if model_obs_dim != expected_model_dim:
-            # If this prints, the model was trained with a different stack size
-            print(
-                f"[WARN] Model expects obs_dim={model_obs_dim}, but our pipeline builds {expected_model_dim}.\n"
-                f"       Adjust N_STACK or verify the trained policy wrappers."
-            )
-
-    # ---------------------------- VecNormalize loader ----------------------------
-    def _load_vecnorm(self, path: str) -> Optional[_VecNormStats]:
-        try:
-            with open(path, "rb") as f:
-                data = pickle.load(f)
-        except Exception as e:
-            print(f"[WARN] Could not load VecNormalize stats from '{path}': {e}\n"
-                  f"       Proceeding WITHOUT observation normalization (will likely underperform).")
-            # Return an identity transform
-            return _VecNormStats(mean=np.zeros(18, dtype=np.float32),
-                                 var=np.ones(18, dtype=np.float32),
-                                 eps=1e-8,
-                                 clip_obs=CLIP_OBS_DEFAULT)
-
-        # SB3 stores a dict-like payload; 'obs_rms' holds RunningMeanStd
-        obs_rms = data.get("obs_rms") or data.get("ob_rms")
-        clip_obs = float(data.get("clip_obs", CLIP_OBS_DEFAULT))
-
-        # Fallback if structure is unexpected
-        if obs_rms is None:
-            print("[WARN] VecNormalize payload missing 'obs_rms' — using identity stats.")
-            return _VecNormStats(mean=np.zeros(18, dtype=np.float32),
-                                 var=np.ones(18, dtype=np.float32),
-                                 eps=float(data.get("epsilon", 1e-8)),
-                                 clip_obs=clip_obs)
-
-        # RunningMeanStd may be an object with .mean/.var/.epsilon
-        mean = np.asarray(getattr(obs_rms, "mean", np.zeros(18)), dtype=np.float32)
-        var = np.asarray(getattr(obs_rms, "var", np.ones(18)), dtype=np.float32)
-        eps = float(getattr(obs_rms, "epsilon", data.get("epsilon", 1e-8)))
-
-        return _VecNormStats(mean=mean, var=var, eps=eps, clip_obs=clip_obs)
-
-    # ---------------------------- Request → obs ----------------------------
-    @staticmethod
-    def _build_raw_obs(req: RaceCarPredictRequestDto) -> np.ndarray:
-        """Recreate RaceCarEnv._get_obs() scaling on the server.
-        - sensors: 16 names → distances in px, None→1000, then divide by 1000
-        - velocity: x/20, y/2
-        Finally clip to [-1, 1] like the Gym env does.
-        """
-        sensors = req.sensors or {}
-        readings: List[float] = []
-        for name in ORDERED_SENSORS:
-            v = sensors.get(name, None)
-            if v is None:
-                v = 1000.0
-            try:
-                val = float(v)
-            except Exception:
-                val = 1000.0
-            readings.append(val / 1000.0)
-
-        vx = float(req.velocity.get("x", 0.0)) / 20.0
-        vy = float(req.velocity.get("y", 0.0)) / 2.0
-
-        obs = np.asarray(readings + [vx, vy], dtype=np.float32)
-        np.clip(obs, -1.0, 1.0, out=obs)
-        return obs
-
-    def _maybe_reset_stack(self, req: RaceCarPredictRequestDto, obs_norm: np.ndarray) -> None:
-        """Reset frame stack at episode boundaries (tick resets or explicit crash).
-        When resetting, SB3's VecFrameStack duplicates the current frame to fill the stack.
-        """
-        episode_reset = False
-        if self._last_tick is None:
-            episode_reset = True
-        elif req.did_crash:
-            episode_reset = True
-        elif req.elapsed_ticks is not None and self._last_tick is not None and req.elapsed_ticks <= self._last_tick:
-            # New game or tick reset
-            episode_reset = True
-
-        if episode_reset or not self._initialized:
-            self.stack.clear()
-            for _ in range(self.n_stack):
-                self.stack.append(obs_norm.copy())
-            self._initialized = True
-        else:
-            self.stack.append(obs_norm.copy())
-
-        self._last_tick = int(req.elapsed_ticks)
-
-    # ---------------------------- Predict ----------------------------
-    def predict_actions(self, req: RaceCarPredictRequestDto) -> List[str]:
-        raw_obs = self._build_raw_obs(req)  # 18-dim
-        obs_norm = self.vec_stats.normalize(raw_obs) if self.vec_stats else raw_obs
-        self._maybe_reset_stack(req, obs_norm)
-
-        stacked = np.concatenate(list(self.stack), dtype=np.float32)  # 18 * n_stack
-
-        # SB3 PPO accepts (obs_dim,) or (batch, obs_dim)
-        action, _ = self.model.predict(stacked, deterministic=True)
-        try:
-            a_int = int(np.asarray(action).squeeze())
-        except Exception:
-            a_int = 4  # NOTHING (robust fallback)
-        a_int = int(np.clip(a_int, 0, len(ACTIONS) - 1))
-        a_name = ACTION_MAP.get(a_int, "NOTHING")
-
-        return [a_name for _ in range(BATCH_ACTIONS)]
-
-
-# --------------------------------------------------------------------------------------
-# FastAPI app
-# --------------------------------------------------------------------------------------
+# --- Global State for Model, Environment, and Frame Stacking ---
 app = FastAPI()
 start_time = time.time()
-ENGINE = InferenceEngine()
+model = None
+venv = None
+startup_error_message = "" # Stores any error message that occurs during model loading
 
+# A deque to hold the last N_STACK observations for a single, ongoing game instance.
+stacked_obs_deque = collections.deque(
+    [np.zeros(OBS_SHAPE, dtype=np.float32) for _ in range(N_STACK)],
+    maxlen=N_STACK
+)
 
-@app.post("/predict", response_model=RaceCarPredictResponseDto)
-def predict(request: RaceCarPredictRequestDto = Body(...)):
-    """Return a *batch* of actions predicted by the PPO policy.
-    This mirrors the exact preprocessing used offline (scaling → VecNormalize → FrameStack).
+@app.on_event("startup")
+def load_model_and_env():
     """
-    actions = ENGINE.predict_actions(request)
-    return RaceCarPredictResponseDto(actions=actions)
+    Load the PPO model and VecNormalize statistics when the server starts.
+    This is done once to avoid loading from disk on every prediction request.
+    """
+    global model, venv, startup_error_message
+    logging.info("Attempting to load model and environment...")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    logging.info(f"Using device: {device}")
+
+    try:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(f"Model file not found at: {MODEL_PATH}")
+        if not os.path.exists(VECNORM_PATH):
+            raise FileNotFoundError(f"VecNormalize stats not found at: {VECNORM_PATH}")
+
+        # Load the trained PPO model
+        model = PPO.load(MODEL_PATH, device=device)
+        logging.info("Model loaded successfully.")
+
+        # We need a dummy env to load the VecNormalize stats into.
+        # It is used for its .normalize_obs() method, not for simulation.
+        dummy_env = make_vec_env(RaceCarEnv, n_envs=1)
+        venv = VecNormalize.load(VECNORM_PATH, dummy_env)
+        venv.training = False
+        venv.norm_reward = False
+        logging.info("VecNormalize stats loaded successfully.")
+
+    except Exception as e:
+        startup_error_message = str(e)
+        logging.critical(f"Could not load model or environment. Reason: {startup_error_message}")
+        logging.critical("The '/predict' endpoint will default to 'NOTHING'.")
+        model = None
+        venv = None
+
+def reset_frame_stack():
+    """Resets the observation deque with zeros, called at the start of a new episode."""
+    global stacked_obs_deque
+    stacked_obs_deque.clear()
+    for _ in range(N_STACK):
+        stacked_obs_deque.append(np.zeros(OBS_SHAPE, dtype=np.float32))
+    logging.info("Frame stack reset for new episode.")
+
+@app.post('/predict', response_model=RaceCarPredictResponseDto)
+def predict(request: RaceCarPredictRequestDto = Body(...)):
+    """
+    Predicts the next action based on the current game state.
+    """
+    global stacked_obs_deque
+    logging.info("Received prediction request.")
+    if model is None or venv is None:
+        logging.warning("Model not loaded, returning 'NOTHING'.")
+        return RaceCarPredictResponseDto(actions=['NOTHING'])
+
+    # A crash signals the end of an episode. Reset the frame stack for the next game.
+    if request.did_crash:
+        reset_frame_stack()
+
+    # 1. Construct the raw observation vector from the request data.
+    try:
+        sensor_readings = [request.sensors.get(name, 1000.0) or 1000.0 for name in SENSOR_ORDER]
+        raw_obs_list = sensor_readings + [request.velocity['x'], request.velocity['y']]
+        raw_obs = np.array(raw_obs_list, dtype=np.float32).reshape(1, -1) # Reshape for VecNormalize
+    except (TypeError, KeyError) as e:
+        logging.error(f"Error parsing request data: {e}. Returning 'NOTHING'.")
+        return RaceCarPredictResponseDto(actions=['NOTHING'])
 
 
-@app.get("/api")
+    # 2. Normalize the observation using the loaded VecNormalize stats.
+    normalized_obs = venv.normalize_obs(raw_obs)
+
+    # 3. Update the frame stack deque with the new normalized observation.
+    stacked_obs_deque.append(normalized_obs.squeeze()) # Squeeze to shape (18,)
+
+    # 4. Prepare the final model input by flattening the deque.
+    model_input = np.array(list(stacked_obs_deque)).flatten().reshape(1, -1)
+    logging.debug(f"Model input shape: {model_input.shape}")
+
+    # 5. Predict the action using the model.
+    action_int, _ = model.predict(model_input, deterministic=True)
+    action_str = ACTION_MAP.get(int(action_int[0]), 'NOTHING')
+    logging.info(f"Predicted action: {action_str}")
+
+    # 6. Return the predicted action in the response DTO.
+    return RaceCarPredictResponseDto(
+        actions=[action_str]
+    )
+
+@app.get('/status')
+def status():
+    """Provides the operational status of the model and environment."""
+    if model and venv:
+        return {"status": "ok", "message": "Model and environment loaded successfully."}
+    else:
+        return {
+            "status": "error",
+            "message": "Model or environment failed to load.",
+            "details": startup_error_message
+        }
+
+@app.get('/api')
 def hello():
     return {
         "service": "race-car-usecase",
-        "uptime": str(datetime.timedelta(seconds=time.time() - start_time)),
-        "device": ENGINE.device,
-        "model_path": _resolve_model_path(MODEL_PATH),
-        "vecnorm_path": VECNORM_PATH,
-        "n_stack": ENGINE.n_stack,
-        "batch_actions": BATCH_ACTIONS,
+        "uptime": '{}'.format(datetime.timedelta(seconds=time.time() - start_time))
     }
 
-
-@app.get("/")
+@app.get('/')
 def index():
     return "Your endpoint is running!"
 
-
-@app.post("/reload")
-def reload_model():  # optional helper for hot-reloading model files without restarting the server
-    global ENGINE
-    ENGINE = InferenceEngine()
-    return {"status": "ok", "reloaded": True}
-
-
-if __name__ == "__main__":
-    # When running locally: `python api.py`
+if __name__ == '__main__':
+    # Note: `reload=True` is for development. For production, this should be False.
     uvicorn.run(
-        "api:app",
+        '__main__:app',
         host=HOST,
         port=PORT,
-        reload=False,
-        log_level="info",
+        reload=True
     )
