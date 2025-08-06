@@ -79,14 +79,20 @@ def load_model():
     
     # Define log headers, similar to local evaluation script
     fieldnames = [
-        "timestamp", "tick", "distance",
-        "action_name",
+        "timestamp", "tick", "distance", "action_name",
         "fwd_min", "left_min", "right_min", "back_min",
-        "rear_danger", "vx", "vy"
+        "ttc_fwd", "ttc_left", "ttc_right", "headway_sec",
+        "rear_danger", "vx", "vy",
     ]
     csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     csv_writer.writeheader()
-    print(f"Crash logs will be saved to: {log_path}")
+    csv_file.flush()                 # ensure header appears immediately
+    import os as _os
+    try:
+        _os.fsync(csv_file.fileno()) # durable on disk (optional but useful)
+    except Exception:
+        pass
+    print(f"Crash logs will be saved to: {os.path.abspath(log_path)}")
 
 
 def close_model():
@@ -137,12 +143,15 @@ def _log_crash_data(request_data: Dict[str, Any], action_name: str):
     vx = float(velocity.get('x', 0.0))
     vy = float(velocity.get('y', 0.0))
 
-    # Approximate the same aggregates used in eval
-    fwd_sensors  = [sensors.get(s, 1000.0) for s in ["front_left_front", "front", "front_right_front"]]
-    left_sensors = [sensors.get(s, 1000.0) for s in ["left_side_front", "left_front"]]
-    right_sensors= [sensors.get(s, 1000.0) for s in ["right_side_front", "right_front"]]
-    back_sensors = [sensors.get(s, 1000.0) for s in ["back_left_back", "back", "back_right_back"]]
+    def _sv(sdict, name, default=1000.0):
+        v = sdict.get(name, default)
+        return default if v is None else v
 
+    # in _log_crash_data:
+    fwd_sensors   = [_sv(sensors, s) for s in ["front_left_front", "front", "front_right_front"]]
+    left_sensors  = [_sv(sensors, s) for s in ["left_side_front", "left_front"]]
+    right_sensors = [_sv(sensors, s) for s in ["right_side_front", "right_front"]]
+    back_sensors  = [_sv(sensors, s) for s in ["back_left_back", "back", "back_right_back"]]
     # Normalize to [0,1] like the obs
     fwd_min   = min(fwd_sensors)   / 1000.0
     left_min  = min(left_sensors)  / 1000.0
@@ -211,6 +220,20 @@ def predict_action(request_data: Dict[str, Any]) -> List[str]:
     )
     action_int = int(action[0])
     action_name = ACTION_MAP.get(action_int, 'NOTHING')
+
+    did_crash = bool(
+        request_data.get("did_crash")
+        or request_data.get("didCrash")
+        or request_data.get("crashed")
+    )
+    if did_crash:
+        print(f"Crash detected at tick {request_data.get('elapsed_ticks')}. Logging diagnostics...")
+        try:
+            _log_crash_data(request_data, action_name)
+        except Exception as e:
+            # don't lose the action due to logging issues
+            print(f"[WARN] Crash logging failed: {e}")
+        reset_state()
     
     # 6. Handle crash logic: log data and reset state for the next run
     if request_data.get('did_crash', False):

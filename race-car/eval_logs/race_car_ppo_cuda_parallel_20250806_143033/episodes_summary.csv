@@ -1,0 +1,5 @@
+episode,steps,total_reward,final_distance,terminated,truncated,crashed,failure_type,crash_step,action_before_crash_int,action_before_crash_name,fwd_min_at_crash,left_min_at_crash,right_min_at_crash,back_min_at_crash,ttc_fwd_at_crash,ttc_left_at_crash,ttc_right_at_crash,headway_sec_at_crash,rear_danger_at_crash,vx_at_crash
+1,309,71.617156,2347.300000,1,0,0,n/a,,2,STEER_LEFT,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+2,3600,1408.720393,17324.900000,0,1,0,n/a,,4,NOTHING,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+3,321,108.533608,2755.000000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+4,368,137.153580,3225.300000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
