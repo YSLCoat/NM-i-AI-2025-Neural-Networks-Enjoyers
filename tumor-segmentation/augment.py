@@ -7,14 +7,35 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # === Config ===
-NUM_AUGMENTED_TOTAL = 1000
+NUM_AUGMENTED_TOTAL = 5000
 INPUT_IMG_DIR = "datasets/original/imgs"
 INPUT_MASK_DIR = "datasets/original/labels"
-OUT_IMG_DIR = "datasets/original_augmented_1000_2/imgs"
-OUT_MASK_DIR = "datasets/original_augmented_1000_2/labels"
+OUT_IMG_DIR = "datasets/original_augmented_5000/imgs"
+OUT_MASK_DIR = "datasets/original_augmented_5000/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)
+
+def add_salt_and_pepper_noise(image, amount=0.004, salt_vs_pepper=0.5):
+    """
+    Add salt and pepper noise to an image.
+    - amount: proportion of image pixels to alter
+    - salt_vs_pepper: proportion of salt vs. pepper noise
+    """
+    noisy = image.copy()
+    num_salt = np.ceil(amount * image.size * salt_vs_pepper).astype(int)
+    num_pepper = np.ceil(amount * image.size * (1.0 - salt_vs_pepper)).astype(int)
+
+    # Salt noise
+    coords = [np.random.randint(0, i - 1, num_salt) for i in image.shape[:2]]
+    noisy[coords[0], coords[1]] = 255
+
+    # Pepper noise
+    coords = [np.random.randint(0, i - 1, num_pepper) for i in image.shape[:2]]
+    noisy[coords[0], coords[1]] = 0
+
+    return noisy
+
 
 # === Define your augmentation pipeline ===
 augment = A.Compose([
@@ -85,6 +106,10 @@ for img_file in tqdm(image_filenames, desc="Augmenting"):
         augmented = augment(image=image, mask=mask)
         aug_img = augmented['image']
         aug_mask = augmented['mask']
+
+        # Apply salt and pepper noise to 10% of augmentations
+        if np.random.rand() < 0.1:
+            aug_img = add_salt_and_pepper_noise(aug_img)
 
         cv2.imwrite(os.path.join(OUT_IMG_DIR, f"aug_patient_{uid:03d}.png"), aug_img)
         cv2.imwrite(os.path.join(OUT_MASK_DIR, f"aug_segmentation_{uid:03d}.png"), aug_mask)
