@@ -23,6 +23,7 @@ model.eval()
 
 
 def predict(img: np.ndarray) -> np.ndarray:
+    assert 0, img.shape
     original_height, original_width = img.shape
     
     transformed = val_transform(image=img)
