@@ -54,6 +54,11 @@ def predict(img: np.ndarray) -> np.ndarray:
     """
     Takes a raw numpy image and returns a cleaned, padded segmentation mask.
     """
+
+    if img.ndim == 3 and img.shape[2] == 3:
+        # Convert the 3-channel image to grayscale.
+        # This mimics what .convert("L") does.
+        img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2GRAY).astype(np.float32)
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
