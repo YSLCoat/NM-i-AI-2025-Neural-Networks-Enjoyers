@@ -76,8 +76,8 @@ def train():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_images = sorted(glob("tumor-segmentation/datasets/original_augmented_2000/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/original_augmented_2000/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/train_augmented_2000/labels/*.png"))
 
     val_images = sorted(glob("tumor-segmentation/datasets/val_2/imgs/*.png"))
     val_masks = sorted(glob("tumor-segmentation/datasets/val_2/labels/*.png"))
