@@ -191,7 +191,7 @@ class RaceCarEnv(gym.Env):
             # forward TTC
             d_fwd_px = fwd_min * MAX_SENSOR_PX
             ttc_fwd = (d_fwd_px / max(vx, 1e-6)) / FPS
-            TTC_CUTOFF_FWD = 1.8
+            TTC_CUTOFF_FWD = 1.2
             TTC_SCALE_FWD  = 4.5
             danger_fwd = float(np.clip((TTC_CUTOFF_FWD - ttc_fwd) / TTC_CUTOFF_FWD, 0.0, 1.0))
             pen_ttc_fwd = (danger_fwd ** 2) * TTC_SCALE_FWD
@@ -234,6 +234,8 @@ class RaceCarEnv(gym.Env):
                 act_shaping += 0.7 * (danger_fwd - 0.35)
             elif action_string == 'DECELERATE' and max(danger_fwd, danger_left, danger_right) > 0.35:
                 act_shaping -= 0.35 * (max(danger_fwd, danger_left, danger_right) - 0.35)
+            if action == "ACCELERATE" and ttc_fwd < 0.3:
+            act_shaping += 1.0 * (0.3 - ttc_fwd)  # was 0.7 * (danger_fwd-0.35)
 
             # --- distance-keeping bonus (time headway) ---
             headway_sec = ttc_fwd
@@ -274,6 +276,7 @@ class RaceCarEnv(gym.Env):
             if action_string == 'DECELERATE' and rear_danger > 0.25 and danger_fwd < 0.35:
                 # MODIFICATION: Increased penalty from 0.2 to 0.4
                 rear_brake_pen = 0.4 * rear_danger * (1.0 - danger_fwd)
+            
 
             # 2) Penalize merging toward a rear-occupied side (avoid getting clipped)
             rear_merge_pen = 0.0
