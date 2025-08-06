@@ -69,7 +69,7 @@ def validate(model, val_loader, device):
 
 def train():
     model_name = 'model_6_3'
-    epochs = 30
+    epochs = 5
     batch_size = 4
     resize_shape = (512, 512)
     learning_rate = 1e-4
