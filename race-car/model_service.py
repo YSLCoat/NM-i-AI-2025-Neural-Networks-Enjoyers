@@ -27,6 +27,12 @@ CRASH_WINDOW_SIZE = 30 # Number of steps to log before a crash
 N_STACK = 3
 DETERMINISTIC_PREDICTION = True
 
+FPS = 60.0
+MAX_SENSOR_PX = 1000.0
+PREDICTION_HORIZON = 4   # see item #3
+MIN_SAFE_STEERING_MARGIN = 120.0  # px
+FWD_TTC_CUTOFF = 1.8  # seconds
+
 sensor_options = [
     (90, "front"), (135, "right_front"), (180, "right_side"), (225, "right_back"),
     (270, "back"), (315, "left_back"), (0, "left_side"), (45, "left_front"),
@@ -67,7 +73,10 @@ def load_model():
     # 1. Setup PREDICTION log (logs every step)
     pred_log_path = os.path.join(LOG_DIR, f"prediction_log_{run_timestamp}.csv")
     prediction_log_file = open(pred_log_path, "w", newline="", encoding="utf-8")
-    pred_fieldnames = ["timestamp", "episode_id", "tick", "distance", "action_name", "vx", "vy"]
+    pred_fieldnames = [
+        "timestamp","episode_id","tick","distance",
+        "action_name","vx","vy"
+    ] + SENSOR_ORDER + ["fwd_min","left_min","right_min","back_min","ttc_fwd"]
     prediction_log_writer = csv.DictWriter(prediction_log_file, fieldnames=pred_fieldnames)
     prediction_log_writer.writeheader()
     print(f"Continuous prediction log will be saved to: {pred_log_path}")
@@ -129,13 +138,56 @@ def predict_action(request_data: Dict[str, Any]) -> List[str]:
     action, _ = model.predict(stacked_observation.reshape(1, -1), deterministic=DETERMINISTIC_PREDICTION)
     action_int = int(action[0]); action_name = ACTION_MAP.get(action_int, 'NOTHING')
 
-    # 2. Log general prediction data for EVERY step
-    velocity = request_data.get('velocity', {})
-    prediction_log_writer.writerow({
-        "timestamp": time.strftime('%H:%M:%S'), "episode_id": episode_id,
-        "tick": request_data.get('elapsed_ticks'), "distance": request_data.get('distance'),
-        "action_name": action_name, "vx": velocity.get('x'), "vy": velocity.get('y')
-    })
+    if action_name == "ACCELERATE" and ttc_fwd < FWD_TTC_CUTOFF:
+        action_name = "DECELERATE"
+
+    # Don’t steer into the tighter side unless it’s clearly safer
+    if action_name == "STEER_LEFT" and left_min + MIN_SAFE_STEERING_MARGIN < right_min:
+        action_name = "NOTHING"
+    if action_name == "STEER_RIGHT" and right_min + MIN_SAFE_STEERING_MARGIN < left_min:
+        action_name = "NOTHING"
+
+    # Discourage braking if a car is too close behind AND forward is not dangerous
+    rear_danger = back_min < 350.0
+    fwd_clear   = fwd_min  > 450.0
+    if action_name == "DECELERATE" and rear_danger and fwd_clear:
+        action_name = "NOTHING"
+
+    sensors = request_data.get("sensors", {}) or {}
+    def cone_min(names):
+        return float(min(sensors.get(n, MAX_SENSOR_PX) for n in names))
+
+    FRONT_CONE = ["left_front","front_left_front","front","front_right_front","right_front"]
+    LEFT_CONE  = ["left_side_front","left_front","front_left_front"]
+    RIGHT_CONE = ["front_right_front","right_front","right_side_front"]
+    BACK_CONE  = ["right_back","back","left_back"]
+
+    fwd_min   = cone_min(FRONT_CONE)
+    left_min  = cone_min(LEFT_CONE)
+    right_min = cone_min(RIGHT_CONE)
+    back_min  = cone_min(BACK_CONE)
+
+    # Simple forward TTC (seconds)
+    vx_px_per_tick = float((request_data.get("velocity", {}) or {}).get("x", 0.0))
+    vx_px_per_sec  = max(vx_px_per_tick * FPS, 1e-6)
+    ttc_fwd = float(fwd_min / vx_px_per_sec)  # seconds
+
+    # 3) write **full** prediction row including sensors + diagnostics
+    row = {
+        "timestamp": time.strftime('%H:%M:%S'),
+        "episode_id": episode_id,
+        "tick": request_data.get('elapsed_ticks'),
+        "distance": request_data.get('distance'),
+        "action_name": action_name,
+        "vx": vx_px_per_tick,
+        "vy": (request_data.get("velocity", {}) or {}).get("y", 0.0),
+        "fwd_min": fwd_min, "left_min": left_min, "right_min": right_min,
+        "back_min": back_min, "ttc_fwd": ttc_fwd
+    }
+    # append all sensors (raw px)
+    for name in SENSOR_ORDER:
+        row[name] = sensors.get(name)
+    prediction_log_writer.writerow(row)
     prediction_log_file.flush()
 
     # 3. Store current state in the history window for potential crash logging
