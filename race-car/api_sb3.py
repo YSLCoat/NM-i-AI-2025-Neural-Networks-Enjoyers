@@ -189,42 +189,51 @@ class PPOPredictor:
         assert base.shape == (BASE_OBS_DIM,), f"Bad base obs shape: {base.shape}"
         return base
 
-    def _safety_shim(self, req: RaceCarPredictRequestDto, a_name: str, sensors_norm: np.ndarray) -> str:
-        """Small, surgical overrides for emergencies (no fighting the policy)."""
-        # Forward TTC
-        fwd_min = float(np.min(sensors_norm[list(FWD_IDXS)]))
-        d_fwd_px = fwd_min * 1000.0
+    def _safety_shim(self, req: RaceCarPredictRequestDto, a_name: str, sensors01: np.ndarray) -> tuple[str, float, float, float]:
+        """
+        Emergency guardrails that operate on *pre-normalized* sensor distances in [0,1].
+        sensors01: np.ndarray of shape (16,), values in [0,1] (1.0 = far, 0.0 = very close).
+        Returns: (final_action, ttc_fwd, fwd_min01, back_min01)
+        """
+        # Forward TTC (use front cone min distance in [0,1])
+        fwd_min01 = float(np.min(sensors01[list(FWD_IDXS)]))   # 0..1
+        d_fwd_px = fwd_min01 * 1000.0
+
+        # Ego speed in px/tick (raw, not scaled)
         vx_raw = float((req.velocity or {}).get("x", 0.0))
-        vx_pos = max(vx_raw, 1e-6)      # px / tick
-        ttc_fwd = (d_fwd_px / vx_pos) / 60.0
+        vx_pos = max(vx_raw, 1e-6)
+        ttc_fwd = (d_fwd_px / vx_pos) / 60.0  # seconds
 
-        # Rear proximity (narrow cone)
-        back_min = float(np.min(sensors_norm[list(BACK_IDXS)]))
+        # Rear proximity (narrow cone) in [0,1]
+        back_min01 = float(np.min(sensors01[list(BACK_IDXS)]))
 
-        # 1) Never accelerate into short forward TTC
-        if a_name == "ACCELERATE" and ttc_fwd < TTC_ACC_BLOCK_SEC:
+        # ---------- Overrides ----------
+        # 1) If TTC is short, never accelerate AND don't idle into it: brake.
+        if ttc_fwd < TTC_ACC_BLOCK_SEC and a_name in ("ACCELERATE", "NOTHING"):
             a_name = "DECELERATE"
 
-        # 2) If rear is very close and front is fairly clear, avoid hard braking:
-        if a_name == "DECELERATE" and back_min < REAR_CLOSE_THRESH:
-            if fwd_min >= FWD_CLEAR_FOR_NUDGE:
-                a_name = "ACCELERATE"   # keep moving to open gap
-            elif fwd_min >= 0.55:
-                a_name = "NOTHING"      # gentle: neither accel nor brake
+        # 2) Rear pressure: if someone is on our bumper and front is fairly clear,
+        #    avoid hard braking (prefer NOTHING or gentle ACCELERATE).
+        if a_name == "DECELERATE" and back_min01 < REAR_CLOSE_THRESH:
+            if fwd_min01 >= FWD_CLEAR_FOR_NUDGE:
+                a_name = "ACCELERATE"  # open the gap a bit
+            elif fwd_min01 >= 0.55:
+                a_name = "NOTHING"     # coast instead of brake
 
-        return a_name, ttc_fwd, fwd_min, back_min
+        return a_name, ttc_fwd, fwd_min01, back_min01
+
 
     def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
         try:
-            # 1) Build base obs (18,)
-            base = self._build_base_obs(req)
+            # 1) Build base obs (18,) with training-identical scaling
+            base = self._build_base_obs(req)                     # sensors01 + vx/20 + vy/2
 
-            # 2) Normalize per-frame, then stack to (54,)
-            base_norm = self.obs_norm(base)           # (18,)
-            stacked_norm = self._stack(base_norm)     # (54,)
+            # 2) Normalize single frame, then stack to (54,) for the policy
+            base_norm = self.obs_norm(base)                      # z-scored frame (18,)
+            stacked_norm = self._stack(base_norm)                # (54,)
             obs_for_model = stacked_norm.reshape(1, -1)
 
-            # Optional: watch for clipping (should be near zero with correct stats)
+            # Optional: clipping diagnostics on normalized features
             if self.obs_norm.enabled:
                 clip = getattr(self.obs_norm, "clip_obs", 10.0)
                 clip_frac = float(np.mean((base_norm <= -clip) | (base_norm >= clip)))
@@ -236,20 +245,24 @@ class PPOPredictor:
                 act_int, _ = self.model.predict(obs_for_model, deterministic=True)
             a_int = int(np.asarray(act_int).squeeze())
             if _HAS_ENV_ACTIONS and 0 <= a_int < len(ENV_ACTIONS):
-                a_name = str(ENV_ACTIONS[a_int])
+                a_model = str(ENV_ACTIONS[a_int])
             else:
-                a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
+                a_model = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
 
-            # 4) Safety shim (TTC + rear pressure), returns updated action + metrics
-            sensors_norm = base_norm[:16]
-            a_safe, ttc_fwd, fwd_min, back_min = self._safety_shim(req, a_name, sensors_norm)
+            # 4) SAFETY SHIM MUST USE PRE-NORM SENSORS IN [0,1]  <-- key fix
+            sensors01 = base[:16]                                 # NOT base_norm
+            a_safe, ttc_fwd, fwd_min01, back_min01 = self._safety_shim(req, a_model, sensors01)
 
-            # 5) Dynamic buffer: react FAST when risky or shim triggered
-            risky = (ttc_fwd < TTC_ACC_BLOCK_SEC) or (fwd_min < 0.45)
-            dyn_buf = min(buffer_len, 2) if (risky or a_safe != a_name) else buffer_len
+            # 5) Dynamic buffer: react FAST when risky or shim changed the action
+            risky = (ttc_fwd < TTC_ACC_BLOCK_SEC) or (fwd_min01 < 0.45)
+            dyn_buf = 1 if risky or (a_safe != a_model) else buffer_len
+            # keep a sane upper bound anyway
+            dyn_buf = min(dyn_buf, 3)
 
-            logger.info(f"[Predict] a_model={a_name} -> a_final={a_safe} | "
-                        f"ttc_fwd={ttc_fwd:.2f}s, fwd_min={fwd_min:.2f}, back_min={back_min:.2f}, buf={dyn_buf}")
+            logger.info(
+                f"[Predict] a_model={a_model} -> a_final={a_safe} | "
+                f"ttc_fwd={ttc_fwd:.2f}s, fwd_min01={fwd_min01:.2f}, back_min01={back_min01:.2f}, buf={dyn_buf}"
+            )
 
             return [a_safe] * dyn_buf
 
