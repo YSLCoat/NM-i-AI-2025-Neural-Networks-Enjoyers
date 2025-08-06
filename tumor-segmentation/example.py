@@ -52,24 +52,34 @@ def postprocess(pred: torch.Tensor) -> np.ndarray:
 
 def predict(img: np.ndarray) -> np.ndarray:
     """
-    Takes a raw numpy image and returns a cleaned, padded segmentation mask.
+    Takes a raw numpy image and returns a cleaned segmentation mask of the same size.
     """
+    # --- 1. Store the original image's shape ---
+    original_height, original_width = img.shape[:2]
 
+    # Handle grayscale conversion if necessary
     if img.ndim == 3 and img.shape[2] == 3:
-        # Convert the 3-channel image to grayscale.
-        # This mimics what .convert("L") does.
         img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2GRAY).astype(np.float32)
+
+    # Apply transforms (including resizing for the model)
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
 
+    # Get model prediction
     with torch.no_grad():
         logits = model(image_tensor)
         probabilities = torch.sigmoid(logits)
-        # Note: We pass the raw probabilities to postprocess now
         predicted_mask = probabilities.float()
 
-    return postprocess(predicted_mask)
+    # Post-process the mask (cleaning, etc.)
+    # The output here is still at the model's size (e.g., 992, 400, 3)
+    processed_mask = postprocess(predicted_mask)
+
+    # --- 2. Resize the final mask back to the original image's dimensions ---
+    final_mask = cv2.resize(processed_mask, (original_width, original_height), interpolation=cv2.INTER_NEAREST)
+
+    return final_mask
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate segmentation model performance.")
