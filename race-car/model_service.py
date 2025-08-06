@@ -114,13 +114,29 @@ def reset_state():
     print(f"State reset for new episode: {episode_id}")
 
 def _create_obs_from_request(request_data: Dict[str, Any]) -> np.ndarray:
-    """Constructs a numpy observation array from the API request."""
-    # ... (function is unchanged)
+    MAX_SENSOR_PX = 1000.0  # or reuse your module constant
+
+    sensor_dict = (request_data.get("sensors") or {})
+
+    def _norm_sensor(value, default=MAX_SENSOR_PX) -> float:
+        # Coerce None/NaN/'' -> default; cast to float; clamp to [0, MAX_SENSOR_PX]
+        if value is None:
+            v = default
+        else:
+            try:
+                v = float(value)
+            except (TypeError, ValueError):
+                v = default
+        if v < 0.0:
+            v = 0.0
+        elif v > MAX_SENSOR_PX:
+            v = MAX_SENSOR_PX
+        return v / MAX_SENSOR_PX
+
     sensor_readings = []
-    sensor_dict = request_data.get('sensors', {})
-    for sensor_name in SENSOR_ORDER:
-        value = sensor_dict.get(sensor_name, 1000.0)
-        sensor_readings.append(value / 1000.0)
+    for _, sensor_name in sensor_options:  # your 16 names
+        raw = sensor_dict.get(sensor_name, MAX_SENSOR_PX)
+        sensor_readings.append(_norm_sensor(raw))
     velocity = request_data.get('velocity', {})
     vx = velocity.get('x', 0.0) / 20.0
     vy = velocity.get('y', 0.0) / 2.0
