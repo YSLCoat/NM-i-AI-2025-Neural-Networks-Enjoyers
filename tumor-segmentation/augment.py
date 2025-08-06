@@ -10,14 +10,17 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 NUM_AUGMENTED_TOTAL = 1000
 INPUT_IMG_DIR = "datasets/original/imgs"
 INPUT_MASK_DIR = "datasets/original/labels"
-OUT_IMG_DIR = "datasets/original_augmented_1000/imgs"
-OUT_MASK_DIR = "datasets/original_augmented_1000/labels"
+OUT_IMG_DIR = "datasets/original_augmented_1000_2/imgs"
+OUT_MASK_DIR = "datasets/original_augmented_1000_2/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)
 
 # === Define your augmentation pipeline ===
 augment = A.Compose([
+    A.HorizontalFlip(p=0.5),
+    A.VerticalFlip(p=0.5),
+    A.RandomRotate90(p=0.5),
     A.ShiftScaleRotate(
         shift_limit=0.05,
         scale_limit=0.05,
