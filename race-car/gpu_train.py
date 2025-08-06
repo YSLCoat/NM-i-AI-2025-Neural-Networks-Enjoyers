@@ -32,7 +32,7 @@ LOG_DIR = "logs_sb3"
 NUM_CPU = 24        
 N_STEPS = 4096       
 SEED = 42
-TOTAL_TIMESTEPS = 400_000_000
+TOTAL_TIMESTEPS = 30_000_000
 
 NET_ARCH = [256, 256, 256, 256]     
 LEARNING_RATE = 3e-4
@@ -142,8 +142,11 @@ def train():
         "MlpPolicy",
         train_env,
         policy_kwargs=policy_kwargs,
-        learning_rate=linear_schedule(3e-4, 1e-4, end_fraction=1.0),  # 3e-4 → 1e-4 over the run
-        clip_range=linear_schedule(0.20, 0.10, end_fraction=1.0),     # 0.20 → 0.10
+        # MODIFICATION: Adjusted learning rate schedule
+        # Start higher (5e-4), end higher (2e-5), and decay over 90% of the run.
+        learning_rate=linear_schedule(5e-4, 2e-5, end_fraction=0.9),
+        # MODIFICATION: Adjusted clip range schedule to match learning rate
+        clip_range=linear_schedule(0.25, 0.10, end_fraction=0.9),
         n_steps=N_STEPS,          # per-env
         batch_size=batch_size,    # must divide n_steps * n_envs
         n_epochs=N_EPOCHS,
@@ -169,7 +172,6 @@ def train():
         gamma=GAMMA,
     )
     # share obs stats from training (see helper below)
-    # eval_env.obs_rms = train_env.obs_rms   # <-- remove this line
     eval_env.training = False
 
     # add the same frame stack used in training

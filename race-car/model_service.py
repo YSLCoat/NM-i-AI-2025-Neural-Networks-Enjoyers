@@ -167,9 +167,6 @@ BACK_CONE  = ["right_back","back","left_back"]
 
 
 def predict_action(request_data: Dict[str, Any]) -> List[str]:
-    """Processes a request, logs data, and returns a predicted action."""
-    # ... (The first part of your function remains the same)
-
     raw_obs = _create_obs_from_request(request_data)
     normalized_obs = vec_normalize.normalize_obs(np.array([raw_obs]))[0]
     frame_stack.append(normalized_obs)
@@ -178,16 +175,11 @@ def predict_action(request_data: Dict[str, Any]) -> List[str]:
     action_int = int(action[0])
     action_name = ACTION_MAP.get(action_int, 'NOTHING')
 
-    # --- THIS IS THE CORRECTED SECTION ---
-    # Explicitly pass the sensors dictionary from the request data
     sensors_data = request_data.get("sensors", {})
     fwd_min   = cone_min(sensors_data, FRONT_CONE)
     left_min  = cone_min(sensors_data, LEFT_CONE)
     right_min = cone_min(sensors_data, RIGHT_CONE)
     back_min  = cone_min(sensors_data, BACK_CONE)
-    # --- END OF CORRECTION ---
-
-    # ... (The rest of your function for logging and returning the action remains the same)
     
     velocity = request_data.get('velocity', {})
     prediction_log_writer.writerow({
