@@ -31,16 +31,15 @@ def predict(img: np.ndarray) -> np.ndarray:
     """
     Takes a numpy array (color or grayscale) and returns a segmentation mask.
     """
-    # --- START OF FIX: Universal Grayscale Conversion ---
-    # This block ensures the input is always single-channel grayscale,
-    # whether it comes from the API (3-channel) or a local script.
+    # --- START OF CRITICAL SERVER FIX ---
+    # This block handles preprocessing for images coming directly from the API.
+    # It ensures the image is 1-channel grayscale and float32, just like in training.
     if img.ndim == 3 and img.shape[2] == 3:
-        # Convert 3-channel (e.g., RGB) to 1-channel grayscale
         pil_image = Image.fromarray(img)
         img = np.array(pil_image.convert("L"), dtype=np.float32)
-    # --- END OF FIX ---
+    # --- END OF CRITICAL SERVER FIX ---
 
-    # The input 'img' is now guaranteed to be grayscale (H, W)
+    # The input 'img' is now guaranteed to be in the correct format
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
@@ -58,6 +57,9 @@ def predict(img: np.ndarray) -> np.ndarray:
 
 
 def main():
+    """
+    This function is for local testing and validation.
+    """
     parser = argparse.ArgumentParser(description="Evaluate segmentation model performance.")
     parser.add_argument("--folder_path", type=str, required=True, help="Path to the folder containing 'imgs' and 'labels' subfolders.")
     args = parser.parse_args()
@@ -80,8 +82,8 @@ def main():
         if not os.path.exists(label_path):
             continue
 
-        # Load image and ensure it's converted to 1-channel Grayscale
-        image_np = np.array(Image.open(img_path).convert("L"))
+        # Load image and preprocess it identically to the training/API pipeline
+        image_np = np.array(Image.open(img_path).convert("L"), dtype=np.float32)
 
         # Load label as Grayscale
         label_np = np.array(Image.open(label_path).convert("L"))
