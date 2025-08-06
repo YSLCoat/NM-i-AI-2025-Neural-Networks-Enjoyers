@@ -49,6 +49,7 @@ app = FastAPI()
 start_time = time.time()
 model = None
 venv = None
+startup_error_message = "" # Stores any error message that occurs during model loading
 
 # A deque to hold the last N_STACK observations for a single, ongoing game instance.
 stacked_obs_deque = collections.deque(
@@ -62,7 +63,7 @@ def load_model_and_env():
     Load the PPO model and VecNormalize statistics when the server starts.
     This is done once to avoid loading from disk on every prediction request.
     """
-    global model, venv
+    global model, venv, startup_error_message
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
 
@@ -85,8 +86,9 @@ def load_model_and_env():
         print("VecNormalize stats loaded successfully.")
 
     except Exception as e:
-        print(f"FATAL: Could not load model or environment. {e}")
-        print("The '/predict' endpoint will not work. Please ensure model files are present.")
+        startup_error_message = str(e)
+        print(f"FATAL: Could not load model or environment. {startup_error_message}")
+        print("The '/predict' endpoint will not work. Please ensure model files are present and all dependencies are installed.")
         model = None
         venv = None
 
@@ -144,6 +146,18 @@ def predict(request: RaceCarPredictRequestDto = Body(...)):
         actions=[action_str]
     )
 
+@app.get('/status')
+def status():
+    """Provides the operational status of the model and environment."""
+    if model and venv:
+        return {"status": "ok", "message": "Model and environment loaded successfully."}
+    else:
+        return {
+            "status": "error",
+            "message": "Model or environment failed to load.",
+            "details": startup_error_message
+        }
+
 @app.get('/api')
 def hello():
     return {
@@ -159,5 +173,6 @@ if __name__ == '__main__':
     uvicorn.run(
         'api:app',
         host=HOST,
-        port=PORT
+        port=PORT,
+        reload=True # Use reload for development to see changes without restarting
     )
