@@ -29,32 +29,46 @@ model.eval()
 
 def predict(img: np.ndarray) -> np.ndarray:
     """
-    Takes a numpy array (color or grayscale) and returns a segmentation mask.
+    Takes a numpy array (color or grayscale) and returns a segmentation mask
+    that matches the original image's dimensions.
     """
-    # --- START OF CRITICAL SERVER FIX ---
-    # This block handles preprocessing for images coming directly from the API.
-    # It ensures the image is 1-channel grayscale and float32, just like in training.
+    # --- START OF PRE-PROCESSING ---
+    # Ensure the image is in the correct format (1-channel, float32)
     if img.ndim == 3 and img.shape[2] == 3:
         pil_image = Image.fromarray(img)
         img = np.array(pil_image.convert("L"), dtype=np.float32)
-    # --- END OF CRITICAL SERVER FIX ---
 
-    # The input 'img' is now guaranteed to be in the correct format
+    # 1. Store the original shape *before* transforming (padding)
+    original_height, original_width = img.shape[:2]
+
+    # Pad the image to the model's required input size
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
+    # --- END OF PRE-PROCESSING ---
 
+
+    # --- MODEL PREDICTION ---
     with torch.no_grad():
         logits = model(image_tensor)
         probabilities = torch.sigmoid(logits)
         predicted_mask = (probabilities > 0.5).float()
+    # --- END OF MODEL PREDICTION ---
 
+
+    # --- START OF POST-PROCESSING ---
+    # Convert the prediction tensor to a numpy array
     predicted_mask_np = predicted_mask.squeeze(0).squeeze(0).cpu().numpy()
-    final_segmentation_2d = (predicted_mask_np * 255).astype(np.uint8)
+
+    # 2. Crop the padded prediction back down to the original shape
+    cropped_mask = predicted_mask_np[:original_height, :original_width]
+
+    # Convert to a 3-channel image with values of 0 or 255
+    final_segmentation_2d = (cropped_mask * 255).astype(np.uint8)
     final_segmentation_3d = np.stack([final_segmentation_2d] * 3, axis=-1)
+    # --- END OF POST-PROCESSING ---
 
     return final_segmentation_3d
-
 
 def main():
     """
