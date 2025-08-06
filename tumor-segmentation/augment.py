@@ -7,11 +7,11 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # === Config ===
-NUM_AUGMENTED_TOTAL = 5000
+NUM_AUGMENTED_TOTAL = 10000
 INPUT_IMG_DIR = "datasets/original/imgs"
 INPUT_MASK_DIR = "datasets/original/labels"
-OUT_IMG_DIR = "datasets/original_augmented_5000/imgs"
-OUT_MASK_DIR = "datasets/original_augmented_5000/labels"
+OUT_IMG_DIR = "datasets/original_augmented_10k/imgs"
+OUT_MASK_DIR = "datasets/original_augmented_10k/labels"
 
 os.makedirs(OUT_IMG_DIR, exist_ok=True)
 os.makedirs(OUT_MASK_DIR, exist_ok=True)

@@ -68,7 +68,7 @@ def validate(model, val_loader, device):
     return sum(dice_scores) / len(dice_scores)
 
 def train():
-    model_name = 'model_6_6'
+    model_name = 'model_6_7'
     epochs = 5
     batch_size = 4
     resize_shape = (512, 512)
@@ -76,8 +76,8 @@ def train():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_images = sorted(glob("tumor-segmentation/datasets/original_augmented_5000/imgs/*.png"))
-    train_masks = sorted(glob("tumor-segmentation/datasets/original_augmented_5000/labels/*.png"))
+    train_images = sorted(glob("tumor-segmentation/datasets/original_augmented_10k/imgs/*.png"))
+    train_masks = sorted(glob("tumor-segmentation/datasets/original_augmented_10k/labels/*.png"))
 
     val_images = sorted(glob("tumor-segmentation/datasets/val_2/imgs/*.png"))
     val_masks = sorted(glob("tumor-segmentation/datasets/val_2/labels/*.png"))
