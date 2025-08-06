@@ -186,6 +186,16 @@ class PPOPredictor:
         vx = vx_raw / 20.0
         vy = vy_raw / 2.0
         base = np.array(sensors + [vx, vy], dtype=np.float32)
+
+        # ================================ FIX START =================================
+        # This step is CRITICAL to match the training environment (`racecar_env.py`).
+        # The environment clips the observation vector to [-1.0, 1.0] *before*
+        # it is passed to the VecNormalize wrapper. Omitting this step causes
+        # out-of-distribution inputs, especially for velocity, leading to poor
+        # model performance.
+        base = np.clip(base, -1.0, 1.0)
+        # ================================= FIX END ==================================
+
         assert base.shape == (BASE_OBS_DIM,), f"Bad base obs shape: {base.shape}"
         return base
 
@@ -225,8 +235,8 @@ class PPOPredictor:
 
     def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
         try:
-            # 1) Build base obs (18,) with training-identical scaling
-            base = self._build_base_obs(req)                     # sensors01 + vx/20 + vy/2
+            # 1) Build base obs (18,) with training-identical scaling AND clipping
+            base = self._build_base_obs(req)
 
             # 2) Normalize single frame, then stack to (54,) for the policy
             base_norm = self.obs_norm(base)                      # z-scored frame (18,)
@@ -235,10 +245,10 @@ class PPOPredictor:
 
             # Optional: clipping diagnostics on normalized features
             if self.obs_norm.enabled:
-                clip = getattr(self.obs_norm, "clip_obs", 10.0)
-                clip_frac = float(np.mean((base_norm <= -clip) | (base_norm >= clip)))
+                clip_val = getattr(self.obs_norm, "clip_obs", 10.0)
+                clip_frac = float(np.mean((base_norm <= -clip_val) | (base_norm >= clip_val)))
                 if clip_frac > 0.05:
-                    logger.warning(f"[ObsNorm] {clip_frac*100:.1f}% dims at clip (+/-{clip}). Stats may not match.")
+                    logger.warning(f"[ObsNorm] {clip_frac*100:.1f}% dims at clip (+/-{clip_val}). Stats may not match.")
 
             # 3) Policy prediction
             with torch.no_grad():
@@ -249,8 +259,8 @@ class PPOPredictor:
             else:
                 a_model = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
 
-            # 4) SAFETY SHIM MUST USE PRE-NORM SENSORS IN [0,1]  <-- key fix
-            sensors01 = base[:16]                                 # NOT base_norm
+            # 4) SAFETY SHIM MUST USE PRE-NORM SENSORS IN [0,1]
+            sensors01 = base[:16] # This uses the pre-normalized (but now correctly clipped) obs
             a_safe, ttc_fwd, fwd_min01, back_min01 = self._safety_shim(req, a_model, sensors01)
 
             # 5) Dynamic buffer: react FAST when risky or shim changed the action
