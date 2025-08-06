@@ -1,0 +1,1029 @@
+2025-08-06 09:39:21,279 - api_predictor - INFO - [Model] Loading PPO on device=cuda
+2025-08-06 09:39:51,136 - api_predictor - INFO - [ObsNorm] Loaded stats: clip_obs=10.0, mean.shape=(1, 18), var.shape=(1, 18)
+2025-08-06 09:39:51,136 - api_predictor - INFO - [Startup] Predictor ready.
+2025-08-06 09:40:06,744 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:06,744 - api_predictor - INFO - Received request: distance=567.00, ticks=50, crashed=False
+2025-08-06 09:40:06,745 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.061
+2025-08-06 09:40:06,745 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.857, max=10.000, mean=-0.390
+2025-08-06 09:40:06,745 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.857, max=10.000, mean=-0.390
+2025-08-06 09:40:07,099 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:07,100 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:07,100 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,586 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,587 - api_predictor - INFO - Received request: distance=0.00, ticks=1, crashed=False
+2025-08-06 09:40:11,587 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.444
+2025-08-06 09:40:11,587 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=2.096
+2025-08-06 09:40:11,587 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.857, max=10.000, mean=0.439
+2025-08-06 09:40:11,589 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,589 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,589 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,635 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,635 - api_predictor - INFO - Received request: distance=127.80, ticks=12, crashed=False
+2025-08-06 09:40:11,635 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=11.200, mean=1.328
+2025-08-06 09:40:11,635 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,636 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.857, max=10.000, mean=0.864
+2025-08-06 09:40:11,636 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,636 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,637 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,681 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,681 - api_predictor - INFO - Received request: distance=270.00, ticks=24, crashed=False
+2025-08-06 09:40:11,681 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=12.400, mean=1.395
+2025-08-06 09:40:11,682 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,682 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=1.288
+2025-08-06 09:40:11,682 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,683 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,683 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,732 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,733 - api_predictor - INFO - Received request: distance=426.60, ticks=36, crashed=False
+2025-08-06 09:40:11,733 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=13.600, mean=1.462
+2025-08-06 09:40:11,733 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,733 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,734 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,734 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,734 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,783 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,783 - api_predictor - INFO - Received request: distance=597.60, ticks=48, crashed=False
+2025-08-06 09:40:11,783 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=14.800, mean=1.528
+2025-08-06 09:40:11,783 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,784 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,784 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,784 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,784 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,835 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,835 - api_predictor - INFO - Received request: distance=783.00, ticks=60, crashed=False
+2025-08-06 09:40:11,835 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=16.000, mean=1.595
+2025-08-06 09:40:11,835 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,835 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:11,836 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,836 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,836 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,885 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,885 - api_predictor - INFO - Received request: distance=982.80, ticks=72, crashed=False
+2025-08-06 09:40:11,885 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=17.200, mean=1.658
+2025-08-06 09:40:11,885 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:11,886 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.878
+2025-08-06 09:40:11,886 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,886 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,886 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:11,950 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:11,950 - api_predictor - INFO - Received request: distance=1197.00, ticks=84, crashed=False
+2025-08-06 09:40:11,950 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=18.400, mean=1.725
+2025-08-06 09:40:11,950 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:11,950 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.872
+2025-08-06 09:40:11,951 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:11,951 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:11,951 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,008 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,008 - api_predictor - INFO - Received request: distance=1425.60, ticks=96, crashed=False
+2025-08-06 09:40:12,009 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=19.600, mean=1.790
+2025-08-06 09:40:12,009 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.071, max=10.000, mean=0.854
+2025-08-06 09:40:12,009 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.071, max=10.000, mean=0.861
+2025-08-06 09:40:12,010 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,010 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,010 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,070 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,070 - api_predictor - INFO - Received request: distance=1668.60, ticks=108, crashed=False
+2025-08-06 09:40:12,070 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=20.800, mean=1.846
+2025-08-06 09:40:12,070 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.083, max=10.000, mean=0.797
+2025-08-06 09:40:12,070 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.083, max=10.000, mean=0.839
+2025-08-06 09:40:12,071 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,071 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,071 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,131 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,131 - api_predictor - INFO - Received request: distance=1926.00, ticks=120, crashed=False
+2025-08-06 09:40:12,131 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=22.000, mean=1.900
+2025-08-06 09:40:12,132 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.159, max=10.000, mean=0.714
+2025-08-06 09:40:12,132 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.159, max=10.000, mean=0.788
+2025-08-06 09:40:12,132 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,133 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,133 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,182 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,182 - api_predictor - INFO - Received request: distance=2197.80, ticks=132, crashed=False
+2025-08-06 09:40:12,183 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=23.200, mean=1.972
+2025-08-06 09:40:12,183 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.717
+2025-08-06 09:40:12,183 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.743
+2025-08-06 09:40:12,184 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,184 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,184 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,233 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,233 - api_predictor - INFO - Received request: distance=2484.00, ticks=144, crashed=False
+2025-08-06 09:40:12,233 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=24.400, mean=2.038
+2025-08-06 09:40:12,233 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.719
+2025-08-06 09:40:12,233 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.716
+2025-08-06 09:40:12,234 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,234 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,234 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,280 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,280 - api_predictor - INFO - Received request: distance=2784.60, ticks=156, crashed=False
+2025-08-06 09:40:12,280 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=25.600, mean=2.113
+2025-08-06 09:40:12,280 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.132, max=10.000, mean=0.799
+2025-08-06 09:40:12,280 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.745
+2025-08-06 09:40:12,281 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,281 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,281 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,325 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,326 - api_predictor - INFO - Received request: distance=3099.60, ticks=168, crashed=False
+2025-08-06 09:40:12,326 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=26.800, mean=2.190
+2025-08-06 09:40:12,326 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.126, max=10.000, mean=0.855
+2025-08-06 09:40:12,326 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.791
+2025-08-06 09:40:12,327 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,327 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,327 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,374 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,375 - api_predictor - INFO - Received request: distance=3429.00, ticks=180, crashed=False
+2025-08-06 09:40:12,375 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=28.000, mean=2.258
+2025-08-06 09:40:12,375 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.863
+2025-08-06 09:40:12,375 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.132, max=10.000, mean=0.839
+2025-08-06 09:40:12,376 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,376 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,376 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,427 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,428 - api_predictor - INFO - Received request: distance=3772.80, ticks=192, crashed=False
+2025-08-06 09:40:12,428 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=29.200, mean=2.328
+2025-08-06 09:40:12,428 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:12,428 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.126, max=10.000, mean=0.867
+2025-08-06 09:40:12,429 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,429 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,429 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,504 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,504 - api_predictor - INFO - Received request: distance=4131.00, ticks=204, crashed=False
+2025-08-06 09:40:12,504 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=30.400, mean=2.392
+2025-08-06 09:40:12,504 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:12,505 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.870
+2025-08-06 09:40:12,505 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,505 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,505 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,554 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,555 - api_predictor - INFO - Received request: distance=4503.60, ticks=216, crashed=False
+2025-08-06 09:40:12,555 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=31.600, mean=2.458
+2025-08-06 09:40:12,555 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:12,555 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.871
+2025-08-06 09:40:12,556 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,556 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,556 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,608 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,608 - api_predictor - INFO - Received request: distance=4890.60, ticks=228, crashed=False
+2025-08-06 09:40:12,608 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=32.800, mean=2.524
+2025-08-06 09:40:12,609 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.026, max=10.000, mean=0.859
+2025-08-06 09:40:12,609 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.026, max=10.000, mean=0.862
+2025-08-06 09:40:12,609 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,609 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,609 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,672 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,672 - api_predictor - INFO - Received request: distance=5292.00, ticks=240, crashed=False
+2025-08-06 09:40:12,672 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=34.000, mean=2.579
+2025-08-06 09:40:12,672 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.154, max=10.000, mean=0.796
+2025-08-06 09:40:12,672 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.154, max=10.000, mean=0.840
+2025-08-06 09:40:12,673 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,673 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,673 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,723 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,723 - api_predictor - INFO - Received request: distance=5707.80, ticks=252, crashed=False
+2025-08-06 09:40:12,724 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=35.200, mean=2.634
+2025-08-06 09:40:12,724 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.217, max=10.000, mean=0.713
+2025-08-06 09:40:12,724 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.217, max=10.000, mean=0.789
+2025-08-06 09:40:12,725 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,725 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,725 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,773 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,774 - api_predictor - INFO - Received request: distance=6138.00, ticks=264, crashed=False
+2025-08-06 09:40:12,774 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=36.400, mean=2.704
+2025-08-06 09:40:12,774 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.712
+2025-08-06 09:40:12,774 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.740
+2025-08-06 09:40:12,775 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,775 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,775 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,824 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,824 - api_predictor - INFO - Received request: distance=6582.60, ticks=276, crashed=False
+2025-08-06 09:40:12,824 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=37.600, mean=2.762
+2025-08-06 09:40:12,824 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.643
+2025-08-06 09:40:12,825 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.689
+2025-08-06 09:40:12,825 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,825 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,826 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,875 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,875 - api_predictor - INFO - Received request: distance=7041.60, ticks=288, crashed=False
+2025-08-06 09:40:12,875 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=38.800, mean=2.818
+2025-08-06 09:40:12,876 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-2.003, max=10.000, mean=0.587
+2025-08-06 09:40:12,876 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-2.003, max=10.000, mean=0.647
+2025-08-06 09:40:12,877 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,877 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,877 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,927 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,928 - api_predictor - INFO - Received request: distance=7515.00, ticks=300, crashed=False
+2025-08-06 09:40:12,928 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=40.000, mean=2.890
+2025-08-06 09:40:12,928 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.287, max=10.000, mean=0.603
+2025-08-06 09:40:12,928 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.287, max=10.000, mean=0.611
+2025-08-06 09:40:12,929 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,929 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,929 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:12,988 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:12,988 - api_predictor - INFO - Received request: distance=8002.80, ticks=312, crashed=False
+2025-08-06 09:40:12,988 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=41.200, mean=2.947
+2025-08-06 09:40:12,988 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-4.673, max=10.000, mean=0.515
+2025-08-06 09:40:12,988 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-4.673, max=10.000, mean=0.569
+2025-08-06 09:40:12,989 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:12,989 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:12,989 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:13,043 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:13,043 - api_predictor - INFO - Received request: distance=8505.00, ticks=324, crashed=False
+2025-08-06 09:40:13,043 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=42.400, mean=3.001
+2025-08-06 09:40:13,043 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-6.196, max=10.000, mean=0.419
+2025-08-06 09:40:13,043 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.512
+2025-08-06 09:40:13,044 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:13,044 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:13,044 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,619 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,619 - api_predictor - INFO - Received request: distance=0.00, ticks=1, crashed=False
+2025-08-06 09:40:23,619 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.444
+2025-08-06 09:40:23,619 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=2.096
+2025-08-06 09:40:23,620 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=1.010
+2025-08-06 09:40:23,621 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,621 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,621 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,672 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,673 - api_predictor - INFO - Received request: distance=127.80, ticks=12, crashed=False
+2025-08-06 09:40:23,673 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=11.200, mean=1.328
+2025-08-06 09:40:23,673 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,673 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=1.133
+2025-08-06 09:40:23,674 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,674 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,674 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,724 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,725 - api_predictor - INFO - Received request: distance=270.00, ticks=24, crashed=False
+2025-08-06 09:40:23,725 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=12.400, mean=1.395
+2025-08-06 09:40:23,725 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,725 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=1.288
+2025-08-06 09:40:23,726 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,726 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,726 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,775 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,776 - api_predictor - INFO - Received request: distance=426.60, ticks=36, crashed=False
+2025-08-06 09:40:23,776 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=13.600, mean=1.462
+2025-08-06 09:40:23,776 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,776 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,777 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,777 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,777 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,830 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,830 - api_predictor - INFO - Received request: distance=597.60, ticks=48, crashed=False
+2025-08-06 09:40:23,830 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=14.800, mean=1.528
+2025-08-06 09:40:23,831 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,831 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,831 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,831 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,832 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,880 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,880 - api_predictor - INFO - Received request: distance=783.00, ticks=60, crashed=False
+2025-08-06 09:40:23,880 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=16.000, mean=1.595
+2025-08-06 09:40:23,880 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,880 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:23,881 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,881 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,881 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,930 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,930 - api_predictor - INFO - Received request: distance=982.80, ticks=72, crashed=False
+2025-08-06 09:40:23,930 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=17.200, mean=1.658
+2025-08-06 09:40:23,930 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:23,930 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.878
+2025-08-06 09:40:23,931 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,931 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,931 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:23,987 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:23,987 - api_predictor - INFO - Received request: distance=1197.00, ticks=84, crashed=False
+2025-08-06 09:40:23,987 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=18.400, mean=1.725
+2025-08-06 09:40:23,987 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:23,987 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.872
+2025-08-06 09:40:23,988 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:23,988 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:23,988 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,038 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,038 - api_predictor - INFO - Received request: distance=1425.60, ticks=96, crashed=False
+2025-08-06 09:40:24,038 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=19.600, mean=1.790
+2025-08-06 09:40:24,038 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.071, max=10.000, mean=0.854
+2025-08-06 09:40:24,039 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.071, max=10.000, mean=0.861
+2025-08-06 09:40:24,039 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,039 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,039 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,111 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,111 - api_predictor - INFO - Received request: distance=1668.60, ticks=108, crashed=False
+2025-08-06 09:40:24,111 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=20.800, mean=1.846
+2025-08-06 09:40:24,111 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.083, max=10.000, mean=0.797
+2025-08-06 09:40:24,111 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.083, max=10.000, mean=0.839
+2025-08-06 09:40:24,112 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,112 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,112 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,167 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,167 - api_predictor - INFO - Received request: distance=1926.00, ticks=120, crashed=False
+2025-08-06 09:40:24,167 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=22.000, mean=1.900
+2025-08-06 09:40:24,168 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.159, max=10.000, mean=0.714
+2025-08-06 09:40:24,168 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.159, max=10.000, mean=0.788
+2025-08-06 09:40:24,168 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,168 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,168 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,229 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,229 - api_predictor - INFO - Received request: distance=2197.80, ticks=132, crashed=False
+2025-08-06 09:40:24,230 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=23.200, mean=1.972
+2025-08-06 09:40:24,230 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.717
+2025-08-06 09:40:24,230 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.743
+2025-08-06 09:40:24,231 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,231 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,231 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,292 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,292 - api_predictor - INFO - Received request: distance=2484.00, ticks=144, crashed=False
+2025-08-06 09:40:24,292 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=24.400, mean=2.038
+2025-08-06 09:40:24,292 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.719
+2025-08-06 09:40:24,292 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.716
+2025-08-06 09:40:24,293 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,293 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,293 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,344 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,344 - api_predictor - INFO - Received request: distance=2784.60, ticks=156, crashed=False
+2025-08-06 09:40:24,344 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=25.600, mean=2.113
+2025-08-06 09:40:24,344 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.132, max=10.000, mean=0.799
+2025-08-06 09:40:24,344 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.745
+2025-08-06 09:40:24,345 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,345 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,345 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,408 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,409 - api_predictor - INFO - Received request: distance=3099.60, ticks=168, crashed=False
+2025-08-06 09:40:24,409 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=26.800, mean=2.190
+2025-08-06 09:40:24,409 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.126, max=10.000, mean=0.855
+2025-08-06 09:40:24,409 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.791
+2025-08-06 09:40:24,410 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,410 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,410 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,466 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,466 - api_predictor - INFO - Received request: distance=3429.00, ticks=180, crashed=False
+2025-08-06 09:40:24,466 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=28.000, mean=2.258
+2025-08-06 09:40:24,466 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.863
+2025-08-06 09:40:24,466 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.132, max=10.000, mean=0.839
+2025-08-06 09:40:24,467 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,467 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,467 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,547 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,548 - api_predictor - INFO - Received request: distance=3772.80, ticks=192, crashed=False
+2025-08-06 09:40:24,548 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=29.200, mean=2.328
+2025-08-06 09:40:24,548 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:24,548 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.126, max=10.000, mean=0.867
+2025-08-06 09:40:24,549 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,549 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,549 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,601 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,601 - api_predictor - INFO - Received request: distance=4131.00, ticks=204, crashed=False
+2025-08-06 09:40:24,602 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=30.400, mean=2.392
+2025-08-06 09:40:24,602 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:24,602 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.870
+2025-08-06 09:40:24,603 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,603 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,603 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,653 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,653 - api_predictor - INFO - Received request: distance=4503.60, ticks=216, crashed=False
+2025-08-06 09:40:24,653 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=31.600, mean=2.458
+2025-08-06 09:40:24,654 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:24,654 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.871
+2025-08-06 09:40:24,654 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,655 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,655 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,703 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,703 - api_predictor - INFO - Received request: distance=4890.60, ticks=228, crashed=False
+2025-08-06 09:40:24,703 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=32.800, mean=2.524
+2025-08-06 09:40:24,704 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.026, max=10.000, mean=0.859
+2025-08-06 09:40:24,704 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.026, max=10.000, mean=0.862
+2025-08-06 09:40:24,704 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,704 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,704 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,751 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,752 - api_predictor - INFO - Received request: distance=5292.00, ticks=240, crashed=False
+2025-08-06 09:40:24,752 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=34.000, mean=2.579
+2025-08-06 09:40:24,752 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.154, max=10.000, mean=0.796
+2025-08-06 09:40:24,752 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.154, max=10.000, mean=0.840
+2025-08-06 09:40:24,753 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,753 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,753 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,802 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,802 - api_predictor - INFO - Received request: distance=5707.80, ticks=252, crashed=False
+2025-08-06 09:40:24,802 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=35.200, mean=2.634
+2025-08-06 09:40:24,802 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.217, max=10.000, mean=0.713
+2025-08-06 09:40:24,802 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.217, max=10.000, mean=0.789
+2025-08-06 09:40:24,803 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,803 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,803 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,851 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,851 - api_predictor - INFO - Received request: distance=6138.00, ticks=264, crashed=False
+2025-08-06 09:40:24,851 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=36.400, mean=2.704
+2025-08-06 09:40:24,851 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.712
+2025-08-06 09:40:24,851 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.740
+2025-08-06 09:40:24,852 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,852 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,852 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,911 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,911 - api_predictor - INFO - Received request: distance=6582.60, ticks=276, crashed=False
+2025-08-06 09:40:24,911 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=37.600, mean=2.762
+2025-08-06 09:40:24,911 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.643
+2025-08-06 09:40:24,911 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.689
+2025-08-06 09:40:24,912 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,912 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,912 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:24,963 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:24,963 - api_predictor - INFO - Received request: distance=7041.60, ticks=288, crashed=False
+2025-08-06 09:40:24,963 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=38.800, mean=2.818
+2025-08-06 09:40:24,963 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-2.003, max=10.000, mean=0.587
+2025-08-06 09:40:24,963 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-2.003, max=10.000, mean=0.647
+2025-08-06 09:40:24,964 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:24,964 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:24,964 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:25,015 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:25,015 - api_predictor - INFO - Received request: distance=7515.00, ticks=300, crashed=False
+2025-08-06 09:40:25,015 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=40.000, mean=2.890
+2025-08-06 09:40:25,015 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.287, max=10.000, mean=0.603
+2025-08-06 09:40:25,015 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.287, max=10.000, mean=0.611
+2025-08-06 09:40:25,016 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:25,016 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:25,016 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:25,073 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:25,073 - api_predictor - INFO - Received request: distance=8002.80, ticks=312, crashed=False
+2025-08-06 09:40:25,074 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=41.200, mean=2.947
+2025-08-06 09:40:25,074 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-4.673, max=10.000, mean=0.515
+2025-08-06 09:40:25,074 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-4.673, max=10.000, mean=0.569
+2025-08-06 09:40:25,075 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:25,075 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:25,075 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:25,126 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:25,127 - api_predictor - INFO - Received request: distance=8505.00, ticks=324, crashed=False
+2025-08-06 09:40:25,127 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=42.400, mean=3.001
+2025-08-06 09:40:25,127 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-6.196, max=10.000, mean=0.419
+2025-08-06 09:40:25,127 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.512
+2025-08-06 09:40:25,128 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:25,128 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:25,128 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:33,823 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:33,823 - api_predictor - INFO - Received request: distance=567.00, ticks=50, crashed=False
+2025-08-06 09:40:33,824 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.061
+2025-08-06 09:40:33,824 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.857, max=10.000, mean=-0.390
+2025-08-06 09:40:33,824 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.182
+2025-08-06 09:40:33,825 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:33,825 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:33,825 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,695 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,696 - api_predictor - INFO - Received request: distance=0.00, ticks=1, crashed=False
+2025-08-06 09:40:41,696 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.444
+2025-08-06 09:40:41,696 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=2.096
+2025-08-06 09:40:41,696 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.708
+2025-08-06 09:40:41,697 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,697 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,697 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,744 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,744 - api_predictor - INFO - Received request: distance=127.80, ticks=12, crashed=False
+2025-08-06 09:40:41,744 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=11.200, mean=1.328
+2025-08-06 09:40:41,745 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,745 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.857, max=10.000, mean=0.864
+2025-08-06 09:40:41,746 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,746 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,746 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,799 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,799 - api_predictor - INFO - Received request: distance=270.00, ticks=24, crashed=False
+2025-08-06 09:40:41,799 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=12.400, mean=1.395
+2025-08-06 09:40:41,799 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,799 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=1.288
+2025-08-06 09:40:41,800 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,800 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,800 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,862 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,862 - api_predictor - INFO - Received request: distance=426.60, ticks=36, crashed=False
+2025-08-06 09:40:41,863 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=13.600, mean=1.462
+2025-08-06 09:40:41,868 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,869 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,871 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,871 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,871 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,920 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,920 - api_predictor - INFO - Received request: distance=597.60, ticks=48, crashed=False
+2025-08-06 09:40:41,921 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=14.800, mean=1.528
+2025-08-06 09:40:41,921 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,921 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,922 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,922 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,922 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:41,988 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:41,988 - api_predictor - INFO - Received request: distance=783.00, ticks=60, crashed=False
+2025-08-06 09:40:41,988 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=16.000, mean=1.595
+2025-08-06 09:40:41,989 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,989 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:41,990 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:41,990 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:41,990 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,041 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,041 - api_predictor - INFO - Received request: distance=982.80, ticks=72, crashed=False
+2025-08-06 09:40:42,041 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=17.200, mean=1.658
+2025-08-06 09:40:42,041 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:42,042 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.878
+2025-08-06 09:40:42,043 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,043 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,043 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,097 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,097 - api_predictor - INFO - Received request: distance=1197.00, ticks=84, crashed=False
+2025-08-06 09:40:42,097 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=18.400, mean=1.725
+2025-08-06 09:40:42,098 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:42,098 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.872
+2025-08-06 09:40:42,099 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,099 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,099 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,153 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,153 - api_predictor - INFO - Received request: distance=1425.60, ticks=96, crashed=False
+2025-08-06 09:40:42,153 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=19.600, mean=1.790
+2025-08-06 09:40:42,154 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.071, max=10.000, mean=0.854
+2025-08-06 09:40:42,154 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.071, max=10.000, mean=0.861
+2025-08-06 09:40:42,155 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,155 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,155 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,205 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,205 - api_predictor - INFO - Received request: distance=1668.60, ticks=108, crashed=False
+2025-08-06 09:40:42,206 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=20.800, mean=1.846
+2025-08-06 09:40:42,206 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.083, max=10.000, mean=0.797
+2025-08-06 09:40:42,206 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.083, max=10.000, mean=0.839
+2025-08-06 09:40:42,207 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,207 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,207 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,262 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,262 - api_predictor - INFO - Received request: distance=1926.00, ticks=120, crashed=False
+2025-08-06 09:40:42,262 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=22.000, mean=1.900
+2025-08-06 09:40:42,262 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.159, max=10.000, mean=0.714
+2025-08-06 09:40:42,263 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.159, max=10.000, mean=0.788
+2025-08-06 09:40:42,264 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,264 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,264 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,313 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,313 - api_predictor - INFO - Received request: distance=2197.80, ticks=132, crashed=False
+2025-08-06 09:40:42,313 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=23.200, mean=1.972
+2025-08-06 09:40:42,313 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.717
+2025-08-06 09:40:42,313 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.743
+2025-08-06 09:40:42,314 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,314 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,314 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,365 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,365 - api_predictor - INFO - Received request: distance=2484.00, ticks=144, crashed=False
+2025-08-06 09:40:42,365 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=24.400, mean=2.038
+2025-08-06 09:40:42,365 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.719
+2025-08-06 09:40:42,365 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.716
+2025-08-06 09:40:42,366 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,366 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,366 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,415 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,415 - api_predictor - INFO - Received request: distance=2784.60, ticks=156, crashed=False
+2025-08-06 09:40:42,415 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=25.600, mean=2.113
+2025-08-06 09:40:42,415 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.132, max=10.000, mean=0.799
+2025-08-06 09:40:42,416 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.745
+2025-08-06 09:40:42,416 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,416 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,417 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,469 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,469 - api_predictor - INFO - Received request: distance=3099.60, ticks=168, crashed=False
+2025-08-06 09:40:42,469 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=26.800, mean=2.190
+2025-08-06 09:40:42,469 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.126, max=10.000, mean=0.855
+2025-08-06 09:40:42,469 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.791
+2025-08-06 09:40:42,470 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,471 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,471 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,521 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,521 - api_predictor - INFO - Received request: distance=3429.00, ticks=180, crashed=False
+2025-08-06 09:40:42,521 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=28.000, mean=2.258
+2025-08-06 09:40:42,521 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.863
+2025-08-06 09:40:42,521 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.132, max=10.000, mean=0.839
+2025-08-06 09:40:42,522 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,522 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,523 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,598 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,598 - api_predictor - INFO - Received request: distance=3772.80, ticks=192, crashed=False
+2025-08-06 09:40:42,598 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=29.200, mean=2.328
+2025-08-06 09:40:42,598 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:42,598 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.126, max=10.000, mean=0.867
+2025-08-06 09:40:42,599 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,599 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,599 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,648 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,648 - api_predictor - INFO - Received request: distance=4131.00, ticks=204, crashed=False
+2025-08-06 09:40:42,648 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=30.400, mean=2.392
+2025-08-06 09:40:42,648 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:42,648 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.870
+2025-08-06 09:40:42,649 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,649 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,649 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,709 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,709 - api_predictor - INFO - Received request: distance=4503.60, ticks=216, crashed=False
+2025-08-06 09:40:42,709 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=31.600, mean=2.458
+2025-08-06 09:40:42,709 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:42,709 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.871
+2025-08-06 09:40:42,710 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,710 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,710 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,763 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,763 - api_predictor - INFO - Received request: distance=4890.60, ticks=228, crashed=False
+2025-08-06 09:40:42,763 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=32.800, mean=2.524
+2025-08-06 09:40:42,763 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.026, max=10.000, mean=0.859
+2025-08-06 09:40:42,763 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.026, max=10.000, mean=0.862
+2025-08-06 09:40:42,764 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,764 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,764 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,818 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,818 - api_predictor - INFO - Received request: distance=5292.00, ticks=240, crashed=False
+2025-08-06 09:40:42,818 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=34.000, mean=2.579
+2025-08-06 09:40:42,818 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.154, max=10.000, mean=0.796
+2025-08-06 09:40:42,818 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.154, max=10.000, mean=0.840
+2025-08-06 09:40:42,820 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,820 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,820 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,869 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,869 - api_predictor - INFO - Received request: distance=5707.80, ticks=252, crashed=False
+2025-08-06 09:40:42,869 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=35.200, mean=2.634
+2025-08-06 09:40:42,869 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.217, max=10.000, mean=0.713
+2025-08-06 09:40:42,869 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.217, max=10.000, mean=0.789
+2025-08-06 09:40:42,870 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,870 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,871 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,925 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,925 - api_predictor - INFO - Received request: distance=6138.00, ticks=264, crashed=False
+2025-08-06 09:40:42,925 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=36.400, mean=2.704
+2025-08-06 09:40:42,925 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.712
+2025-08-06 09:40:42,925 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.740
+2025-08-06 09:40:42,927 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,927 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,927 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:42,975 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:42,975 - api_predictor - INFO - Received request: distance=6582.60, ticks=276, crashed=False
+2025-08-06 09:40:42,975 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=37.600, mean=2.762
+2025-08-06 09:40:42,975 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.643
+2025-08-06 09:40:42,975 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.689
+2025-08-06 09:40:42,976 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:42,976 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:42,976 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:43,024 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:43,024 - api_predictor - INFO - Received request: distance=7041.60, ticks=288, crashed=False
+2025-08-06 09:40:43,024 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=38.800, mean=2.818
+2025-08-06 09:40:43,024 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-2.003, max=10.000, mean=0.587
+2025-08-06 09:40:43,024 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-2.003, max=10.000, mean=0.647
+2025-08-06 09:40:43,025 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:43,025 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:43,025 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:43,083 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:43,083 - api_predictor - INFO - Received request: distance=7515.00, ticks=300, crashed=False
+2025-08-06 09:40:43,083 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=40.000, mean=2.890
+2025-08-06 09:40:43,084 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.287, max=10.000, mean=0.603
+2025-08-06 09:40:43,084 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.287, max=10.000, mean=0.611
+2025-08-06 09:40:43,085 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:43,085 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:43,085 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:43,131 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:43,131 - api_predictor - INFO - Received request: distance=8002.80, ticks=312, crashed=False
+2025-08-06 09:40:43,131 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=41.200, mean=2.947
+2025-08-06 09:40:43,131 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-4.673, max=10.000, mean=0.515
+2025-08-06 09:40:43,131 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-4.673, max=10.000, mean=0.569
+2025-08-06 09:40:43,132 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:43,132 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:43,132 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:43,180 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:43,181 - api_predictor - INFO - Received request: distance=8505.00, ticks=324, crashed=False
+2025-08-06 09:40:43,181 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=42.400, mean=3.001
+2025-08-06 09:40:43,181 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-6.196, max=10.000, mean=0.419
+2025-08-06 09:40:43,181 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.512
+2025-08-06 09:40:43,182 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:43,182 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:43,182 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,723 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,723 - api_predictor - INFO - Received request: distance=0.00, ticks=1, crashed=False
+2025-08-06 09:40:53,724 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=10.000, mean=1.444
+2025-08-06 09:40:53,724 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=2.096
+2025-08-06 09:40:53,724 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=1.010
+2025-08-06 09:40:53,725 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,725 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,725 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,779 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,779 - api_predictor - INFO - Received request: distance=127.80, ticks=12, crashed=False
+2025-08-06 09:40:53,779 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=11.200, mean=1.328
+2025-08-06 09:40:53,779 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,779 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=1.133
+2025-08-06 09:40:53,780 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,780 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,780 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,831 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,831 - api_predictor - INFO - Received request: distance=270.00, ticks=24, crashed=False
+2025-08-06 09:40:53,831 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=12.400, mean=1.395
+2025-08-06 09:40:53,832 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,832 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=1.288
+2025-08-06 09:40:53,832 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,832 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,832 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,880 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,880 - api_predictor - INFO - Received request: distance=426.60, ticks=36, crashed=False
+2025-08-06 09:40:53,880 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=13.600, mean=1.462
+2025-08-06 09:40:53,880 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,880 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,881 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,881 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,881 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,929 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,929 - api_predictor - INFO - Received request: distance=597.60, ticks=48, crashed=False
+2025-08-06 09:40:53,929 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=14.800, mean=1.528
+2025-08-06 09:40:53,929 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,929 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,930 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,930 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,930 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:53,975 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:53,975 - api_predictor - INFO - Received request: distance=783.00, ticks=60, crashed=False
+2025-08-06 09:40:53,975 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=16.000, mean=1.595
+2025-08-06 09:40:53,975 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,975 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:53,976 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:53,976 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:53,976 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,043 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,043 - api_predictor - INFO - Received request: distance=982.80, ticks=72, crashed=False
+2025-08-06 09:40:54,043 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=17.200, mean=1.658
+2025-08-06 09:40:54,043 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:54,043 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.878
+2025-08-06 09:40:54,044 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,044 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,044 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,097 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,097 - api_predictor - INFO - Received request: distance=1197.00, ticks=84, crashed=False
+2025-08-06 09:40:54,097 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=18.400, mean=1.725
+2025-08-06 09:40:54,097 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.865
+2025-08-06 09:40:54,097 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.872
+2025-08-06 09:40:54,098 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,098 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,098 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,149 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,149 - api_predictor - INFO - Received request: distance=1425.60, ticks=96, crashed=False
+2025-08-06 09:40:54,149 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=19.600, mean=1.790
+2025-08-06 09:40:54,149 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.071, max=10.000, mean=0.854
+2025-08-06 09:40:54,150 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.071, max=10.000, mean=0.861
+2025-08-06 09:40:54,150 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,150 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,150 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,214 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,214 - api_predictor - INFO - Received request: distance=1668.60, ticks=108, crashed=False
+2025-08-06 09:40:54,214 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=20.800, mean=1.846
+2025-08-06 09:40:54,214 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.083, max=10.000, mean=0.797
+2025-08-06 09:40:54,214 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.083, max=10.000, mean=0.839
+2025-08-06 09:40:54,215 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,215 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,215 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,263 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,263 - api_predictor - INFO - Received request: distance=1926.00, ticks=120, crashed=False
+2025-08-06 09:40:54,263 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=22.000, mean=1.900
+2025-08-06 09:40:54,263 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.159, max=10.000, mean=0.714
+2025-08-06 09:40:54,263 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.159, max=10.000, mean=0.788
+2025-08-06 09:40:54,264 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,264 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,264 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,312 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,312 - api_predictor - INFO - Received request: distance=2197.80, ticks=132, crashed=False
+2025-08-06 09:40:54,312 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=23.200, mean=1.972
+2025-08-06 09:40:54,312 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.717
+2025-08-06 09:40:54,312 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.743
+2025-08-06 09:40:54,313 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,313 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,313 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,356 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,356 - api_predictor - INFO - Received request: distance=2484.00, ticks=144, crashed=False
+2025-08-06 09:40:54,356 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=24.400, mean=2.038
+2025-08-06 09:40:54,356 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.207, max=10.000, mean=0.719
+2025-08-06 09:40:54,356 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.716
+2025-08-06 09:40:54,357 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,357 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,357 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,413 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,413 - api_predictor - INFO - Received request: distance=2784.60, ticks=156, crashed=False
+2025-08-06 09:40:54,414 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=25.600, mean=2.113
+2025-08-06 09:40:54,414 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.132, max=10.000, mean=0.799
+2025-08-06 09:40:54,414 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.745
+2025-08-06 09:40:54,415 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,415 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,415 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,462 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,462 - api_predictor - INFO - Received request: distance=3099.60, ticks=168, crashed=False
+2025-08-06 09:40:54,462 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=26.800, mean=2.190
+2025-08-06 09:40:54,462 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.126, max=10.000, mean=0.855
+2025-08-06 09:40:54,462 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.207, max=10.000, mean=0.791
+2025-08-06 09:40:54,463 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,463 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,463 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,512 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,512 - api_predictor - INFO - Received request: distance=3429.00, ticks=180, crashed=False
+2025-08-06 09:40:54,512 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=28.000, mean=2.258
+2025-08-06 09:40:54,512 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.863
+2025-08-06 09:40:54,512 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.132, max=10.000, mean=0.839
+2025-08-06 09:40:54,513 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,513 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,513 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,560 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,560 - api_predictor - INFO - Received request: distance=3772.80, ticks=192, crashed=False
+2025-08-06 09:40:54,560 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=29.200, mean=2.328
+2025-08-06 09:40:54,560 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.884
+2025-08-06 09:40:54,561 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.126, max=10.000, mean=0.867
+2025-08-06 09:40:54,561 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,561 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,561 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,641 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,641 - api_predictor - INFO - Received request: distance=4131.00, ticks=204, crashed=False
+2025-08-06 09:40:54,641 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=30.400, mean=2.392
+2025-08-06 09:40:54,641 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:54,641 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.870
+2025-08-06 09:40:54,642 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,642 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,642 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,694 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,694 - api_predictor - INFO - Received request: distance=4503.60, ticks=216, crashed=False
+2025-08-06 09:40:54,695 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=31.600, mean=2.458
+2025-08-06 09:40:54,695 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.007, max=10.000, mean=0.864
+2025-08-06 09:40:54,695 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.007, max=10.000, mean=0.871
+2025-08-06 09:40:54,696 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,696 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,696 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,742 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,742 - api_predictor - INFO - Received request: distance=4890.60, ticks=228, crashed=False
+2025-08-06 09:40:54,742 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=32.800, mean=2.524
+2025-08-06 09:40:54,742 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-0.026, max=10.000, mean=0.859
+2025-08-06 09:40:54,743 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-0.026, max=10.000, mean=0.862
+2025-08-06 09:40:54,743 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,743 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,743 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,795 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,795 - api_predictor - INFO - Received request: distance=5292.00, ticks=240, crashed=False
+2025-08-06 09:40:54,795 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=34.000, mean=2.579
+2025-08-06 09:40:54,795 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.154, max=10.000, mean=0.796
+2025-08-06 09:40:54,795 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.154, max=10.000, mean=0.840
+2025-08-06 09:40:54,796 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,796 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,796 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,842 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,842 - api_predictor - INFO - Received request: distance=5707.80, ticks=252, crashed=False
+2025-08-06 09:40:54,842 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=35.200, mean=2.634
+2025-08-06 09:40:54,842 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.217, max=10.000, mean=0.713
+2025-08-06 09:40:54,842 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.217, max=10.000, mean=0.789
+2025-08-06 09:40:54,843 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,843 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,843 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,890 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,890 - api_predictor - INFO - Received request: distance=6138.00, ticks=264, crashed=False
+2025-08-06 09:40:54,890 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=36.400, mean=2.704
+2025-08-06 09:40:54,890 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.712
+2025-08-06 09:40:54,890 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.740
+2025-08-06 09:40:54,891 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,891 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,891 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,939 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,939 - api_predictor - INFO - Received request: distance=6582.60, ticks=276, crashed=False
+2025-08-06 09:40:54,939 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=37.600, mean=2.762
+2025-08-06 09:40:54,939 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-1.264, max=10.000, mean=0.643
+2025-08-06 09:40:54,940 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-1.264, max=10.000, mean=0.689
+2025-08-06 09:40:54,940 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,940 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,940 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:54,991 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:54,991 - api_predictor - INFO - Received request: distance=7041.60, ticks=288, crashed=False
+2025-08-06 09:40:54,991 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=38.800, mean=2.818
+2025-08-06 09:40:54,991 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-2.003, max=10.000, mean=0.587
+2025-08-06 09:40:54,991 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-2.003, max=10.000, mean=0.647
+2025-08-06 09:40:54,992 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:54,992 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:54,992 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:55,052 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:55,052 - api_predictor - INFO - Received request: distance=7515.00, ticks=300, crashed=False
+2025-08-06 09:40:55,052 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=40.000, mean=2.890
+2025-08-06 09:40:55,052 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-3.287, max=10.000, mean=0.603
+2025-08-06 09:40:55,052 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-3.287, max=10.000, mean=0.611
+2025-08-06 09:40:55,053 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:55,053 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:55,053 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:55,104 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:55,105 - api_predictor - INFO - Received request: distance=8002.80, ticks=312, crashed=False
+2025-08-06 09:40:55,105 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=41.200, mean=2.947
+2025-08-06 09:40:55,105 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-4.673, max=10.000, mean=0.515
+2025-08-06 09:40:55,105 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-4.673, max=10.000, mean=0.569
+2025-08-06 09:40:55,106 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:55,106 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:55,107 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
+2025-08-06 09:40:55,154 - api_predictor - INFO - ==================================================
+2025-08-06 09:40:55,154 - api_predictor - INFO - Received request: distance=8505.00, ticks=324, crashed=False
+2025-08-06 09:40:55,154 - api_predictor - INFO - Step 1: Built base_obs | shape=(18,), min=0.000, max=42.400, mean=3.001
+2025-08-06 09:40:55,154 - api_predictor - INFO - Step 2: Built normalized_base_obs | shape=(18,), min=-6.196, max=10.000, mean=0.419
+2025-08-06 09:40:55,154 - api_predictor - INFO - Step 3: Built stacked_normalized_obs | shape=(54,), min=-6.196, max=10.000, mean=0.512
+2025-08-06 09:40:55,155 - api_predictor - INFO - Step 4: Model predicted action_int=1
+2025-08-06 09:40:55,155 - api_predictor - INFO - Step 5: Mapped to action_name='ACCELERATE'
+2025-08-06 09:40:55,155 - api_predictor - INFO - --> Responding with actions: ['ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE', 'ACCELERATE']
+
