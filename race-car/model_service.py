@@ -1,5 +1,4 @@
 # model_service.py
-
 import os
 import csv
 import time
@@ -14,8 +13,6 @@ from stable_baselines3.common.vec_env import VecNormalize
 
 # ACTION_MAP is defined in racecar_env.py and maps action integers to names
 from src.game.racecar_env import RaceCarEnv, ACTION_MAP
-# SENSOR_ORDER is derived from the sensor_options in core.py
-from core import sensor_options
 
 # --- Configuration ---
 MODEL_SAVE_DIR = "models_sb3"
@@ -28,7 +25,16 @@ LOG_DIR = "eval_logs_api"
 N_STACK = 3
 DETERMINISTIC_PREDICTION = True
 
-# The exact order of sensors used to build the observation vector, taken from core.py
+# CORRECTED: Define sensor_options directly to avoid the invalid import.
+# This list is derived from the definition in core.py's initialize_game_state function.
+sensor_options = [
+    (90, "front"), (135, "right_front"), (180, "right_side"), (225, "right_back"),
+    (270, "back"), (315, "left_back"), (0, "left_side"), (45, "left_front"),
+    (22.5, "left_side_front"), (67.5, "front_left_front"), (112.5, "front_right_front"),
+    (157.5, "right_side_front"), (202.5, "right_side_back"), (247.5, "back_right_back"),
+    (292.5, "back_left_back"), (337.5, "left_side_back"),
+]
+# The exact order of sensors used to build the observation vector.
 SENSOR_ORDER = [name for angle, name in sensor_options]
 
 # --- Global State (managed by lifespan events) ---
