@@ -154,7 +154,6 @@ def cone_min(sensors: Dict[str, Any], names: List[str]) -> float:
             reading = MAX_SENSOR_PX
         readings.append(reading)
 
-    # If for some reason there are no readings, return max distance
     if not readings:
         return MAX_SENSOR_PX
 
