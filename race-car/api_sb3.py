@@ -47,7 +47,7 @@ MODEL_PATH = os.path.join(MODEL_SAVE_DIR, MODEL_BASENAME)
 VECNORM_PATH = os.path.join(MODEL_SAVE_DIR, f"{MODEL_BASENAME}_vecnormalize.pkl")
 
 HOST = os.environ.get("HOST", "0.0.0.0")
-PORT = int(os.environ.get("PORT", "9052"))  # default 9052 for hosted evals
+PORT = int(os.environ.get("PORT", "8000"))  # default 9052 for hosted evals
 
 # Must match training wrappers
 N_STACK = 3                 # VecFrameStack(n_stack=3) in train
