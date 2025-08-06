@@ -2,8 +2,12 @@ import torch
 import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from PIL import Image # <--- Add this import
+from PIL import Image
+import os
+import argparse
+from tqdm import tqdm
 
+from utils import dice_score
 from model import UNet
 import config
 
@@ -11,6 +15,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL_PATH = "saved_models/unet_tumor_segmentation.pth"
 print(f"Inference running on device: {DEVICE}")
 
+# This transform should be identical to the validation transform in dataset.py
 val_transform = A.Compose([
     A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0),
     A.Normalize(mean=[0.0], std=[1.0]),
@@ -19,27 +24,16 @@ val_transform = A.Compose([
 
 
 model = UNet(in_channels=1, out_channels=1).to(DEVICE)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE), weights_only=False))
+# NOTE: Set weights_only=False if you encounter a loading error with newer PyTorch versions
+model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE)))
 model.eval()
 
 
 def predict(img: np.ndarray) -> np.ndarray:
-    # --- START OF MODIFICATION ---
-    # The input 'img' is a NumPy array. We will replicate the training preprocessing.
-
-    # 1. Check if the input is a 3-channel color image
-    if img.ndim == 3 and img.shape[2] == 3:
-        # 2. Convert NumPy array to PIL Image
-        pil_image = Image.fromarray(img.astype(np.uint8))
-        # 3. Convert to grayscale ("L" mode), just like in the TumorDataset
-        grayscale_pil_image = pil_image.convert("L")
-        # 4. Convert back to a NumPy array for further processing
-        img = np.array(grayscale_pil_image, dtype=np.float32)
-
-    # --- END OF MODIFICATION ---
-
-    original_height, original_width = img.shape
-    
+    """
+    Takes a preprocessed single-channel numpy array and returns a segmentation mask.
+    """
+    # The input 'img' is now expected to be grayscale (H, W)
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
@@ -49,15 +43,64 @@ def predict(img: np.ndarray) -> np.ndarray:
         probabilities = torch.sigmoid(logits)
         predicted_mask = (probabilities > 0.5).float()
 
-    predicted_mask = predicted_mask.squeeze(0).squeeze(0).cpu().numpy()
-    cropped_mask = predicted_mask[:original_height, :original_width]
-    final_segmentation_2d = (cropped_mask * 255).astype(np.uint8)
+    # The output is the full-size prediction, do not crop it.
+    predicted_mask_np = predicted_mask.squeeze(0).squeeze(0).cpu().numpy()
+    final_segmentation_2d = (predicted_mask_np * 255).astype(np.uint8)
 
-    # Convert the 2D grayscale mask to a 3-channel image to match validation requirements
+    # Convert to 3-channel for dice score function compatibility
     final_segmentation_3d = np.stack([final_segmentation_2d] * 3, axis=-1)
 
     return final_segmentation_3d
 
 
-def get_threshold_segmentation(img:np.ndarray, threshold:int) -> np.ndarray:
-    return (img < threshold).astype(np.uint8)*255
+def main():
+    parser = argparse.ArgumentParser(description="Evaluate segmentation model performance.")
+    parser.add_argument("--folder_path", type=str, required=True, help="Path to the folder containing 'imgs' and 'labels' subfolders.")
+    args = parser.parse_args()
+
+    imgs_dir = os.path.join(args.folder_path, "imgs")
+    labels_dir = os.path.join(args.folder_path, "labels")
+
+    image_files = sorted([f for f in os.listdir(imgs_dir) if f.startswith('patient_') and f.endswith('.png')])
+    dice_scores = []
+
+    # Define a simple transform to pad the label, matching the validation process
+    label_pad_transform = A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0)
+
+    print(f"Evaluating {len(image_files)} images from {args.folder_path}...")
+
+    for img_file in tqdm(image_files, desc="Calculating Dice Scores"):
+        img_path = os.path.join(imgs_dir, img_file)
+        label_file = img_file.replace("patient_", "segmentation_")
+        label_path = os.path.join(labels_dir, label_file)
+
+        if not os.path.exists(label_path):
+            continue
+
+        # 1. Load image as Grayscale, matching the training dataset
+        image_np = np.array(Image.open(img_path).convert("L"), dtype=np.float32)
+
+        # 2. Load label as Grayscale
+        label_np = np.array(Image.open(label_path).convert("L"))
+
+        # 3. Pad the ground truth label to match the model's output size
+        padded_label = label_pad_transform(image=label_np)["image"]
+        label_3d = np.stack([padded_label] * 3, axis=-1) # Convert to 3-channel
+
+        # Get the full-sized prediction (the predict function no longer crops)
+        prediction_np = predict(image_np)
+
+        # Calculate Dice score on full-sized, padded data
+        score = dice_score(y_true=label_3d, y_pred=prediction_np)
+        dice_scores.append(score)
+
+    if dice_scores:
+        avg_dice_score = np.mean(dice_scores)
+        print(f"\n✅ Evaluation Complete.")
+        print(f"Average Dice Score: {avg_dice_score:.4f}")
+    else:
+        print("No images were evaluated.")
+
+
+if __name__ == '__main__':
+    main()
