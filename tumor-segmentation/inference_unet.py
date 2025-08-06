@@ -3,7 +3,8 @@ import numpy as np
 import cv2
 from unet_model import get_unet_model
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 print(f"Inference device: {device}")
 model = get_unet_model(in_channels=1, out_classes=1)
 model.load_state_dict(torch.load("tumor-segmentation/models/unet_model_6_7.pth", map_location=device, weights_only=False))
