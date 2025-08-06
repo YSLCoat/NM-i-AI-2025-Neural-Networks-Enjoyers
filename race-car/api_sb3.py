@@ -16,7 +16,7 @@ from src.game.racecar_env import RaceCarEnv
 
 # Server configuration
 HOST = "0.0.0.0"
-PORT = int(os.getenv("API_PORT", 9052))
+PORT = int(os.getenv("API_PORT", 8000))
 
 # FastAPI app and uptime tracking
 app = FastAPI()
