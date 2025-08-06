@@ -33,7 +33,7 @@ def predict_endpoint(request: TumorPredictRequestDto):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     filename = f"image_{timestamp}.png"
     image_path = os.path.join(save_dir, filename)
-    imageio.imwrite(image_path, img)
+    # imageio.imwrite(image_path, img)
 
     # Obtain segmentation prediction
     predicted_segmentation = predict(img)
