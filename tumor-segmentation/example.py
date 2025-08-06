@@ -51,9 +51,12 @@ def predict(img: np.ndarray) -> np.ndarray:
 
     predicted_mask = predicted_mask.squeeze(0).squeeze(0).cpu().numpy()
     cropped_mask = predicted_mask[:original_height, :original_width]
-    final_segmentation = (cropped_mask * 255).astype(np.uint8)
+    final_segmentation_2d = (cropped_mask * 255).astype(np.uint8)
 
-    return final_segmentation
+    # Convert the 2D grayscale mask to a 3-channel image to match validation requirements
+    final_segmentation_3d = np.stack([final_segmentation_2d] * 3, axis=-1)
+
+    return final_segmentation_3d
 
 
 def get_threshold_segmentation(img:np.ndarray, threshold:int) -> np.ndarray:
