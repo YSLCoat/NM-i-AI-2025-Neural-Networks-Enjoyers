@@ -4,7 +4,7 @@ import numpy as np
 from torch.utils.data import Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-import cv2  # Import OpenCV
+import cv2
 
 import config
 
@@ -42,17 +42,19 @@ class TumorDataset(Dataset):
         return image, mask
 
 train_transform = A.Compose([
-    A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0),
-    A.Rotate(limit=15, p=0.5, border_mode=0),
+    # Replace LongestMaxSize and PadIfNeeded with a single Resize command
+    A.Resize(height=config.IMG_HEIGHT, width=config.IMG_WIDTH, interpolation=cv2.INTER_AREA),
+    A.Rotate(limit=15, p=0.5, border_mode=cv2.BORDER_CONSTANT),
     A.HorizontalFlip(p=0.5),
-    A.RandomBrightnessContrast(p=0.2), # Add this
-    A.GaussNoise(p=0.2), # And this
-    A.Normalize(mean=[0.0], std=[1.0]),
+    A.GridDistortion(p=0.2, border_mode=cv2.BORDER_CONSTANT),
+    A.ElasticTransform(p=0.2, alpha=120, sigma=120 * 0.05, border_mode=cv2.BORDER_CONSTANT),
+    A.Normalize(mean=[0.485], std=[0.229], max_pixel_value=255.0),
     ToTensorV2(),
 ])
 
 val_transform = A.Compose([
-    A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0),
-    A.Normalize(mean=[0.0], std=[1.0]),
+    # Also update the validation transform to match
+    A.Resize(height=config.IMG_HEIGHT, width=config.IMG_WIDTH, interpolation=cv2.INTER_AREA),
+    A.Normalize(mean=[0.485], std=[0.229], max_pixel_value=255.0),
     ToTensorV2(),
 ])

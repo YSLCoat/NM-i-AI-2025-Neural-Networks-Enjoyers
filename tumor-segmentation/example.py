@@ -6,74 +6,67 @@ from PIL import Image
 import os
 import argparse
 from tqdm import tqdm
+import cv2
 
 from utils import dice_score
 from model import UNet
+from dataset import val_transform  # Import the transform from dataset.py for consistency
 import config
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL_PATH = "saved_models/unet_tumor_segmentation.pth"
 print(f"Inference running on device: {DEVICE}")
 
-val_transform = A.Compose([
-    A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0),
-    A.Normalize(mean=[0.0], std=[1.0]),
-    ToTensorV2(),
-])
-
+# The val_transform is now imported from dataset.py to guarantee it's identical.
 
 model = UNet(in_channels=1, out_channels=1).to(DEVICE)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE)))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE), weights_only=False))
 model.eval()
 
+def postprocess(pred: torch.Tensor) -> np.ndarray:
+    """
+    Cleans the mask on the full-sized (padded) canvas without resizing.
+    """
+    # pred shape: (1, 1, H_pred, W_pred)
+    pred_np = pred.squeeze().cpu().numpy()  # (H_pred, W_pred)
+
+    # --- NO RESIZING ---
+    # Threshold the mask directly
+    binary_mask = (pred_np > 0.5).astype(np.uint8)
+
+    # Remove small objects
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary_mask, connectivity=8)
+    min_size = 5
+    cleaned_mask = np.zeros_like(binary_mask)
+    for i in range(1, num_labels):
+        if stats[i, cv2.CC_STAT_AREA] >= min_size:
+            cleaned_mask[labels == i] = 1
+
+    # Morphological closing
+    kernel = np.ones((3, 3), np.uint8)
+    cleaned_mask = cv2.morphologyEx(cleaned_mask, cv2.MORPH_CLOSE, kernel)
+
+    # Convert to [0, 255] and 3-channel RGB for evaluation/visualization
+    cleaned_mask = (cleaned_mask * 255).astype(np.uint8)
+    return cv2.cvtColor(cleaned_mask, cv2.COLOR_GRAY2RGB)
 
 def predict(img: np.ndarray) -> np.ndarray:
     """
-    Takes a numpy array (color or grayscale) and returns a segmentation mask
-    that matches the original image's dimensions.
+    Takes a raw numpy image and returns a cleaned, padded segmentation mask.
     """
-    # --- START OF PRE-PROCESSING ---
-    # Ensure the image is in the correct format (1-channel, float32)
-    if img.ndim == 3 and img.shape[2] == 3:
-        pil_image = Image.fromarray(img)
-        img = np.array(pil_image.convert("L"), dtype=np.float32)
-
-    # 1. Store the original shape *before* transforming (padding)
-    original_height, original_width = img.shape[:2]
-
-    # Pad the image to the model's required input size
     transformed = val_transform(image=img)
     image_tensor = transformed["image"]
     image_tensor = image_tensor.unsqueeze(0).to(DEVICE)
-    # --- END OF PRE-PROCESSING ---
 
-
-    # --- MODEL PREDICTION ---
     with torch.no_grad():
         logits = model(image_tensor)
         probabilities = torch.sigmoid(logits)
-        predicted_mask = (probabilities > 0.5).float()
-    # --- END OF MODEL PREDICTION ---
+        # Note: We pass the raw probabilities to postprocess now
+        predicted_mask = probabilities.float()
 
-
-    # --- START OF POST-PROCESSING ---
-    # Convert the prediction tensor to a numpy array
-    predicted_mask_np = predicted_mask.squeeze(0).squeeze(0).cpu().numpy()
-
-    # 2. Crop the padded prediction back down to the original shape
-    cropped_mask = predicted_mask_np[:original_height, :original_width]
-
-    # Convert to a 3-channel image with values of 0 or 255
-    final_segmentation_2d = (cropped_mask * 255).astype(np.uint8)
-    final_segmentation_3d = np.stack([final_segmentation_2d] * 3, axis=-1)
-    # --- END OF POST-PROCESSING ---
-
-    return final_segmentation_3d
+    return postprocess(predicted_mask)
 
 def main():
-    """
-    This function is for local testing and validation.
-    """
     parser = argparse.ArgumentParser(description="Evaluate segmentation model performance.")
     parser.add_argument("--folder_path", type=str, required=True, help="Path to the folder containing 'imgs' and 'labels' subfolders.")
     args = parser.parse_args()
@@ -83,8 +76,6 @@ def main():
 
     image_files = sorted([f for f in os.listdir(imgs_dir) if f.startswith('patient_') and f.endswith('.png')])
     dice_scores = []
-
-    label_pad_transform = A.PadIfNeeded(min_height=config.IMG_HEIGHT, min_width=config.IMG_WIDTH, border_mode=0)
 
     print(f"Evaluating {len(image_files)} images from {args.folder_path}...")
 
@@ -96,20 +87,23 @@ def main():
         if not os.path.exists(label_path):
             continue
 
-        # Load image and preprocess it identically to the training/API pipeline
+        # 1. Load raw image and label
         image_np = np.array(Image.open(img_path).convert("L"), dtype=np.float32)
+        label_np = np.array(Image.open(label_path).convert("L")) / 255.0 # Normalize to 0/1
 
-        # Load label as Grayscale
-        label_np = np.array(Image.open(label_path).convert("L"))
+        # 2. Get the padded prediction from the model
+        prediction_np = predict(image_np) # This is already a 3-channel RGB numpy array
 
-        # Pad the ground truth label to match the model's output size
-        padded_label = label_pad_transform(image=label_np)["image"]
-        label_3d = np.stack([padded_label] * 3, axis=-1)
+        # 3. Apply the *same* validation transform to the ground truth label
+        # This pads it to match the prediction's canvas.
+        padded_label_data = val_transform(image=image_np, mask=label_np)
+        padded_label_np = padded_label_data['mask'].numpy() # (H, W)
 
-        # Get prediction
-        prediction_np = predict(image_np)
+        # Convert padded label to 3-channel RGB for Dice score comparison
+        label_3d = np.stack([padded_label_np] * 3, axis=-1)
+        label_3d = (label_3d * 255).astype(np.uint8)
 
-        # Calculate Dice score on full-sized, padded data
+        # 4. Calculate Dice score on the aligned, padded images
         score = dice_score(y_true=label_3d, y_pred=prediction_np)
         dice_scores.append(score)
 
@@ -119,7 +113,6 @@ def main():
         print(f"Average Dice Score: {avg_dice_score:.4f}")
     else:
         print("No images were evaluated.")
-
 
 if __name__ == '__main__':
     main()

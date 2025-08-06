@@ -146,7 +146,7 @@ def train_one_epoch(loader, model, optimizer, loss_fn, scaler):
         data = data.to(device=config.DEVICE)
         targets = targets.float().unsqueeze(1).to(device=config.DEVICE)
 
-        with torch.cuda.amp.autocast():
+        with torch.amp.autocast(device_type='cuda'):
             predictions = model(data)
             loss = loss_fn(predictions, targets)
             
@@ -166,7 +166,7 @@ def main():
     model = UNet(in_channels=1, out_channels=1).to(config.DEVICE)
     loss_fn = DiceBCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-    scaler = torch.cuda.amp.GradScaler()
+    scaler = torch.amp.GradScaler()
 
     patient_img_dir = os.path.join(config.PATIENTS_DIR, "imgs")
     patient_mask_dir = os.path.join(config.PATIENTS_DIR, "labels")
