@@ -1,8 +1,14 @@
-# api_sb3.py — Serve PPO policy for server-side verification
+# api_sb3.py — Serve PPO policy for server-side verification (final)
+# Matches training wrappers: VecNormalize -> VecFrameStack(3)
+# Adds robust VecNormalize unwrapping, TTC+rear safety shim, short dynamic buffer.
+
 import os
+# Keep server CPU usage predictable (avoid oversubscription)
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+
 import pickle
-import logging # --- LOGGING ADDED ---
-from datetime import datetime # --- LOGGING ADDED ---
+import logging
 from collections import deque
 from typing import List, Optional
 
@@ -11,10 +17,9 @@ import torch
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-
 from stable_baselines3 import PPO
 
-# Optional: if we can import SB3 VecNormalize to load stats for obs standardization
+# Optional: SB3 VecNormalize for loading obs stats
 try:
     from stable_baselines3.common.vec_env import VecNormalize
     _HAS_VECNORM = True
@@ -23,47 +28,41 @@ except Exception:
 
 from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
 
-# ----------------------------- Logging Setup -----------------------------
-# --- LOGGING ADDED ---
-# Create a logger
+# ----------------------------- Logging -----------------------------
 logger = logging.getLogger("api_predictor")
 logger.setLevel(logging.INFO)
-
-# Create handlers
-log_file_path = "predictor_log.txt"
-file_handler = logging.FileHandler(log_file_path)
-console_handler = logging.StreamHandler()
-
-# Create a formatter and set it for both handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
-
-# Add handlers to the logger
 if not logger.handlers:
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-# --- END LOGGING ADDED ---
+    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    fh = logging.FileHandler("predictor_log.txt")
+    ch = logging.StreamHandler()
+    fh.setFormatter(fmt)
+    ch.setFormatter(fmt)
+    logger.addHandler(fh)
+    logger.addHandler(ch)
 
-
-# ----------------------------- Config -----------------------------
+# ----------------------------- Config ------------------------------
 MODEL_SAVE_DIR = "models_sb3"
 MODEL_BASENAME = "race_car_ppo_cuda_parallel"  # must match training
 MODEL_PATH = os.path.join(MODEL_SAVE_DIR, MODEL_BASENAME)
 VECNORM_PATH = os.path.join(MODEL_SAVE_DIR, f"{MODEL_BASENAME}_vecnormalize.pkl")
 
 HOST = os.environ.get("HOST", "0.0.0.0")
-PORT = int(os.environ.get("PORT", "8000"))
+PORT = int(os.environ.get("PORT", "9052"))  # default 9052 for hosted evals
 
-# Match training
-N_STACK = 3            # VecFrameStack(n_stack=3) in train
-BASE_OBS_DIM = 18      # 16 sensors + vx + vy
+# Must match training wrappers
+N_STACK = 3                 # VecFrameStack(n_stack=3) in train
+BASE_OBS_DIM = 18           # 16 sensors + vx + vy
 STACKED_OBS_DIM = N_STACK * BASE_OBS_DIM
 
-# How many actions to return per call
-ACTION_BUFFER_LEN = int(os.environ.get("ACTION_BUFFER_LEN", "4"))
+# Keep buffers short; we’ll shorten further under risk
+ACTION_BUFFER_LEN = int(os.environ.get("ACTION_BUFFER_LEN", "2"))
 
-# Action name mapping: pull from your env if available, else fallback
+# Safety shim thresholds (tuneable without retraining)
+TTC_ACC_BLOCK_SEC = 1.2     # block ACCELERATE if forward TTC < 1.2s
+REAR_CLOSE_THRESH = 0.35    # rear beam < 0.35 (normalized) → “on our bumper”
+FWD_CLEAR_FOR_NUDGE = 0.65  # if front is this clear, allow gentle accel under rear pressure
+
+# Action mapping from the env if available
 try:
     from src.game.racecar_env import ACTIONS as ENV_ACTIONS, ACTION_MAP as ENV_ACTION_MAP
     _HAS_ENV_ACTIONS = True
@@ -72,81 +71,99 @@ except Exception:
     ENV_ACTIONS = ["NOTHING", "ACCELERATE", "DECELERATE", "STEER_LEFT", "STEER_RIGHT"]
     ENV_ACTION_MAP = {i: a for i, a in enumerate(ENV_ACTIONS)}
 
-# Sensor order must match the game's creation order used in training
+# Sensor order must match training
 SENSORS_ORDER = [
     "front", "right_front", "right_side", "right_back", "back", "left_back",
     "left_side", "left_front", "left_side_front", "front_left_front",
     "front_right_front", "right_side_front", "right_side_back",
     "back_right_back", "back_left_back", "left_side_back",
 ]
+FWD_IDXS  = (7, 9, 0, 10, 1)  # left_front, front_left_front, front, front_right_front, right_front
+BACK_IDXS = (3, 4, 5)         # right_back, back, left_back
 
+# ------------------------- Obs Normalizer --------------------------
 class ObsNormalizer:
-    # This class is now simplified to only normalize the base 18-dim observation
+    """
+    Normalize a single 18-D frame using VecNormalize stats saved at training time.
+    Robustly unwraps to find obs_rms even if wrappers changed.
+    """
     def __init__(self, vecnorm_path: str, clip_obs: float = 10.0):
         self.enabled = False
         self.mean = None
         self.var = None
         self.clip_obs = clip_obs
-        if _HAS_VECNORM and os.path.exists(vecnorm_path):
-            try:
-                with open(vecnorm_path, "rb") as f:
-                    vn = pickle.load(f)
-                # Ensure mean/var are shaped correctly for the base observation
-                self.mean = np.array(vn.obs_rms.mean, dtype=np.float32).reshape(1, BASE_OBS_DIM)
-                self.var = np.array(vn.obs_rms.var, dtype=np.float32).reshape(1, BASE_OBS_DIM)
-                self.clip_obs = float(getattr(vn, "clip_obs", clip_obs))
-                self.enabled = True
-                logger.info(f"[ObsNorm] Loaded stats: clip_obs={self.clip_obs}, "
-                      f"mean.shape={self.mean.shape}, var.shape={self.var.shape}")
-            except Exception as e:
-                logger.error(f"[ObsNorm] Could not load VecNormalize stats from {vecnorm_path}: {e}")
-                self.enabled = False
+
+        if not _HAS_VECNORM or not os.path.exists(vecnorm_path):
+            logger.warning(f"[ObsNorm] VecNormalize not available or stats file missing: {vecnorm_path}")
+            return
+
+        try:
+            with open(vecnorm_path, "rb") as f:
+                obj = pickle.load(f)
+
+            def _extract_obs_rms(x):
+                seen = set()
+                cur = x
+                last_clip = clip_obs
+                while cur is not None and id(cur) not in seen:
+                    seen.add(id(cur))
+                    if hasattr(cur, "obs_rms") and hasattr(cur.obs_rms, "mean") and hasattr(cur.obs_rms, "var"):
+                        return cur.obs_rms, float(getattr(cur, "clip_obs", last_clip))
+                    last_clip = float(getattr(cur, "clip_obs", last_clip))
+                    cur = getattr(cur, "venv", None)
+                return None, clip_obs
+
+            obs_rms, clip = _extract_obs_rms(obj)
+            if obs_rms is None:
+                logger.warning(f"[ObsNorm] Could not find obs_rms in {vecnorm_path}; running UN-normalized.")
+                return
+
+            self.mean = np.array(obs_rms.mean, dtype=np.float32).reshape(1, BASE_OBS_DIM)
+            self.var  = np.array(obs_rms.var,  dtype=np.float32).reshape(1, BASE_OBS_DIM)
+            self.clip_obs = clip
+            self.enabled = True
+            logger.info(f"[ObsNorm] Loaded stats: clip_obs={self.clip_obs}, mean.shape={self.mean.shape}, var.shape={self.var.shape}")
+        except Exception as e:
+            logger.exception(f"[ObsNorm] Failed to load stats from {vecnorm_path}: {e}")
 
     def __call__(self, obs: np.ndarray) -> np.ndarray:
         if not self.enabled:
-            return obs
-        # Expects a single, unstacked observation of shape (BASE_OBS_DIM,)
+            return obs.astype(np.float32, copy=False)
         assert obs.shape == (BASE_OBS_DIM,), f"Expected ({BASE_OBS_DIM},), got {obs.shape}"
-        
-        # Reshape to (1, BASE_OBS_DIM) for broadcasting
-        obs = obs.reshape(1, BASE_OBS_DIM)
-        
+        obs2d = obs.reshape(1, BASE_OBS_DIM)
         eps = 1e-8
-        norm = (obs - self.mean) / np.sqrt(self.var + eps)
+        norm = (obs2d - self.mean) / np.sqrt(self.var + eps)
         clipped = np.clip(norm, -self.clip_obs, self.clip_obs)
-        
-        # Return the normalized, unstacked observation, flattened back
-        return clipped.flatten()
+        return clipped.astype(np.float32, copy=False).reshape(-1)
 
 # --------------------------- Predictor -----------------------------
 class PPOPredictor:
     def __init__(self, model_path: str, vecnorm_path: Optional[str]):
+        # Avoid CPU oversubscription in torch on servers
+        try:
+            torch.set_num_threads(1)
+        except Exception:
+            pass
+
         device = "cuda" if torch.cuda.is_available() else "cpu"
         logger.info(f"[Model] Loading PPO on device={device}")
         path = model_path if os.path.isfile(model_path) else model_path + ".zip"
         self.model = PPO.load(path, device=device)
-        self._hist = deque(maxlen=N_STACK)
+
+        # Sanity: observation size expected by model vs what we will build
+        try:
+            model_dim = int(np.prod(self.model.observation_space.shape))
+            expected = STACKED_OBS_DIM
+            if model_dim != expected:
+                logger.warning(f"[Sanity] Model expects obs_dim={model_dim}, server builds {expected}. "
+                               f"Check N_STACK={N_STACK} & BASE_OBS_DIM={BASE_OBS_DIM}.")
+        except Exception as e:
+            logger.warning(f"[Sanity] Could not verify model obs shape: {e}")
+
         self.obs_norm = ObsNormalizer(vecnorm_path, clip_obs=10.0)
-
-    def _build_base_obs(self, req: RaceCarPredictRequestDto) -> np.ndarray:
-        s = req.sensors or {}
-        
-        sensors = []
-        for name in SENSORS_ORDER:
-            raw_reading = s.get(name)
-            reading = float(raw_reading) if raw_reading is not None else 1000.0
-            sensors.append(reading / 1000.0)
-
-        vx = float(req.velocity.get("x", 0.0))
-        vy = float(req.velocity.get("y", 0.0))
-        
-        base = np.array(sensors + [vx, vy], dtype=np.float32)
-        
-        assert base.shape == (BASE_OBS_DIM,), f"Bad base obs shape: {base.shape}"
-        return base
+        self._hist = deque(maxlen=N_STACK)
 
     def _stack(self, normalized_base_obs: np.ndarray) -> np.ndarray:
-        # This now expects an already-normalized observation
         if len(self._hist) == 0:
             for _ in range(N_STACK):
                 self._hist.append(normalized_base_obs.copy())
@@ -156,106 +173,89 @@ class PPOPredictor:
         assert stacked.shape == (STACKED_OBS_DIM,), f"Bad stacked shape: {stacked.shape}"
         return stacked
 
+    def _build_base_obs(self, req: RaceCarPredictRequestDto) -> np.ndarray:
+        # Training-identical scaling: sensors in [0,1], vx/20, vy/2
+        s = req.sensors or {}
+        sensors = []
+        for name in SENSORS_ORDER:
+            raw = s.get(name, None)
+            v = 1.0 if raw is None else float(raw) / 1000.0
+            sensors.append(max(0.0, min(1.0, v)))
+        vx_raw = float((req.velocity or {}).get("x", 0.0))
+        vy_raw = float((req.velocity or {}).get("y", 0.0))
+        vx = vx_raw / 20.0
+        vy = vy_raw / 2.0
+        base = np.array(sensors + [vx, vy], dtype=np.float32)
+        assert base.shape == (BASE_OBS_DIM,), f"Bad base obs shape: {base.shape}"
+        return base
+
+    def _safety_shim(self, req: RaceCarPredictRequestDto, a_name: str, sensors_norm: np.ndarray) -> str:
+        """Small, surgical overrides for emergencies (no fighting the policy)."""
+        # Forward TTC
+        fwd_min = float(np.min(sensors_norm[list(FWD_IDXS)]))
+        d_fwd_px = fwd_min * 1000.0
+        vx_raw = float((req.velocity or {}).get("x", 0.0))
+        vx_pos = max(vx_raw, 1e-6)      # px / tick
+        ttc_fwd = (d_fwd_px / vx_pos) / 60.0
+
+        # Rear proximity (narrow cone)
+        back_min = float(np.min(sensors_norm[list(BACK_IDXS)]))
+
+        # 1) Never accelerate into short forward TTC
+        if a_name == "ACCELERATE" and ttc_fwd < TTC_ACC_BLOCK_SEC:
+            a_name = "DECELERATE"
+
+        # 2) If rear is very close and front is fairly clear, avoid hard braking:
+        if a_name == "DECELERATE" and back_min < REAR_CLOSE_THRESH:
+            if fwd_min >= FWD_CLEAR_FOR_NUDGE:
+                a_name = "ACCELERATE"   # keep moving to open gap
+            elif fwd_min >= 0.55:
+                a_name = "NOTHING"      # gentle: neither accel nor brake
+
+        return a_name, ttc_fwd, fwd_min, back_min
+
     def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
-            try:
-                logger.info("=" * 50)
-                logger.info(
-                    f"Received request: distance={req.distance:.2f}, "
-                    f"ticks={req.elapsed_ticks}, crashed={req.did_crash}"
-                )
+        try:
+            # 1) Build base obs (18,)
+            base = self._build_base_obs(req)
 
-                # -------------------- 1) Build base observation (unnormalized) --------------------
-                base_obs = self._build_base_obs(req)  # shape (BASE_OBS_DIM,)
-                logger.info(
-                    f"Step 1: base_obs | shape={base_obs.shape}, "
-                    f"min={base_obs.min():.3f}, max={base_obs.max():.3f}, mean={base_obs.mean():.3f}"
-                )
+            # 2) Normalize per-frame, then stack to (54,)
+            base_norm = self.obs_norm(base)           # (18,)
+            stacked_norm = self._stack(base_norm)     # (54,)
+            obs_for_model = stacked_norm.reshape(1, -1)
 
-                # -------------------- 2) Normalize the base observation --------------------------
-                # Many ObsNormalizer impls expect (batch, dim). Normalize per-frame, then stack.
-                try:
-                    base_obs_2d = base_obs.reshape(1, -1)
-                    norm_base_obs_2d = self.obs_norm(base_obs_2d)  # expected shape (1, BASE_OBS_DIM)
-                    # Be tolerant if obs_norm returns 1D
-                    if norm_base_obs_2d is None:
-                        norm_base_obs = base_obs.astype(np.float32)
-                    else:
-                        norm_base_obs = np.asarray(norm_base_obs_2d).reshape(-1).astype(np.float32)
-                except Exception as e_norm:
-                    logger.warning(f"Step 2: normalization failed ({e_norm}); using unnormalized base.")
-                    norm_base_obs = base_obs.astype(np.float32)
+            # Optional: watch for clipping (should be near zero with correct stats)
+            if self.obs_norm.enabled:
+                clip = getattr(self.obs_norm, "clip_obs", 10.0)
+                clip_frac = float(np.mean((base_norm <= -clip) | (base_norm >= clip)))
+                if clip_frac > 0.05:
+                    logger.warning(f"[ObsNorm] {clip_frac*100:.1f}% dims at clip (+/-{clip}). Stats may not match.")
 
-                logger.info(
-                    f"Step 2: norm_base_obs | shape={norm_base_obs.shape}, "
-                    f"min={norm_base_obs.min():.3f}, max={norm_base_obs.max():.3f}, mean={norm_base_obs.mean():.3f}"
-                )
+            # 3) Policy prediction
+            with torch.no_grad():
+                act_int, _ = self.model.predict(obs_for_model, deterministic=True)
+            a_int = int(np.asarray(act_int).squeeze())
+            if _HAS_ENV_ACTIONS and 0 <= a_int < len(ENV_ACTIONS):
+                a_name = str(ENV_ACTIONS[a_int])
+            else:
+                a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
 
-                # -------------------- 3) Stack normalized observations ---------------------------
-                # Emulate VecFrameStack: append this normalized frame to history
-                stacked_norm_obs = self._stack(norm_base_obs)  # shape (n_stack * BASE_OBS_DIM,)
-                logger.info(
-                    f"Step 3: stacked_norm_obs | shape={stacked_norm_obs.shape}, "
-                    f"min={stacked_norm_obs.min():.3f}, max={stacked_norm_obs.max():.3f}, mean={stacked_norm_obs.mean():.3f}"
-                )
+            # 4) Safety shim (TTC + rear pressure), returns updated action + metrics
+            sensors_norm = base_norm[:16]
+            a_safe, ttc_fwd, fwd_min, back_min = self._safety_shim(req, a_name, sensors_norm)
 
-                # -------------------- 4) Model prediction ----------------------------------------
-                obs_for_model = stacked_norm_obs.reshape(1, -1)
-                with torch.no_grad():
-                    act_int, _ = self.model.predict(obs_for_model, deterministic=True)
-                a_int = int(np.asarray(act_int).squeeze())
-                logger.info(f"Step 4: model predicted action_int={a_int}")
+            # 5) Dynamic buffer: react FAST when risky or shim triggered
+            risky = (ttc_fwd < TTC_ACC_BLOCK_SEC) or (fwd_min < 0.45)
+            dyn_buf = min(buffer_len, 2) if (risky or a_safe != a_name) else buffer_len
 
-                # -------------------- 5) Map to action name --------------------------------------
-                if _HAS_ENV_ACTIONS:
-                    if 0 <= a_int < len(ENV_ACTIONS):
-                        a_name = str(ENV_ACTIONS[a_int])
-                    else:
-                        a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
-                else:
-                    a_name = ENV_ACTION_MAP.get(a_int, "NOTHING")
-                logger.info(f"Step 5: mapped to action_name='{a_name}'")
+            logger.info(f"[Predict] a_model={a_name} -> a_final={a_safe} | "
+                        f"ttc_fwd={ttc_fwd:.2f}s, fwd_min={fwd_min:.2f}, back_min={back_min:.2f}, buf={dyn_buf}")
 
-                # -------------------- 6) Risk-aware buffer + tiny TTC safety shim ----------------
-                # Estimate forward TTC using a forward cone consistent with training
-                s = req.sensors or {}
-                fwd_names = ["left_front", "front_left_front", "front", "front_right_front", "right_front"]
-                fwd_vals = [float(s.get(n, 1.0) if s.get(n) is not None else 1.0) for n in fwd_names]
-                fwd_min = min(fwd_vals) if fwd_vals else 1.0
+            return [a_safe] * dyn_buf
 
-                # Convert normalized distance back to px for TTC: d_px = fwd_min * MAX_SENSOR_PX
-                MAX_SENSOR_PX = 1000.0
-                FPS = 60.0
-                vx_px_per_tick = max(float(req.velocity.get("x", 0.0)), 0.0)
-                if vx_px_per_tick <= 1e-6:
-                    ttc_fwd = float("inf")
-                else:
-                    d_px = fwd_min * MAX_SENSOR_PX
-                    ttc_fwd = (d_px / vx_px_per_tick) / FPS
-
-                # Minimal override: avoid "accelerate/idle into short TTC"
-                if ttc_fwd < 1.0 and a_name in ("ACCELERATE", "NOTHING"):
-                    logger.info(f"TTC shim: ttc_fwd={ttc_fwd:.2f} < 1.0 → override '{a_name}' → 'DECELERATE'")
-                    a_name = "DECELERATE"
-
-                # Dynamic action buffer: be reactive under risk, relax when very safe
-                if ttc_fwd < 1.0 or fwd_min < 0.5:
-                    buf = 2
-                elif ttc_fwd > 3.0 and fwd_min > 0.7:
-                    buf = max(buffer_len + 2, 6)
-                else:
-                    buf = buffer_len
-
-                logger.info(
-                    f"Step 6: TTC/Buffer | fwd_min={fwd_min:.2f}, ttc_fwd={ttc_fwd:.2f}, "
-                    f"final_action='{a_name}', buffer={buf}"
-                )
-
-                return [a_name] * buf
-
-            except Exception as e:
-                logger.exception(f"[predict_actions] Exception: {e}")
-                # Fail-safe: short buffer of no-ops to avoid erratic behavior
-                return ["NOTHING"] * 2
+        except Exception as e:
+            logger.exception(f"[predict_actions] error: {e}")
+            return ["NOTHING"] * max(1, min(buffer_len, 2))
 
 # ----------------------------- API -------------------------------
 app = FastAPI(title="Race Car PPO API", version="1.0")
@@ -272,15 +272,17 @@ def _load_model():
 def root():
     return {"status": "ok", "message": "Race Car PPO endpoint running."}
 
+@app.get("/health")
+def health():
+    return {"ok": True}
+
 @app.post("/predict", response_model=RaceCarPredictResponseDto)
 def predict(req: RaceCarPredictRequestDto):
     if predictor is None:
         actions = ["NOTHING"] * ACTION_BUFFER_LEN
         logger.error("Predictor not initialized, returning 'NOTHING'")
         return RaceCarPredictResponseDto(actions=actions)
-    
     actions = predictor.predict_actions(req, buffer_len=ACTION_BUFFER_LEN)
-    logger.info(f"--> Responding with actions: {actions}\n") # --- LOGGING ADDED ---
     return RaceCarPredictResponseDto(actions=actions)
 
 if __name__ == "__main__":
