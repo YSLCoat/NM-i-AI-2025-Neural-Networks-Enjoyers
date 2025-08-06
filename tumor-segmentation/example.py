@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from PIL import Image # <--- Add this import
 
 from model import UNet
 import config
@@ -23,7 +24,20 @@ model.eval()
 
 
 def predict(img: np.ndarray) -> np.ndarray:
-    assert 0, img.shape
+    # --- START OF MODIFICATION ---
+    # The input 'img' is a NumPy array. We will replicate the training preprocessing.
+
+    # 1. Check if the input is a 3-channel color image
+    if img.ndim == 3 and img.shape[2] == 3:
+        # 2. Convert NumPy array to PIL Image
+        pil_image = Image.fromarray(img.astype(np.uint8))
+        # 3. Convert to grayscale ("L" mode), just like in the TumorDataset
+        grayscale_pil_image = pil_image.convert("L")
+        # 4. Convert back to a NumPy array for further processing
+        img = np.array(grayscale_pil_image, dtype=np.float32)
+
+    # --- END OF MODIFICATION ---
+
     original_height, original_width = img.shape
     
     transformed = val_transform(image=img)
