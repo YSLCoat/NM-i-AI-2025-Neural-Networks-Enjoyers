@@ -156,106 +156,106 @@ class PPOPredictor:
         assert stacked.shape == (STACKED_OBS_DIM,), f"Bad stacked shape: {stacked.shape}"
         return stacked
 
-def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
-        try:
-            logger.info("=" * 50)
-            logger.info(
-                f"Received request: distance={req.distance:.2f}, "
-                f"ticks={req.elapsed_ticks}, crashed={req.did_crash}"
-            )
-
-            # -------------------- 1) Build base observation (unnormalized) --------------------
-            base_obs = self._build_base_obs(req)  # shape (BASE_OBS_DIM,)
-            logger.info(
-                f"Step 1: base_obs | shape={base_obs.shape}, "
-                f"min={base_obs.min():.3f}, max={base_obs.max():.3f}, mean={base_obs.mean():.3f}"
-            )
-
-            # -------------------- 2) Normalize the base observation --------------------------
-            # Many ObsNormalizer impls expect (batch, dim). Normalize per-frame, then stack.
+    def predict_actions(self, req: RaceCarPredictRequestDto, buffer_len: int = ACTION_BUFFER_LEN) -> List[str]:
             try:
-                base_obs_2d = base_obs.reshape(1, -1)
-                norm_base_obs_2d = self.obs_norm(base_obs_2d)  # expected shape (1, BASE_OBS_DIM)
-                # Be tolerant if obs_norm returns 1D
-                if norm_base_obs_2d is None:
+                logger.info("=" * 50)
+                logger.info(
+                    f"Received request: distance={req.distance:.2f}, "
+                    f"ticks={req.elapsed_ticks}, crashed={req.did_crash}"
+                )
+
+                # -------------------- 1) Build base observation (unnormalized) --------------------
+                base_obs = self._build_base_obs(req)  # shape (BASE_OBS_DIM,)
+                logger.info(
+                    f"Step 1: base_obs | shape={base_obs.shape}, "
+                    f"min={base_obs.min():.3f}, max={base_obs.max():.3f}, mean={base_obs.mean():.3f}"
+                )
+
+                # -------------------- 2) Normalize the base observation --------------------------
+                # Many ObsNormalizer impls expect (batch, dim). Normalize per-frame, then stack.
+                try:
+                    base_obs_2d = base_obs.reshape(1, -1)
+                    norm_base_obs_2d = self.obs_norm(base_obs_2d)  # expected shape (1, BASE_OBS_DIM)
+                    # Be tolerant if obs_norm returns 1D
+                    if norm_base_obs_2d is None:
+                        norm_base_obs = base_obs.astype(np.float32)
+                    else:
+                        norm_base_obs = np.asarray(norm_base_obs_2d).reshape(-1).astype(np.float32)
+                except Exception as e_norm:
+                    logger.warning(f"Step 2: normalization failed ({e_norm}); using unnormalized base.")
                     norm_base_obs = base_obs.astype(np.float32)
+
+                logger.info(
+                    f"Step 2: norm_base_obs | shape={norm_base_obs.shape}, "
+                    f"min={norm_base_obs.min():.3f}, max={norm_base_obs.max():.3f}, mean={norm_base_obs.mean():.3f}"
+                )
+
+                # -------------------- 3) Stack normalized observations ---------------------------
+                # Emulate VecFrameStack: append this normalized frame to history
+                stacked_norm_obs = self._stack(norm_base_obs)  # shape (n_stack * BASE_OBS_DIM,)
+                logger.info(
+                    f"Step 3: stacked_norm_obs | shape={stacked_norm_obs.shape}, "
+                    f"min={stacked_norm_obs.min():.3f}, max={stacked_norm_obs.max():.3f}, mean={stacked_norm_obs.mean():.3f}"
+                )
+
+                # -------------------- 4) Model prediction ----------------------------------------
+                obs_for_model = stacked_norm_obs.reshape(1, -1)
+                with torch.no_grad():
+                    act_int, _ = self.model.predict(obs_for_model, deterministic=True)
+                a_int = int(np.asarray(act_int).squeeze())
+                logger.info(f"Step 4: model predicted action_int={a_int}")
+
+                # -------------------- 5) Map to action name --------------------------------------
+                if _HAS_ENV_ACTIONS:
+                    if 0 <= a_int < len(ENV_ACTIONS):
+                        a_name = str(ENV_ACTIONS[a_int])
+                    else:
+                        a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
                 else:
-                    norm_base_obs = np.asarray(norm_base_obs_2d).reshape(-1).astype(np.float32)
-            except Exception as e_norm:
-                logger.warning(f"Step 2: normalization failed ({e_norm}); using unnormalized base.")
-                norm_base_obs = base_obs.astype(np.float32)
+                    a_name = ENV_ACTION_MAP.get(a_int, "NOTHING")
+                logger.info(f"Step 5: mapped to action_name='{a_name}'")
 
-            logger.info(
-                f"Step 2: norm_base_obs | shape={norm_base_obs.shape}, "
-                f"min={norm_base_obs.min():.3f}, max={norm_base_obs.max():.3f}, mean={norm_base_obs.mean():.3f}"
-            )
+                # -------------------- 6) Risk-aware buffer + tiny TTC safety shim ----------------
+                # Estimate forward TTC using a forward cone consistent with training
+                s = req.sensors or {}
+                fwd_names = ["left_front", "front_left_front", "front", "front_right_front", "right_front"]
+                fwd_vals = [float(s.get(n, 1.0) if s.get(n) is not None else 1.0) for n in fwd_names]
+                fwd_min = min(fwd_vals) if fwd_vals else 1.0
 
-            # -------------------- 3) Stack normalized observations ---------------------------
-            # Emulate VecFrameStack: append this normalized frame to history
-            stacked_norm_obs = self._stack(norm_base_obs)  # shape (n_stack * BASE_OBS_DIM,)
-            logger.info(
-                f"Step 3: stacked_norm_obs | shape={stacked_norm_obs.shape}, "
-                f"min={stacked_norm_obs.min():.3f}, max={stacked_norm_obs.max():.3f}, mean={stacked_norm_obs.mean():.3f}"
-            )
-
-            # -------------------- 4) Model prediction ----------------------------------------
-            obs_for_model = stacked_norm_obs.reshape(1, -1)
-            with torch.no_grad():
-                act_int, _ = self.model.predict(obs_for_model, deterministic=True)
-            a_int = int(np.asarray(act_int).squeeze())
-            logger.info(f"Step 4: model predicted action_int={a_int}")
-
-            # -------------------- 5) Map to action name --------------------------------------
-            if _HAS_ENV_ACTIONS:
-                if 0 <= a_int < len(ENV_ACTIONS):
-                    a_name = str(ENV_ACTIONS[a_int])
+                # Convert normalized distance back to px for TTC: d_px = fwd_min * MAX_SENSOR_PX
+                MAX_SENSOR_PX = 1000.0
+                FPS = 60.0
+                vx_px_per_tick = max(float(req.velocity.get("x", 0.0)), 0.0)
+                if vx_px_per_tick <= 1e-6:
+                    ttc_fwd = float("inf")
                 else:
-                    a_name = str(ENV_ACTION_MAP.get(a_int, "NOTHING"))
-            else:
-                a_name = ENV_ACTION_MAP.get(a_int, "NOTHING")
-            logger.info(f"Step 5: mapped to action_name='{a_name}'")
+                    d_px = fwd_min * MAX_SENSOR_PX
+                    ttc_fwd = (d_px / vx_px_per_tick) / FPS
 
-            # -------------------- 6) Risk-aware buffer + tiny TTC safety shim ----------------
-            # Estimate forward TTC using a forward cone consistent with training
-            s = req.sensors or {}
-            fwd_names = ["left_front", "front_left_front", "front", "front_right_front", "right_front"]
-            fwd_vals = [float(s.get(n, 1.0) if s.get(n) is not None else 1.0) for n in fwd_names]
-            fwd_min = min(fwd_vals) if fwd_vals else 1.0
+                # Minimal override: avoid "accelerate/idle into short TTC"
+                if ttc_fwd < 1.0 and a_name in ("ACCELERATE", "NOTHING"):
+                    logger.info(f"TTC shim: ttc_fwd={ttc_fwd:.2f} < 1.0 → override '{a_name}' → 'DECELERATE'")
+                    a_name = "DECELERATE"
 
-            # Convert normalized distance back to px for TTC: d_px = fwd_min * MAX_SENSOR_PX
-            MAX_SENSOR_PX = 1000.0
-            FPS = 60.0
-            vx_px_per_tick = max(float(req.velocity.get("x", 0.0)), 0.0)
-            if vx_px_per_tick <= 1e-6:
-                ttc_fwd = float("inf")
-            else:
-                d_px = fwd_min * MAX_SENSOR_PX
-                ttc_fwd = (d_px / vx_px_per_tick) / FPS
+                # Dynamic action buffer: be reactive under risk, relax when very safe
+                if ttc_fwd < 1.0 or fwd_min < 0.5:
+                    buf = 2
+                elif ttc_fwd > 3.0 and fwd_min > 0.7:
+                    buf = max(buffer_len + 2, 6)
+                else:
+                    buf = buffer_len
 
-            # Minimal override: avoid "accelerate/idle into short TTC"
-            if ttc_fwd < 1.0 and a_name in ("ACCELERATE", "NOTHING"):
-                logger.info(f"TTC shim: ttc_fwd={ttc_fwd:.2f} < 1.0 → override '{a_name}' → 'DECELERATE'")
-                a_name = "DECELERATE"
+                logger.info(
+                    f"Step 6: TTC/Buffer | fwd_min={fwd_min:.2f}, ttc_fwd={ttc_fwd:.2f}, "
+                    f"final_action='{a_name}', buffer={buf}"
+                )
 
-            # Dynamic action buffer: be reactive under risk, relax when very safe
-            if ttc_fwd < 1.0 or fwd_min < 0.5:
-                buf = 2
-            elif ttc_fwd > 3.0 and fwd_min > 0.7:
-                buf = max(buffer_len + 2, 6)
-            else:
-                buf = buffer_len
+                return [a_name] * buf
 
-            logger.info(
-                f"Step 6: TTC/Buffer | fwd_min={fwd_min:.2f}, ttc_fwd={ttc_fwd:.2f}, "
-                f"final_action='{a_name}', buffer={buf}"
-            )
-
-            return [a_name] * buf
-
-        except Exception as e:
-            logger.exception(f"[predict_actions] Exception: {e}")
-            # Fail-safe: short buffer of no-ops to avoid erratic behavior
-            return ["NOTHING"] * 2
+            except Exception as e:
+                logger.exception(f"[predict_actions] Exception: {e}")
+                # Fail-safe: short buffer of no-ops to avoid erratic behavior
+                return ["NOTHING"] * 2
 
 # ----------------------------- API -------------------------------
 app = FastAPI(title="Race Car PPO API", version="1.0")
