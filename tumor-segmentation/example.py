@@ -19,7 +19,7 @@ val_transform = A.Compose([
 
 
 model = UNet(in_channels=1, out_channels=1).to(DEVICE)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE)))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device(DEVICE), weights_only=False))
 model.eval()
 
 
