@@ -1,0 +1,11 @@
+episode,steps,total_reward,final_distance,terminated,truncated,crashed,failure_type,crash_step,action_before_crash_int,action_before_crash_name,fwd_min_at_crash,left_min_at_crash,right_min_at_crash,back_min_at_crash,ttc_fwd_at_crash,ttc_left_at_crash,ttc_right_at_crash,headway_sec_at_crash,rear_danger_at_crash,vx_at_crash
+1,623,3403.980831,13001.700000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+2,3600,25896.877523,76513.700000,0,1,0,n/a,,4,NOTHING,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+3,3600,15143.855050,65901.500000,0,1,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+4,1057,2124.715581,7910.100000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+5,2032,3557.845381,10699.600000,1,0,0,n/a,,0,ACCELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+6,3600,13217.701931,45269.100000,0,1,0,n/a,,4,NOTHING,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+7,3600,16973.116720,55995.800000,0,1,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+8,3600,16523.888866,56727.600000,0,1,0,n/a,,0,ACCELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+9,1864,2830.594966,8186.300000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan
+10,3084,6270.482349,20077.100000,1,0,0,n/a,,1,DECELERATE,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan

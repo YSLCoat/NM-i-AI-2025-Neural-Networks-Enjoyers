@@ -235,7 +235,7 @@ class RaceCarEnv(gym.Env):
             elif action_string == 'DECELERATE' and max(danger_fwd, danger_left, danger_right) > 0.35:
                 act_shaping -= 0.35 * (max(danger_fwd, danger_left, danger_right) - 0.35)
             if action == "ACCELERATE" and ttc_fwd < 0.3:
-            act_shaping += 1.0 * (0.3 - ttc_fwd)  # was 0.7 * (danger_fwd-0.35)
+                act_shaping += 1.0 * (0.3 - ttc_fwd)  # was 0.7 * (danger_fwd-0.35)
 
             # --- distance-keeping bonus (time headway) ---
             headway_sec = ttc_fwd
