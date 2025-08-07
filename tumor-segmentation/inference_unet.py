@@ -7,7 +7,7 @@ from unet_model import get_unet_model
 device = torch.device("cpu")
 print(f"Inference device: {device}")
 model = get_unet_model(in_channels=1, out_classes=1)
-model.load_state_dict(torch.load("tumor-segmentation/models/unet_model_6_9.pth", map_location=device, weights_only=False))
+model.load_state_dict(torch.load("tumor-segmentation/models/unet_model_7_0.pth", map_location=device, weights_only=False))
 model.to(device)
 model.eval()
 
