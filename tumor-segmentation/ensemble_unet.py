@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import cv2
 from unet_model import get_unet_model
+import matplotlib.pyplot as plt
 
 # Device
 device = torch.device("cpu")  # Match original
@@ -14,7 +15,7 @@ _models = [
     "tumor-segmentation/models/unet_model_6_7.pth"
 ]
 _resize_shape = (512, 512)
-_threshold = 0.3
+_threshold = 0.5
 
 
 def load_ensemble(model_paths: list):
@@ -51,6 +52,17 @@ def preprocess(img: np.ndarray, resize_shape=(512, 512)) -> torch.Tensor:
     tensor = torch.tensor(img, dtype=torch.float32).to(device)
     return tensor
 
+def debug_thresholds(pred_resized: np.ndarray):
+    """
+    Show different thresholded masks using OpenCV windows.
+    """
+    for thresh in [0.3, 0.4, 0.5, 0.6, 0.7]:
+        mask = (pred_resized > thresh).astype(np.uint8) * 255  # scale to 0–255
+        cv2.imshow(f"Threshold: {thresh}", mask)
+
+    print("Press any key to close all threshold windows...")
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def postprocess(pred: torch.Tensor, target_size: tuple) -> np.ndarray:
     # pred shape: (1, 1, H, W)
@@ -58,6 +70,9 @@ def postprocess(pred: torch.Tensor, target_size: tuple) -> np.ndarray:
 
     # Resize back to original image size
     pred_resized = cv2.resize(pred_np, (target_size[1], target_size[0]), interpolation=cv2.INTER_LINEAR)
+
+    # print("<<<<<<<<<<<<  DEBUG  >>>>>>>>>>>>>>>")
+    # debug_thresholds(pred_resized)
 
     # Threshold to binary mask
     binary_mask = (pred_resized > _threshold).astype(np.uint8)  # 0 or 1
@@ -103,4 +118,5 @@ def predict(img: np.ndarray) -> np.ndarray:
         preds.append(prob)
 
     avg_pred = torch.stack(preds, dim=0).mean(dim=0)  # shape: (1, 1, H, W)
-    return postprocess(avg_pred, original_size)
+    ret = postprocess(avg_pred, original_size)
+    return ret

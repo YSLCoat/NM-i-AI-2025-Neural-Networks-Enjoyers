@@ -10,6 +10,7 @@ from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import time
 import torchvision.utils as vutils
+import os
 
 # Tversky Loss (PyTorch)
 class TverskyLoss(nn.Module):
@@ -69,7 +70,7 @@ def validate(model, val_loader, device):
 
 def train():
     model_name = 'model_7_1'
-    epochs = 5
+    epochs = 10
     batch_size = 4
     resize_shape = (512, 512)
     learning_rate = 1e-4
@@ -99,7 +100,7 @@ def train():
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
 
     model = get_unet_model(in_channels=1, out_classes=1).to(device)
-    loss_fn = CombinedLossDiceTversky(weight_dice=1.0, weight_tversky=0.0)
+    loss_fn = CombinedLossDiceTversky(weight_dice=0.9, weight_tversky=0.1)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=5)
 
@@ -184,6 +185,19 @@ def train():
         print(f" - Val Dice (hard):   {val_dice:.4f}")
 
         scheduler.step(val_dice)
+
+        # Checkpoint saving
+        checkpoint_path = f"tumor-segmentation/models/checkpoints/unet_{model_name}_epoch{epoch+1}.pth"
+        os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
+        
+        # Save latest checkpoint every epoch
+        torch.save({
+            'epoch': epoch + 1,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'scheduler_state_dict': scheduler.state_dict(),
+            'val_dice': val_dice,
+        }, checkpoint_path)
 
     torch.save(model.state_dict(), f"tumor-segmentation/models/unet_{model_name}.pth")
     print(f"Model saved as unet_{model_name}.pth")
