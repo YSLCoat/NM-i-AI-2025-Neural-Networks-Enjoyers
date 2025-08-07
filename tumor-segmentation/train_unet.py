@@ -69,8 +69,8 @@ def validate(model, val_loader, device):
     return sum(dice_scores) / len(dice_scores)
 
 def train():
-    model_name = 'model_7_1'
-    epochs = 10
+    model_name = 'model_7_2'
+    epochs = 250
     batch_size = 4
     resize_shape = (512, 512)
     learning_rate = 1e-4
