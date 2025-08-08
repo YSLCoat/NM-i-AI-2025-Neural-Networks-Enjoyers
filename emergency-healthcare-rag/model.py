@@ -22,7 +22,7 @@ RERANKER_MODEL = 'BAAI/bge-reranker-large'
 FAISS_INDEX_PATH = "faiss_index.bin"
 CHUNKS_PATH = "clean_chunks.pkl"
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
-TOP_K_RETRIEVE = 25  # How many initial candidates to retrieve
+TOP_K_RETRIEVE = 50  # How many initial candidates to retrieve
 TOP_N_RERANKED = 3   # How many of the best reranked candidates to use for context
 
 RETRIEVER = None

@@ -23,7 +23,7 @@ set "INFERENCE_SCRIPT=inference.py"
 
 
 echo --- Step 1: Creating new vector store with embedding model: %EMBEDDING_MODEL% ---
-python "%CREATE_STORE_SCRIPT%" --model "%EMBEDDING_MODEL%" --chunks_filename "%CHUNKS_FILENAME%" --faiss_index_filename "%FAISS_INDEX_FILENAME%"
+REM python "%CREATE_STORE_SCRIPT%" --model "%EMBEDDING_MODEL%" --chunks_filename "%CHUNKS_FILENAME%" --faiss_index_filename "%FAISS_INDEX_FILENAME%"
 
 echo --- Vector store created successfully. ---
 echo.
