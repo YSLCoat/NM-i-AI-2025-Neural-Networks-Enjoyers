@@ -13,7 +13,7 @@ set "RERANKER_MODEL=BAAI/bge-reranker-large"
 set "LLM_MODEL=gemma2:9b"
 
 REM Giving the powerful reranker more candidates can help. 10 is a good starting point.
-set "TOP_K_FOR_RERANKING=10"
+set "TOP_K_FOR_RERANKING=25"
 set "CHUNKS_FILENAME=clean_chunks.pkl"
 set "FAISS_INDEX_FILENAME=faiss_index.bin"
 
@@ -23,7 +23,7 @@ set "INFERENCE_SCRIPT=inference.py"
 
 
 echo --- Step 1: Creating new vector store with embedding model: %EMBEDDING_MODEL% ---
-@REM python "%CREATE_STORE_SCRIPT%" --model "%EMBEDDING_MODEL%" --chunks_filename "%CHUNKS_FILENAME%" --faiss_index_filename "%FAISS_INDEX_FILENAME%"
+REM python "%CREATE_STORE_SCRIPT%" --model "%EMBEDDING_MODEL%" --chunks_filename "%CHUNKS_FILENAME%" --faiss_index_filename "%FAISS_INDEX_FILENAME%"
 
 echo --- Vector store created successfully. ---
 echo.

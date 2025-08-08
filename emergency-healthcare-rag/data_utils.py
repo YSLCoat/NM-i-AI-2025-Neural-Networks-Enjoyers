@@ -42,8 +42,8 @@ def create_clean_chunks(topic_id: int, raw_text: str, tokenizer_model: str = "BA
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
     
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=512,      # The target size for each chunk in tokens
-        chunk_overlap=100,   # The number of tokens to overlap between chunks
+        chunk_size=256,      # The target size for each chunk in tokens
+        chunk_overlap=25,   # The number of tokens to overlap between chunks
         length_function=lambda x: len(tokenizer.encode(x)), # Use the tokenizer for length calculation
         separators=["\n\n## ", "\n\n", "\n", ". ", " ", ""], # How to split recursively
         add_start_index=False,
@@ -75,16 +75,16 @@ def create_clean_chunks(topic_id: int, raw_text: str, tokenizer_model: str = "BA
             section_content = part[title_end_index:].strip()
 
             if section_title and section_content and section_title not in unwanted_sections:
-                # For each section, add its title to the content for context,
-                # then split it into smaller, overlapping chunks.
-                content_with_title = f"## {section_title}\n\n{section_content}"
-                sub_chunks = text_splitter.split_text(content_with_title)
+                # ENHANCEMENT: Add main document title AND section title
+                content_with_full_title = f"# {title}\n\n## {section_title}\n\n{section_content}"
+                sub_chunks = text_splitter.split_text(content_with_full_title)
                 
                 for sub_chunk in sub_chunks:
                     chunks.append({
                         'topic_id': topic_id,
                         'section_title': section_title,
-                        'content': sub_chunk
+                        'content': sub_chunk,
+                        'main_doc_title': title # Optional: store for clarity
                     })
         except (IndexError, ValueError):
             logging.warning(f"Could not process a malformed section part in topic {topic_id}")

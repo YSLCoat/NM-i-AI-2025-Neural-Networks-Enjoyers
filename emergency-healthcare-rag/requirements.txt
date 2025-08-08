@@ -4,3 +4,12 @@ pydantic
 pydantic-settings
 loguru
 openai
+sentence-transformers
+faiss-cpu
+torch
+transformers
+numpy
+requests
+tqdm 
+pydantic
+loguru

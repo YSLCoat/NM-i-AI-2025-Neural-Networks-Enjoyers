@@ -1,42 +1,59 @@
-import time
+# api.py
+
 import uvicorn
 import datetime
+import time
+from contextlib import asynccontextmanager
 from fastapi import Body, FastAPI
+
+# Import the DTOs and the new model service
 from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
-from example import return_action
+import model_service
 
 HOST = "0.0.0.0"
-PORT = 9052
+PORT = 8001
 
+# Use FastAPI's lifespan manager to load the model on startup
+# and clean up on shutdown. This is the modern replacement for
+# on_event("startup") and on_event("shutdown").
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Load the model and other resources
+    model_service.load_model()
+    yield
+    # Shutdown: Clean up resources
+    model_service.close_model()
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 start_time = time.time()
+
 
 @app.post('/predict', response_model=RaceCarPredictResponseDto)
 def predict(request: RaceCarPredictRequestDto = Body(...)):
-    action = return_action(request.dict())
+    """
+    Receives game state, uses the ML model to predict an action,
+    and returns it.
+    """
+    # The heavy lifting is now done in the model_service
+    predicted_actions = model_service.predict_action(request.dict())
+    
     return RaceCarPredictResponseDto(
-        action_type=action['action_type'],
-        actions=action['actions']
+        actions=predicted_actions
     )
 
 @app.get('/api')
-def hello():
+def api_info():
     return {
-        "service": "race-car-usecase",
-        "uptime": '{}'.format(datetime.timedelta(seconds=time.time() - start_time))
+        "service": "race-car-usecase-model-server",
+        "uptime": f"{datetime.timedelta(seconds=time.time() - start_time)}"
     }
-
 
 @app.get('/')
 def index():
-    return "Your endpoint is running!"
-
-
+    return "Your model endpoint is running! Send POST requests to /predict."
 
 
 if __name__ == '__main__':
-
     uvicorn.run(
         'api:app',
         host=HOST,

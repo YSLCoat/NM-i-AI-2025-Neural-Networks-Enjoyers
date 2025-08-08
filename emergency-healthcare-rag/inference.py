@@ -88,8 +88,17 @@ class RAGGenerator:
         
         topic_id = context_chunks[0]['topic_id']
 
-        prompt = f"""Context:\n---\n{context_text}\n---\nStatement: "{statement}"\n\nTask: Based ONLY on the provided context, respond with a single, raw JSON object with two keys: "statement_is_true" (1 for true, 0 for false) and "statement_topic" (the integer topic ID, which is {topic_id}). Do not add any explanation or markdown."""
+        prompt = f"""Context from medical articles:\n---\n{context_text}\n---\n
+        Statement to evaluate: "{statement}"
 
+        Task:
+        1.  **Analyze**: First, carefully read the statement and identify its key claims.
+        2.  **Verify**: Second, go through the provided context section by section and check if it supports or refutes each key claim.
+        3.  **Conclude**: Third, based on your verification, determine if the entire statement is true or false. The statement is only true if ALL its claims are supported by the context.
+        4.  **Output**: Finally, respond with a single, raw JSON object with two keys: "statement_is_true" (1 for true, 0 for false) and "statement_topic" (the integer topic ID, which is {topic_id}).
+
+        Do not add any explanation or markdown in your final output. Just the raw JSON.
+        """
         payload = {
             "model": self.model_name,
             "prompt": prompt,
@@ -181,7 +190,7 @@ def run_evaluation(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run a full evaluation of the RAG pipeline using Hugging Face Transformers on GPU.")
     
-    parser.add_argument("--llm_model", type=str, default="mistralai/Mistral-7B-Instruct-v0.2", help="Name of the Hugging Face model to use for generation.")
+    parser.add_argument("--llm_model", type=str, help="Name of the Hugging Face model to use for generation.")
     parser.add_argument("--embedding_model", type=str, help="Name of the SentenceTransformer BI-ENCODER model for retrieval.")
     parser.add_argument("--reranker_model", type=str, default="BAAI/bge-reranker-large", help="Name of the SentenceTransformer CROSS-ENCODER model for reranking.")
     parser.add_argument("--statements_dir", type=str, default="/home/torf/NM-i-AI-2025-Neural-Networks-Enjoyers/emergency-healthcare-rag/data/train/statements/", help="Directory for statement .txt files.")
@@ -189,7 +198,7 @@ if __name__ == '__main__':
     parser.add_argument("--faiss_index", type=str, default="faiss_index.bin", help="Path to the FAISS index file.")
     parser.add_argument("--chunks_file", type=str, default="clean_chunks.pkl", help="Path to the clean_chunks.pkl file.")
     parser.add_argument("--vram_check_interval", type=int, default=20, help="How often to check and print VRAM usage.")
-    parser.add_argument("--top_k", type=int, default=10, help="Number of chunks to retrieve from FAISS for reranking. More is better for a cross-encoder, but slower.")
+    parser.add_argument("--top_k", type=int, default=25, help="Number of chunks to retrieve from FAISS for reranking. More is better for a cross-encoder, but slower.")
     # --- NEW: Argument for selecting top N chunks after reranking ---
     parser.add_argument("--top_n_reranked", type=int, default=3, help="Number of top reranked chunks to use as context for the generator.")
 
