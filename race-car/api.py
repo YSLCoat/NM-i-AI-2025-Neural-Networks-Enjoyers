@@ -11,7 +11,7 @@ from dtos import RaceCarPredictRequestDto, RaceCarPredictResponseDto
 import model_service
 
 HOST = "0.0.0.0"
-PORT = 8000
+PORT = 8001
 
 # Use FastAPI's lifespan manager to load the model on startup
 # and clean up on shutdown. This is the modern replacement for

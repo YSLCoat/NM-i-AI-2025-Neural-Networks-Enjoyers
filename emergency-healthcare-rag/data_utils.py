@@ -42,8 +42,8 @@ def create_clean_chunks(topic_id: int, raw_text: str, tokenizer_model: str = "BA
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_model)
     
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=512,      # The target size for each chunk in tokens
-        chunk_overlap=100,   # The number of tokens to overlap between chunks
+        chunk_size=256,      # The target size for each chunk in tokens
+        chunk_overlap=25,   # The number of tokens to overlap between chunks
         length_function=lambda x: len(tokenizer.encode(x)), # Use the tokenizer for length calculation
         separators=["\n\n## ", "\n\n", "\n", ". ", " ", ""], # How to split recursively
         add_start_index=False,

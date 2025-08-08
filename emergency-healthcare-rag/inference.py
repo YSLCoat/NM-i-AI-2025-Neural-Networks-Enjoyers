@@ -88,8 +88,17 @@ class RAGGenerator:
         
         topic_id = context_chunks[0]['topic_id']
 
-        prompt = f"""Context:\n---\n{context_text}\n---\nStatement: "{statement}"\n\nTask: Based ONLY on the provided context, respond with a single, raw JSON object with two keys: "statement_is_true" (1 for true, 0 for false) and "statement_topic" (the integer topic ID, which is {topic_id}). Do not add any explanation or markdown."""
+        prompt = f"""Context from medical articles:\n---\n{context_text}\n---\n
+        Statement to evaluate: "{statement}"
 
+        Task:
+        1.  **Analyze**: First, carefully read the statement and identify its key claims.
+        2.  **Verify**: Second, go through the provided context section by section and check if it supports or refutes each key claim.
+        3.  **Conclude**: Third, based on your verification, determine if the entire statement is true or false. The statement is only true if ALL its claims are supported by the context.
+        4.  **Output**: Finally, respond with a single, raw JSON object with two keys: "statement_is_true" (1 for true, 0 for false) and "statement_topic" (the integer topic ID, which is {topic_id}).
+
+        Do not add any explanation or markdown in your final output. Just the raw JSON.
+        """
         payload = {
             "model": self.model_name,
             "prompt": prompt,
